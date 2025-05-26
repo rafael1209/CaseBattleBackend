@@ -14,7 +14,7 @@ public class ItemService(IItemRepository itemRepository) : IItemService
             Id = ObjectId.GenerateNewId(),
             Name = request.Name,
             Description = request.Description,
-            ImageUrl = null,
+            ImageId = null,
             MinecraftId = request.MinecraftId,
             Amount = request.Amount,
             Price = request.Price
