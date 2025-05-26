@@ -38,10 +38,12 @@ public class Startup
         services.AddSingleton<IMongoDbContext, MongoDbContext>();
 
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IItemRepository, ItemRepository>();
 
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthorizeService, AuthorizeService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IItemService, ItemService>();
 
         services.AddCors(options =>
         {
