@@ -1,8 +1,11 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using CaseBattleBackend.Database;
+using CaseBattleBackend.Interfaces;
+using CaseBattleBackend.Repositories;
+using Microsoft.OpenApi.Models;
 
 namespace CaseBattleBackend;
 
-public class Startup(IConfiguration configuration)
+public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
@@ -34,12 +37,6 @@ public class Startup(IConfiguration configuration)
         services.AddSingleton<IMongoDbContext, MongoDbContext>();
 
         services.AddScoped<IUserRepository, UserRepository>();
-
-        services.AddScoped<IAuthService, AuthService>();
-        services.AddKeyedScoped<IOAuthProvider, GoogleAuthService>(AuthStrategies.Google);
-        services.AddKeyedScoped<IOAuthProvider, DiscordAuthService>(AuthStrategies.Discord);
-        services.AddScoped<IUserService, UserService>();
-        services.AddScoped<ITokenService, TokenService>();
 
         services.AddCors(options =>
         {
