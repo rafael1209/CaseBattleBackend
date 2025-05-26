@@ -40,6 +40,7 @@ public class Startup
         services.AddScoped<IUserRepository, UserRepository>();
 
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IAuthorizeService, AuthorizeService>();
         services.AddScoped<IUserService, UserService>();
 
         services.AddCors(options =>
