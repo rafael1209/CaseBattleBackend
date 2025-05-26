@@ -39,11 +39,13 @@ public class Startup
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IItemRepository, ItemRepository>();
+        services.AddScoped<ICaseRepository, CaseRepository>();
 
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthorizeService, AuthorizeService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IItemService, ItemService>();
+        services.AddScoped<ICaseService, CaseService>();
 
         services.AddCors(options =>
         {

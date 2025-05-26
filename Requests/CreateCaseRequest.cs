@@ -1,0 +1,10 @@
+﻿namespace CaseBattleBackend.Requests;
+
+public class CreateCaseRequest
+{
+    public required string Name { get; set; }
+    public string? Description { get; set; }
+    public string? ImageId { get; set; }
+    public required List<string> Items { get; set; } = [];
+    public int RtpPercentage { get; set; }
+}

@@ -7,4 +7,5 @@ public interface IMongoDbContext
 {
     IMongoCollection<User> UsersCollection { get; }
     IMongoCollection<CaseItem> ItemsCollection { get; }
+    IMongoCollection<Case> CasesCollection { get; }
 }

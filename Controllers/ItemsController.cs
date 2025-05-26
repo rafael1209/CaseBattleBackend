@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CaseBattleBackend.Controllers;
 
 [Route("api/v1/items")]
-public class ItemController(IItemService itemService) : Controller
+public class ItemsController(IItemService itemService) : Controller
 {
     [HttpGet]
     public IActionResult Index()

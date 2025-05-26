@@ -10,6 +10,7 @@ public class MongoDbContext : IMongoDbContext
 
     private const string ConstUsersCollection = "users";
     private const string ConstItemsCollection = "items";
+    private const string ConstCasesCollection = "cases";
 
     public MongoDbContext(IConfiguration configuration)
     {
@@ -19,4 +20,5 @@ public class MongoDbContext : IMongoDbContext
 
     public IMongoCollection<User> UsersCollection => _database.GetCollection<User>(ConstUsersCollection);
     public IMongoCollection<CaseItem> ItemsCollection => _database.GetCollection<CaseItem>(ConstItemsCollection);
+    public IMongoCollection<Case> CasesCollection => _database.GetCollection<Case>(ConstCasesCollection);
 }

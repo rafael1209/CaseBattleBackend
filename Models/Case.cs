@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace CaseBattleBackend.Models;
 
-public class CaseItem
+public class Case
 {
     [BsonId]
     public ObjectId Id { get; set; }
@@ -17,12 +17,9 @@ public class CaseItem
     [BsonElement("imageId")]
     public string? ImageId { get; set; }
 
-    [BsonElement("minecraftId")]
-    public string? MinecraftId { get; set; }
+    [BsonElement("items")]
+    public required List<ObjectId> Items { get; set; } = [];
 
-    [BsonElement("amount")]
-    public required int Amount { get; set; }
-
-    [BsonElement("price")]
-    public required int Price { get; set; }
+    [BsonElement("rtp")]
+    public int RtpPercentage { get; set; }
 }
