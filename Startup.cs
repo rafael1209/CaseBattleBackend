@@ -1,6 +1,7 @@
 ﻿using CaseBattleBackend.Database;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Repositories;
+using CaseBattleBackend.Services;
 using Microsoft.OpenApi.Models;
 
 namespace CaseBattleBackend;
@@ -37,6 +38,9 @@ public class Startup
         services.AddSingleton<IMongoDbContext, MongoDbContext>();
 
         services.AddScoped<IUserRepository, UserRepository>();
+
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IUserService, UserService>();
 
         services.AddCors(options =>
         {
