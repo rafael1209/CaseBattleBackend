@@ -17,6 +17,9 @@ public class User
     [BsonElement("username")]
     public required string Username { get; set; }
 
+    [BsonElement("balance")]
+    public double Balance { get; set; }
+
     [BsonElement("authToken")]
     public required string AuthToken { get; set; }
 

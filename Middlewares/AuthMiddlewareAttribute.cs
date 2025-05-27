@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Security.Principal;
 using CaseBattleBackend.Interfaces;
+using CaseBattleBackend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -26,11 +27,13 @@ public class AuthMiddlewareAttribute : Attribute, IFilterFactory
             try
             {
                 var request = httpContextAccessor.HttpContext!.Request;
-                if (await IsUserAuthorizedByTokenFromHeaderAsync(request))
+                var userData = await IsUserAuthorizedByTokenFromHeaderAsync(request);
+
+                if (userData != null)
                 {
-                    var user = await dbContext.TryGetByAuthToken(request.Headers["Authorization"]);
-                    httpContextAccessor.HttpContext.Items["@me"] = user;
-                    request.HttpContext.User.AddIdentity(new ClaimsIdentity(new GenericIdentity(user?.Id.ToString())));
+                    httpContextAccessor.HttpContext.Items["@me"] = userData;
+                    request.HttpContext.User.AddIdentity(
+                        new ClaimsIdentity(new GenericIdentity(userData.Id.ToString())));
 
                     await next();
                 }
@@ -45,16 +48,16 @@ public class AuthMiddlewareAttribute : Attribute, IFilterFactory
             }
         }
 
-        private async Task<bool> IsUserAuthorizedByTokenFromHeaderAsync(HttpRequest request)
+        private async Task<User?> IsUserAuthorizedByTokenFromHeaderAsync(HttpRequest request)
         {
             request.Headers.TryGetValue("Authorization", out var token);
             var apiKey = token.FirstOrDefault();
 
-            if (string.IsNullOrEmpty(apiKey)) return false;
+            if (string.IsNullOrEmpty(apiKey)) return null;
 
             var user = await dbContext.TryGetByAuthToken(apiKey);
 
-            return user != null;
+            return user;
         }
     }
 }
