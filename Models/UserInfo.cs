@@ -5,6 +5,6 @@ public class UserInfo(string id, double balance, string nickname, string uuid, i
     public string Id { get; set; } = id;
     public double Balance { get; set; } = balance;
     public string Nickname { get; set; } = nickname;
-    public string MinecraftUuid { get; set; } = uuid;
+    public string AvatarUrl { get; set; } = $"https://avatars.spworlds.ru/face/{uuid}?w=48";
     public int Level { get; set; } = level;
 }
