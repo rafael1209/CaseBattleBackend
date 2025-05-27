@@ -24,5 +24,5 @@ public class CaseItem
     public required int Amount { get; set; }
 
     [BsonElement("price")]
-    public required int Price { get; set; }
+    public required double Price { get; set; }
 }

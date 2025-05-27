@@ -7,6 +7,22 @@ namespace CaseBattleBackend.Controllers;
 [Route("api/v1/cases")]
 public class CasesController(ICaseService caseService) : Controller
 {
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetCase(string id)
+    {
+        var caseData = await caseService.GetById(id);
+
+        return Ok(new { caseData });
+    }
+
+    [HttpPost("{id}/open")]
+    public async Task<IActionResult> OpenCase(string id)
+    {
+        var winItem = await caseService.OpenCase(id);
+
+        return Ok(new { winItem });
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetCases()
     {

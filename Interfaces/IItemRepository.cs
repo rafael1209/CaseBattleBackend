@@ -7,4 +7,5 @@ public interface IItemRepository
 {
     Task<CaseItem> Create(CaseItem item);
     Task<CaseItem> GetById(ObjectId id);
+    Task<List<CaseItem>> GetTopByMaxPrice(double maxPrice, int limit);
 }

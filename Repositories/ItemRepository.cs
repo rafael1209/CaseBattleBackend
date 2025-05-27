@@ -22,4 +22,16 @@ public class ItemRepository(IMongoDbContext context) : IItemRepository
 
         return await _items.Find(filter).FirstAsync();
     }
+
+    public async Task<List<CaseItem>> GetTopByMaxPrice(double maxPrice, int limit)
+    {
+        var filter = Builders<CaseItem>.Filter.Lte(i => i.Price, maxPrice);
+
+        return await _items
+            .Find(filter)
+            .SortBy(i => i.Price)
+            .Limit(limit)
+            .ToListAsync();
+    }
+
 }

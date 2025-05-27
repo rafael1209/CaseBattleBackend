@@ -22,4 +22,7 @@ public class Case
 
     [BsonElement("rtp")]
     public int RtpPercentage { get; set; }
+
+    [BsonElement("price")]
+    public required int Price { get; set; }
 }

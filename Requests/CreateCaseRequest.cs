@@ -6,5 +6,6 @@ public class CreateCaseRequest
     public string? Description { get; set; }
     public string? ImageId { get; set; }
     public required List<string> Items { get; set; } = [];
+    public required int Price { get; set; }
     public int RtpPercentage { get; set; }
 }
