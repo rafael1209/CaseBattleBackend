@@ -13,10 +13,10 @@ public class UsersController(IUserService userService) : Controller
     [AuthMiddleware]
     public async Task<IActionResult> GetMe()
     {
-        var user = HttpContext.Items["@me"] as User 
+        var user = HttpContext.Items["@me"] as User
                    ?? throw new SecurityTokenEncryptionKeyNotFoundException();
 
-        var userInfo = new UserInfo(user.Id.ToString(), user.Balance, user.Username, user.MinecraftUuid, 0);
+        var userInfo = await userService.GetUserInfo(user);
 
         return Ok(userInfo);
     }
