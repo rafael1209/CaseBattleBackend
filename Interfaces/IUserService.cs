@@ -8,4 +8,5 @@ public interface IUserService
     Task<User?> TryGetByMinecraftUuid(string minecraftUuid);
     Task<User> Create(User user);
     Task<User?> GetById(ObjectId id);
+    Task<UserInfo> GetUserInfo(User user);
 }
