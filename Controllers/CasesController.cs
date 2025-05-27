@@ -10,9 +10,17 @@ public class CasesController(ICaseService caseService) : Controller
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCase(string id)
     {
-        var caseData = await caseService.GetById(id);
+        try
+        {
+            var caseData = await caseService.GetById(id);
 
-        return Ok(new { caseData });
+            return Ok(new { caseData });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return NotFound();
+        }
     }
 
     [HttpPost("{id}/open")]
