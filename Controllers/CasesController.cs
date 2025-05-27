@@ -1,4 +1,5 @@
 ﻿using CaseBattleBackend.Interfaces;
+using CaseBattleBackend.Middlewares;
 using CaseBattleBackend.Requests;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,7 @@ namespace CaseBattleBackend.Controllers;
 public class CasesController(ICaseService caseService) : Controller
 {
     [HttpGet("{id}")]
+    [AuthMiddleware]
     public async Task<IActionResult> GetCase(string id)
     {
         try
@@ -24,6 +26,7 @@ public class CasesController(ICaseService caseService) : Controller
     }
 
     [HttpPost("{id}/open")]
+    [AuthMiddleware]
     public async Task<IActionResult> OpenCase(string id)
     {
         var winItem = await caseService.OpenCase(id);
@@ -32,6 +35,7 @@ public class CasesController(ICaseService caseService) : Controller
     }
 
     [HttpGet]
+    [AuthMiddleware]
     public async Task<IActionResult> GetCases()
     {
         var cases = await caseService.GetAll();
@@ -40,6 +44,7 @@ public class CasesController(ICaseService caseService) : Controller
     }
 
     [HttpPost]
+    [AuthMiddleware]
     public async Task<IActionResult> CreateCase([FromBody] CreateCaseRequest request)
     {
         try
