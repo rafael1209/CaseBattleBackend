@@ -24,6 +24,9 @@
     "CardToken": "CARD_TOKEN",
     "RedirectUrl": "#MINIAPP",
     "WebhookUrl": "WEBHOOK_URL"
+  },
+  "Minecraft": {
+    "AvatarUrl": "https://avatars.spworlds.ru/face/"
   }
 }
 ```
@@ -48,6 +51,7 @@ services:
       SPWorlds:CardToken: "CARD_TOKEN"
       SPWorlds:RedirectUrl: "REDIRECT_URL"
       SPWorlds:WebhookUrl: "WEBHOOK_URL"
+      Minecraft:AvatarUrl: "https://avatars.spworlds.ru/face/"
     networks:
       - app-network
       - mongo-network
