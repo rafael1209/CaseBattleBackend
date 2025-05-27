@@ -1,4 +1,6 @@
-﻿using CaseBattleBackend.Interfaces;
+﻿using CaseBattleBackend.Dtos;
+using CaseBattleBackend.Enums;
+using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
 using MongoDB.Bson;
@@ -17,7 +19,23 @@ public class ItemService(IItemRepository itemRepository) : IItemService
             ImageId = null,
             MinecraftId = request.MinecraftId,
             Amount = request.Amount,
-            Price = request.Price
+            Price = request.Price,
+            Rarity = request.Rarity
         });
+    }
+
+    public async Task<List<CaseItemViewDto>> GetItems()
+    {
+        var items = await itemRepository.Get();
+        return items.Select(item => new CaseItemViewDto
+        {
+            Id = item.Id.ToString(),
+            Name = item.Name,
+            Description = item.Description,
+            ImageUrl = item.ImageId != null ? new Uri(item.ImageId) : null,
+            Amount = item.Amount,
+            Price = item.Price,
+            Rarity = item.Rarity
+        }).ToList();
     }
 }

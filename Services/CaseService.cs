@@ -1,4 +1,5 @@
 ﻿using CaseBattleBackend.Dtos;
+using CaseBattleBackend.Enums;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
@@ -39,9 +40,19 @@ public class CaseService(ICaseRepository caseRepository, IItemRepository itemRep
         return await caseRepository.Create(newCase);
     }
 
-    public async Task<List<Case>> GetAll()
+    public async Task<List<CaseDto>> GetAll()
     {
-        return await caseRepository.GetAll();
+        var cases = await caseRepository.GetAll();
+
+        return cases.Select(caseDto => new CaseDto
+            {
+                Id = caseDto.Id.ToString(),
+                Name = caseDto.Name,
+                Description = caseDto.Description,
+                ImageUrl = caseDto.ImageId != null ? new Uri(caseDto.ImageId) : null,
+                Price = caseDto.Price
+            })
+            .ToList();
     }
 
     public async Task<CaseViewDto?> GetById(string id)
@@ -188,7 +199,8 @@ public class CaseService(ICaseRepository caseRepository, IItemRepository itemRep
                 ImageUrl = null,
                 Amount = item.Amount,
                 Price = item.Price,
-                PercentChance = 100.0 / items.Count
+                PercentChance = 100.0 / items.Count,
+                Rarity = item.Rarity
             }).ToList();
         }
 
@@ -202,10 +214,13 @@ public class CaseService(ICaseRepository caseRepository, IItemRepository itemRep
                 Id = item.Id.ToString(),
                 Name = item.Name,
                 Description = item.Description,
-                ImageUrl = item.ImageId != null ? new Uri(item.ImageId) : null,
+                ImageUrl = item.ImageId != null
+                    ? new Uri(item.ImageId)
+                    : null,
                 Amount = item.Amount,
                 Price = item.Price,
-                PercentChance = percentChance
+                PercentChance = percentChance,
+                Rarity = item.Rarity
             };
         }).ToList();
 

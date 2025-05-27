@@ -34,4 +34,11 @@ public class ItemRepository(IMongoDbContext context) : IItemRepository
             .ToListAsync();
     }
 
+    public async Task<List<CaseItem>> Get()
+    {
+        return await _items
+            .Find(_ => true)
+            .SortBy(i => i.Price)
+            .ToListAsync();
+    }
 }

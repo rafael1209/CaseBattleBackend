@@ -8,9 +8,11 @@ namespace CaseBattleBackend.Controllers;
 public class ItemsController(IItemService itemService) : Controller
 {
     [HttpGet]
-    public IActionResult Index()
+    public async Task<IActionResult> GetItems()
     {
-        return Ok();
+        var items = await itemService.GetItems();
+
+        return Ok(new { items });
     }
 
     [HttpPost]

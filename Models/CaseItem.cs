@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using CaseBattleBackend.Enums;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace CaseBattleBackend.Models;
@@ -25,4 +26,8 @@ public class CaseItem
 
     [BsonElement("price")]
     public required double Price { get; set; }
+
+    [BsonElement("rarity")]
+    [BsonRepresentation(BsonType.String)]
+    public required Rarity Rarity { get; set; }
 }

@@ -1,4 +1,7 @@
-﻿namespace CaseBattleBackend.Dtos;
+﻿using CaseBattleBackend.Enums;
+using System.Text.Json.Serialization;
+
+namespace CaseBattleBackend.Dtos;
 
 public class CaseItemViewDto
 {
@@ -9,4 +12,6 @@ public class CaseItemViewDto
     public int Amount { get; set; }
     public double Price { get; set; }
     public double PercentChance { get; set; }
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public required Rarity Rarity { get; set; }
 }
