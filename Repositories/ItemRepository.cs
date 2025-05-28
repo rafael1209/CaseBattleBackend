@@ -41,4 +41,14 @@ public class ItemRepository(IMongoDbContext context) : IItemRepository
             .SortBy(i => i.Price)
             .ToListAsync();
     }
+
+    public async Task AddToInventory(ObjectId userId, List<InventoryItem> items)
+    {
+        var userFilter = Builders<User>.Filter.Eq(u => u.Id, userId);
+        var update = Builders<User>.Update.PushEach(u => u.Items, items);
+        var result = await context.UsersCollection.UpdateOneAsync(userFilter, update);
+
+        if (result.ModifiedCount == 0)
+            throw new Exception("Failed to add items to inventory.");
+    }
 }

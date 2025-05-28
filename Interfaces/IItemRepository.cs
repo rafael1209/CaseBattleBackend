@@ -9,4 +9,5 @@ public interface IItemRepository
     Task<CaseItem> GetById(ObjectId id);
     Task<List<CaseItem>> GetTopByMaxPrice(double maxPrice, int limit);
     Task<List<CaseItem>> Get();
+    Task AddToInventory(ObjectId userId, List<InventoryItem> items);
 }

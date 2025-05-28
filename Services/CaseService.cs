@@ -7,7 +7,7 @@ using MongoDB.Bson;
 
 namespace CaseBattleBackend.Services;
 
-public class CaseService(ICaseRepository caseRepository, IItemRepository itemRepository) : ICaseService
+public class CaseService(ICaseRepository caseRepository, IItemRepository itemRepository, IUserService userService) : ICaseService
 {
     public async Task<Case> Create(CreateCaseRequest caseModel)
     {
@@ -19,9 +19,7 @@ public class CaseService(ICaseRepository caseRepository, IItemRepository itemRep
 
             var item = await itemRepository.GetById(id);
             if (item == null)
-            {
                 throw new ArgumentException($"Item with ID {itemId} not found.", nameof(itemId));
-            }
 
             caseItems.Add(id);
         }
@@ -45,13 +43,13 @@ public class CaseService(ICaseRepository caseRepository, IItemRepository itemRep
         var cases = await caseRepository.GetAll();
 
         return cases.Select(caseDto => new CaseDto
-            {
-                Id = caseDto.Id.ToString(),
-                Name = caseDto.Name,
-                Description = caseDto.Description,
-                ImageUrl = caseDto.ImageId != null ? new Uri(caseDto.ImageId) : null,
-                Price = caseDto.Price
-            })
+        {
+            Id = caseDto.Id.ToString(),
+            Name = caseDto.Name,
+            Description = caseDto.Description,
+            ImageUrl = caseDto.ImageId != null ? new Uri(caseDto.ImageId) : null,
+            Price = caseDto.Price
+        })
             .ToList();
     }
 
@@ -79,47 +77,61 @@ public class CaseService(ICaseRepository caseRepository, IItemRepository itemRep
         return caseView;
     }
 
-    public async Task<CaseItemViewDto> OpenCase(string caseId)
+    public async Task<List<CaseItemViewDto>> OpenCase(User user, string caseId, int amount = 1, bool isDemo = true)
     {
         if (!ObjectId.TryParse(caseId, out var objectId))
             throw new ArgumentException("Invalid Case ID format.", nameof(caseId));
 
-        var caseData = await caseRepository.GetById(objectId) ?? throw new Exception("Case not found.");
+        if (amount is <= 0 or > 4)
+            throw new ArgumentException("Amount must be between 1 and 4.", nameof(amount));
+
+        var caseData = await caseRepository.GetById(objectId)
+                       ?? throw new Exception("Case not found.");
+
+        switch (isDemo)
+        {
+            case false when user.Balance < caseData.Price * amount:
+                throw new Exception("Insufficient balance to open the case.");
+            case false:
+                await userService.UpdateBalance(user.Id, -(caseData.Price * amount));
+                break;
+        }
 
         var allCaseItems = new List<CaseItem>();
         foreach (var itemId in caseData.Items)
-        {
-            var item = await itemRepository.GetById(itemId);
-            if (item != null)
-                allCaseItems.Add(item);
-        }
+            allCaseItems.Add(await itemRepository.GetById(itemId));
 
         var caseItemsWithChances = await GetCaseItems(allCaseItems, caseData.RtpPercentage, caseData.Price);
 
         var sumOfChances = caseItemsWithChances.Sum(item => item.PercentChance);
-        if (Math.Abs(sumOfChances - 100.0) > 0.01) // Допустимая погрешность 0.01%
-        {
-            // Это может быть индикатором проблемы в CalculateItemDropChancesByRtp.
-            // Если шансы не суммируются к 100%, алгоритм случайного выбора может работать некорректно.
-            throw new ArgumentException($"Сумма процентов выпадения ({sumOfChances:F2}%) не равна 100%. Пересчитайте шансы или проверьте алгоритм.");
-        }
+        if (Math.Abs(sumOfChances - 100.0) > 0.01)
+            throw new ArgumentException($"The sum of drop chances ({sumOfChances:F2}%) is not equal to 100%.");
 
+        var resultItems = new List<CaseItemViewDto>();
         var random = new Random();
-        var randomNumber = random.NextDouble() * 100.0; // Число от 0.0 до 99.999...
 
-        double cumulativeChance = 0;
-        foreach (var item in caseItemsWithChances.OrderBy(i => i.PercentChance)) // Сортировка необязательна, но может помочь в отладке
+        for (var i = 0; i < amount; i++)
         {
-            cumulativeChance += item.PercentChance;
+            var randomNumber = random.NextDouble() * 100.0;
+            double cumulativeChance = 0;
 
-            if (randomNumber <= cumulativeChance)
+            foreach (var item in caseItemsWithChances.OrderBy(caseItemViewDto => caseItemViewDto.PercentChance))
             {
-                return item; // Возвращаем выпавший предмет
+                cumulativeChance += item.PercentChance;
+
+                if (!(randomNumber <= cumulativeChance)) continue;
+                resultItems.Add(item);
+                break;
             }
         }
 
-        Console.WriteLine("Предупреждение: Случайное число не попало ни в один диапазон шансов. Возвращаем предмет с наибольшим шансом.");
-        return caseItemsWithChances.OrderByDescending(i => i.PercentChance).First(); // Используем First() так как уверены, что список не пуст
+        while (resultItems.Count < amount)
+            resultItems.Add(caseItemsWithChances.OrderByDescending(i => i.PercentChance).First());
+
+        if (!isDemo)
+            await userService.AddToInventory(user.Id, resultItems);
+
+        return resultItems;
     }
 
     private async Task<List<CaseItemViewDto>> GetCaseItems(List<CaseItem> items, int rtp, int casePrice)
@@ -135,7 +147,7 @@ public class CaseService(ICaseRepository caseRepository, IItemRepository itemRep
         return CalculateItemDropChancesByRtp(allItems, (double)rtp, (double)casePrice);
     }
 
-    private List<CaseItemViewDto> CalculateItemDropChancesByRtp(List<CaseItem> items, double rtp, double casePrice)
+    private static List<CaseItemViewDto> CalculateItemDropChancesByRtp(List<CaseItem> items, double rtp, double casePrice)
     {
         var targetTotalExpectedValue = casePrice * (rtp / 100.0);
 
@@ -147,7 +159,7 @@ public class CaseService(ICaseRepository caseRepository, IItemRepository itemRep
 
         for (var i = 0; i < iterations; i++)
         {
-            double currentPower = (minPower + maxPower) / 2.0;
+            var currentPower = (minPower + maxPower) / 2.0;
 
             double sumWeightedValues = 0;
             double sumWeights = 0;
@@ -183,11 +195,7 @@ public class CaseService(ICaseRepository caseRepository, IItemRepository itemRep
             bestPower = currentPower;
         }
 
-        double finalSumWeights = 0;
-        foreach (var item in items)
-        {
-            finalSumWeights += Math.Pow(1.0 / item.Price, bestPower);
-        }
+        var finalSumWeights = items.Sum(item => Math.Pow(1.0 / item.Price, bestPower));
 
         if (finalSumWeights == 0)
         {

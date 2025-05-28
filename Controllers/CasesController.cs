@@ -1,7 +1,9 @@
 ﻿using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Middlewares;
+using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CaseBattleBackend.Controllers;
 
@@ -16,31 +18,50 @@ public class CasesController(ICaseService caseService) : Controller
         {
             var caseData = await caseService.GetById(id);
 
-            return Ok(new { caseData });
+            return Ok(caseData);
         }
         catch (Exception e)
         {
             Console.WriteLine(e.Message);
-            return NotFound();
+            return NotFound(new { message = e.Message });
         }
     }
 
-    [HttpPost("{id}/open")]
+    [HttpPost("{caseId}/opens")]
     [AuthMiddleware]
-    public async Task<IActionResult> OpenCase(string id)
+    public async Task<IActionResult> OpenCase(string caseId, [FromQuery] int amount = 1, [FromQuery] bool demo = false)
     {
-        var winItem = await caseService.OpenCase(id);
+        try
+        {
+            var user = HttpContext.Items["@me"] as User
+                       ?? throw new SecurityTokenEncryptionKeyNotFoundException();
 
-        return Ok(new { winItem });
+            var winItems = await caseService.OpenCase(user, caseId, amount, demo);
+
+            return Ok(winItems);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest(new { message = e.Message });
+        }
     }
 
     [HttpGet]
     [AuthMiddleware]
     public async Task<IActionResult> GetCases()
     {
-        var cases = await caseService.GetAll();
+        try
+        {
+            var cases = await caseService.GetAll();
 
-        return Ok(new { cases });
+            return Ok(new { cases });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest(new { message = e.Message });
+        }
     }
 
     [HttpPost]
@@ -56,7 +77,7 @@ public class CasesController(ICaseService caseService) : Controller
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return BadRequest(new { error = e.Message });
+            return BadRequest(new { message = e.Message });
         }
     }
 }

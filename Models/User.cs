@@ -20,6 +20,9 @@ public class User
     [BsonElement("balance")]
     public double Balance { get; set; }
 
+    [BsonElement("inventory")]
+    public List<InventoryItem> Items { get; set; } = [];
+
     [BsonElement("authToken")]
     public required string AuthToken { get; set; }
 
