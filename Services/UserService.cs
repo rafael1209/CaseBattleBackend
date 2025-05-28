@@ -83,4 +83,20 @@ public class UserService(IConfiguration configuration, IUserRepository userRepos
     {
         await userRepository.AddToInventory(userId, items.Select(i => ObjectId.Parse(i.Id)).ToList());
     }
+
+    public async Task SellItem(User user, string itemId)
+    {
+        if (!ObjectId.TryParse(itemId, out var id))
+            throw new ArgumentException("Invalid ObjectId format", nameof(itemId));
+
+        if (user.Items.All(i => i.Id != id))
+            throw new Exception("Item not found in inventory.");
+
+        var item = await itemRepository.GetById(id) 
+                   ?? throw new Exception("Item not found");
+
+        await userRepository.RemoveFromInventory(user, id);
+
+        await userRepository.UpdateBalance(user.Id, item.Price);
+    }
 }

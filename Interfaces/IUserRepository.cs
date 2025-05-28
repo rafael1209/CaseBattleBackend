@@ -12,4 +12,5 @@ public interface IUserRepository
     Task<bool> UpdateBalance(ObjectId id, double amount);
     Task<List<InventoryItem>> GetInventoryItems(ObjectId id, int page = 1, int pageSize = 32);
     Task AddToInventory(ObjectId userId, List<ObjectId> items);
+    Task RemoveFromInventory(User user, ObjectId itemId);
 }

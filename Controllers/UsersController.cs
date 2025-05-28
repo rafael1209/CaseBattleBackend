@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace CaseBattleBackend.Controllers;
 
-[Route("api/v1/users/@me")]
+[Route("api/v1/users/me")]
 public class UsersController(IUserService userService) : Controller
 {
     [HttpGet]
@@ -16,9 +16,17 @@ public class UsersController(IUserService userService) : Controller
         var user = HttpContext.Items["@me"] as User
                    ?? throw new SecurityTokenEncryptionKeyNotFoundException();
 
-        var userInfo = await userService.GetUserInfo(user);
+        try
+        {
+            var userInfo = await userService.GetUserInfo(user);
 
-        return Ok(userInfo);
+            return Ok(userInfo);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest(new { message = e.Message });
+        }
     }
 
     [HttpGet("inventory")]
@@ -28,8 +36,36 @@ public class UsersController(IUserService userService) : Controller
         var user = HttpContext.Items["@me"] as User
                    ?? throw new SecurityTokenEncryptionKeyNotFoundException();
 
-        var inventoryItems = await userService.GetInventoryItems(user.Id, page, pageSize);
+        try
+        {
+            var inventoryItems = await userService.GetInventoryItems(user.Id, page, pageSize);
 
-        return Ok(inventoryItems);
+            return Ok(inventoryItems);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest(new { message = e.Message });
+        }
+    }
+
+    [HttpGet("inventory/{itemId}/sell")]
+    [AuthMiddleware]
+    public async Task<IActionResult> SellItem([FromRoute] string itemId)
+    {
+        var user = HttpContext.Items["@me"] as User
+                   ?? throw new SecurityTokenEncryptionKeyNotFoundException();
+
+        try
+        {
+            await userService.SellItem(user, itemId);
+
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest(new { message = e.Message });
+        }
     }
 }
