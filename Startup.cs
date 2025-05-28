@@ -46,6 +46,7 @@ public class Startup
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IItemService, ItemService>();
         services.AddScoped<ICaseService, CaseService>();
+        services.AddScoped<ISpPaymentService, SpPaymentService>();
 
         services.AddCors(options =>
         {
