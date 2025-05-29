@@ -48,6 +48,10 @@ public class Startup
         services.AddScoped<ICaseService, CaseService>();
         services.AddScoped<ISpPaymentService, SpPaymentService>();
 
+        services.AddScoped<IConnectionFactory, ConnectionFactory>();
+        services.AddScoped<IConnectionManager, ConnectionManager>();
+        services.AddScoped<IConnection, WebSocketConnection>();
+
         services.AddCors(options =>
         {
             options.AddPolicy("AllowAll", builder =>
@@ -73,6 +77,7 @@ public class Startup
         app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseWebSockets(new WebSocketOptions { KeepAliveInterval = TimeSpan.FromSeconds(30) });
 
         app.UseCors("AllowAll");
 
