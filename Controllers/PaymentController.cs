@@ -8,29 +8,28 @@ using Microsoft.IdentityModel.Tokens;
 namespace CaseBattleBackend.Controllers;
 
 [Route("api/v1/payments")]
-public class PaymentController(IUserService userService)
-    : Controller
+public class PaymentController(IUserService userService) : Controller
 {
     [HttpPost("deposit")]
     [AuthMiddleware]
-    public async Task<IActionResult> Donate([FromBody] int amount)
+    public async Task<IActionResult> Donate([FromBody] DepositRequest deposit)
     {
         var user = HttpContext.Items["@me"] as User
                    ?? throw new SecurityTokenEncryptionKeyNotFoundException();
 
-        var response = await userService.CreatePayment(user, amount);
+        var response = await userService.CreatePayment(user, deposit.Amount);
 
         return Ok(response);
     }
 
     [HttpPost("withdraw")]
     [AuthMiddleware]
-    public async Task<IActionResult> Withdraw([FromBody] int amount, string cardId)
+    public async Task<IActionResult> Withdraw([FromBody] WithdrawRequest withdraw)
     {
         var user = HttpContext.Items["@me"] as User
                    ?? throw new SecurityTokenEncryptionKeyNotFoundException();
 
-        await userService.Withdraw(user, cardId, amount);
+        await userService.Withdraw(user, withdraw.CardId, withdraw.Amount);
 
         return Ok();
     }
