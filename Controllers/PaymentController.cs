@@ -11,7 +11,7 @@ namespace CaseBattleBackend.Controllers;
 public class PaymentController(IUserService userService)
     : Controller
 {
-    [HttpPost]
+    [HttpPost("deposit")]
     [AuthMiddleware]
     public async Task<IActionResult> Donate([FromBody] int amount)
     {
@@ -23,7 +23,7 @@ public class PaymentController(IUserService userService)
         return Ok(response);
     }
 
-    [HttpPost]
+    [HttpPost("withdraw")]
     [AuthMiddleware]
     public async Task<IActionResult> Withdraw([FromBody] int amount, string cardId)
     {
