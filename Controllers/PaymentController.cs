@@ -17,9 +17,18 @@ public class PaymentController(IUserService userService) : Controller
         var user = HttpContext.Items["@me"] as User
                    ?? throw new SecurityTokenEncryptionKeyNotFoundException();
 
-        var response = await userService.CreatePayment(user, deposit.Amount);
+        try
+        {
+            var response = await userService.CreatePayment(user, deposit.Amount);
 
-        return Ok(response);
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+
+            return BadRequest(new { message = e.Message });
+        }
     }
 
     [HttpPost("withdraw")]
@@ -29,9 +38,18 @@ public class PaymentController(IUserService userService) : Controller
         var user = HttpContext.Items["@me"] as User
                    ?? throw new SecurityTokenEncryptionKeyNotFoundException();
 
-        await userService.Withdraw(user, withdraw.CardId, withdraw.Amount);
+        try
+        {
+            await userService.Withdraw(user, withdraw.CardId, withdraw.Amount);
 
-        return Ok();
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+
+            return BadRequest(new { message = e.Message });
+        }
     }
 
     [HttpPost("webhook")]
