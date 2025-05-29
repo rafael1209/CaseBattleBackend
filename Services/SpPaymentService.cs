@@ -6,27 +6,46 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text;
 using MongoDB.Bson;
+using CaseBattleBackend.Models;
 
 namespace CaseBattleBackend.Services;
 
-public class SpPaymentService(IConfiguration configuration, IUserService userService) : ISpPaymentService
+public class SpPaymentService(IConfiguration configuration) : ISpPaymentService
 {
     private readonly string _spCardToken = configuration["SPWorlds:CardToken"] ??
                                            throw new Exception("SPWorlds:CardToken not configuration");
-
     private readonly string _spCardId = configuration["SPWorlds:CardId"] ??
                                            throw new Exception("SPWorlds:CardId not configuration");
+    private readonly string _spRedirectUrl = configuration["SPWorlds:RedirectUrl"] ??
+                                             throw new Exception("SPWorlds:RedirectUrl not configuration");
+    private readonly string _spWebhookUrl = configuration["SPWorlds:WebhookUrl"] ??
+                                            throw new Exception("SPWorlds:WebhookUrl not configuration");
 
     private const string SpBaseUrl = "https://spworlds.ru/api/";
 
-    public async Task<PaymentResponse> CreatePayment(TransactionRequest request)
+    public async Task<PaymentResponse> CreatePayment(User user, int amount)
     {
         var token = SpValidate.GenerateToken(_spCardId, _spCardToken);
 
         using var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-        var json = JsonSerializer.Serialize(request);
+        var json = JsonSerializer.Serialize(new TransactionRequest()
+        {
+            Items =
+            [
+                new Item
+                {
+                    Name = "Поменять это позже",
+                    Count = 1,
+                    Price = amount,
+                    Comment = "Пополнение баланса"
+                }
+            ],
+            RedirectUrl = _spRedirectUrl,
+            WebhookUrl = _spWebhookUrl,
+            Data = $"{user.Id}"
+        });
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         var response = await httpClient.PostAsync($"{SpBaseUrl}public/payments", content);
@@ -40,7 +59,7 @@ public class SpPaymentService(IConfiguration configuration, IUserService userSer
                throw new Exception($"Error creating payment: {response.StatusCode}");
     }
 
-    public async Task HandlePaymentNotification(PaymentNotification notification, string base64Hash)
+    public Task HandlePaymentNotification(PaymentNotification notification, string base64Hash)
     {
         var bodyString = JsonSerializer.Serialize(notification);
 
@@ -50,7 +69,7 @@ public class SpPaymentService(IConfiguration configuration, IUserService userSer
         if (!ObjectId.TryParse(notification.Data, out var id))
             throw new Exception("Error Handle Payment notification.Data parse to ObjectId");
 
-        await userService.UpdateBalance(id, (int)notification.Amount);
+        return Task.CompletedTask;
     }
 
     public async Task<TransactionsResponse> SendTransaction(string cardNumber, int amount)

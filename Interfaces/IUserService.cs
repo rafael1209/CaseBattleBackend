@@ -1,5 +1,7 @@
 ﻿using CaseBattleBackend.Dtos;
 using CaseBattleBackend.Models;
+using CaseBattleBackend.Requests;
+using CaseBattleBackend.Responses;
 using MongoDB.Bson;
 
 namespace CaseBattleBackend.Interfaces;
@@ -14,4 +16,7 @@ public interface IUserService
     Task<List<InventoryItemView>> GetInventoryItems(ObjectId userId, int page = 1, int pageSize = 32);
     Task AddToInventory(ObjectId userId, List<CaseItemViewDto> items);
     Task SellItem(User user, string itemId);
+    Task Withdraw(User user, string cardId, int amount);
+    Task<PaymentResponse> CreatePayment(User user, int amount);
+    Task HandlePayment(PaymentNotification notification, string base64Hash);
 }

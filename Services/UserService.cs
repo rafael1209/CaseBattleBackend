@@ -2,11 +2,17 @@
 using CaseBattleBackend.Enums;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
+using CaseBattleBackend.Requests;
+using CaseBattleBackend.Responses;
 using MongoDB.Bson;
 
 namespace CaseBattleBackend.Services;
 
-public class UserService(IConfiguration configuration, IUserRepository userRepository, IItemRepository itemRepository)
+public class UserService(
+    IConfiguration configuration,
+    IUserRepository userRepository,
+    IItemRepository itemRepository,
+    ISpPaymentService paymentService)
     : IUserService
 {
     private readonly string _avatarBaseUrl =
@@ -92,11 +98,36 @@ public class UserService(IConfiguration configuration, IUserRepository userRepos
         if (user.Items.All(i => i.Id != id))
             throw new Exception("Item not found in inventory.");
 
-        var item = await itemRepository.GetById(id) 
+        var item = await itemRepository.GetById(id)
                    ?? throw new Exception("Item not found");
 
         await userRepository.RemoveFromInventory(user, id);
 
         await userRepository.UpdateBalance(user.Id, item.Price);
+    }
+
+    public async Task Withdraw(User user, string cardId, int amount)
+    {
+        if (user.Balance < amount)
+            throw new Exception("Insufficient balance.");
+
+        await userRepository.UpdateBalance(user.Id, -amount);
+
+        await paymentService.SendTransaction(cardId, amount);
+    }
+
+    public async Task<PaymentResponse> CreatePayment(User user, int amount)
+    {
+        return await paymentService.CreatePayment(user, amount);
+    }
+
+    public async Task HandlePayment(PaymentNotification notification, string base64Hash)
+    {
+        await paymentService.HandlePaymentNotification(notification, base64Hash);
+
+        if (Equals(!ObjectId.TryParse(notification.Data, out var id)))
+            throw new Exception("Invalid user ID in payment notification.");
+
+        await UpdateBalance(id, (int)notification.Amount);
     }
 }

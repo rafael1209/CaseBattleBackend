@@ -8,41 +8,31 @@ using Microsoft.IdentityModel.Tokens;
 namespace CaseBattleBackend.Controllers;
 
 [Route("api/v1/payments")]
-public class PaymentController(IConfiguration configuration, ISpPaymentService paymentService) : Controller
+public class PaymentController(IUserService userService)
+    : Controller
 {
-    private readonly string _spRedirectUrl = configuration["SPWorlds:RedirectUrl"] ??
-                                             throw new Exception("SPWorlds:RedirectUrl not configuration");
-
-    private readonly string _spWebhookUrl = configuration["SPWorlds:WebhookUrl"] ??
-                                            throw new Exception("SPWorlds:WebhookUrl not configuration");
-
     [HttpPost]
     [AuthMiddleware]
-    public async Task<IActionResult> Donate(DepositRequest deposit)
+    public async Task<IActionResult> Donate([FromBody] int amount)
     {
-        // this is a test shit, you need to fix this shit.
-
         var user = HttpContext.Items["@me"] as User
                    ?? throw new SecurityTokenEncryptionKeyNotFoundException();
 
-        var response = await paymentService.CreatePayment(new TransactionRequest
-        {
-            Items =
-            [
-                new Item
-                {
-                    Name = "Поменять это позже",
-                    Count = 1,
-                    Price = deposit.Amount,
-                    Comment = "Пополнение баланса"
-                }
-            ],
-            RedirectUrl = _spRedirectUrl,
-            WebhookUrl = _spWebhookUrl,
-            Data = $"{user.Id}"
-        });
+        var response = await userService.CreatePayment(user, amount);
 
         return Ok(response);
+    }
+
+    [HttpPost]
+    [AuthMiddleware]
+    public async Task<IActionResult> Withdraw([FromBody] int amount, string cardId)
+    {
+        var user = HttpContext.Items["@me"] as User
+                   ?? throw new SecurityTokenEncryptionKeyNotFoundException();
+
+        await userService.Withdraw(user, cardId, amount);
+
+        return Ok();
     }
 
     [HttpPost("webhook")]
@@ -53,7 +43,7 @@ public class PaymentController(IConfiguration configuration, ISpPaymentService p
 
         var base64Hash = base64HashValues.FirstOrDefault() ?? throw new Exception("Error X-Body-Hash header");
 
-        await paymentService.HandlePaymentNotification(notification, base64Hash);
+        await userService.HandlePayment(notification, base64Hash);
 
         return Ok(new { status = "success" });
     }

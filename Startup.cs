@@ -48,10 +48,6 @@ public class Startup
         services.AddScoped<ICaseService, CaseService>();
         services.AddScoped<ISpPaymentService, SpPaymentService>();
 
-        services.AddScoped<IConnectionFactory, ConnectionFactory>();
-        services.AddScoped<IConnectionManager, ConnectionManager>();
-        services.AddScoped<IConnection, WebSocketConnection>();
-
         services.AddCors(options =>
         {
             options.AddPolicy("AllowAll", builder =>
