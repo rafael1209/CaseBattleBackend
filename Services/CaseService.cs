@@ -136,7 +136,7 @@ public class CaseService(ICaseRepository caseRepository, IItemRepository itemRep
 
     private async Task<List<CaseItemViewDto>> GetCaseItems(List<CaseItem> items, int rtp, int casePrice)
     {
-        var cheepItems = await itemRepository.GetTopByMaxPrice(casePrice - 1, 10);
+        var cheepItems = await itemRepository.GetTopByMaxPrice(0.5, 10);
 
         var allItems = new List<CaseItem>(items);
         var existingIds = new HashSet<string>(allItems.Select(i => i.Id.ToString()));
@@ -166,7 +166,7 @@ public class CaseService(ICaseRepository caseRepository, IItemRepository itemRep
 
             foreach (var item in items)
             {
-                double weight = Math.Pow(1.0 / item.Price, currentPower);
+                var weight = Math.Pow(1.0 / item.Price, currentPower);
                 sumWeights += weight;
                 sumWeightedValues += weight * item.Price;
             }
