@@ -40,6 +40,7 @@ public class Startup
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<ICaseRepository, CaseRepository>();
+        services.AddScoped<IGameResultRepository, GameResultRepository>();
 
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthorizeService, AuthorizeService>();
@@ -47,6 +48,7 @@ public class Startup
         services.AddScoped<IItemService, ItemService>();
         services.AddScoped<ICaseService, CaseService>();
         services.AddScoped<ISpPaymentService, SpPaymentService>();
+        services.AddScoped<IGameResult, GameResultService>();
 
         services.AddCors(options =>
         {

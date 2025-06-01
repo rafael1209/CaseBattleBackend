@@ -7,7 +7,11 @@ using MongoDB.Bson;
 
 namespace CaseBattleBackend.Services;
 
-public class CaseService(ICaseRepository caseRepository, IItemRepository itemRepository, IUserService userService) : ICaseService
+public class CaseService(
+    ICaseRepository caseRepository,
+    IItemRepository itemRepository,
+    IUserService userService,
+    IGameResult gameResult) : ICaseService
 {
     public async Task<Case> Create(CreateCaseRequest caseModel)
     {
@@ -119,8 +123,12 @@ public class CaseService(ICaseRepository caseRepository, IItemRepository itemRep
             {
                 cumulativeChance += item.PercentChance;
 
-                if (!(randomNumber <= cumulativeChance)) continue;
+                if (!(randomNumber <= cumulativeChance))
+                    continue;
+
                 resultItems.Add(item);
+
+                await gameResult.SaveResult(user.Id, caseData.Price, item.Price, GameType.Case, caseData.Id);
                 break;
             }
         }
