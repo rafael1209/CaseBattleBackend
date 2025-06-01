@@ -86,13 +86,15 @@ public class UserRepository(IMongoDbContext context) : IUserRepository
         await _users.UpdateOneAsync(u => u.Id == userId, update);
     }
 
-    public async Task RemoveFromInventory(User user, ObjectId itemId)
+    public async Task RemoveFromInventory(User user, ObjectId itemId, int quantity = 1)
     {
         var existingItem = user.Items.FirstOrDefault(i => i.Id == itemId);
         if (existingItem == null) return;
 
-        if (--existingItem.Amount <= 0)
+        if (existingItem.Amount - quantity <= 0)
             user.Items.Remove(existingItem);
+        else
+            existingItem.Amount -= quantity;
 
         var update = Builders<User>.Update.Set(u => u.Items, user.Items);
         await _users.UpdateOneAsync(u => u.Id == user.Id, update);

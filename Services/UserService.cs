@@ -90,10 +90,13 @@ public class UserService(
         await userRepository.AddToInventory(userId, items.Select(i => ObjectId.Parse(i.Id)).ToList());
     }
 
-    public async Task SellItem(User user, string itemId)
+    public async Task SellItem(User user, string itemId, int quantity = 1)
     {
         if (!ObjectId.TryParse(itemId, out var id))
             throw new ArgumentException("Invalid ObjectId format", nameof(itemId));
+
+        if (quantity <= 0)
+            throw new ArgumentException("Quantity must be greater than zero.");
 
         if (user.Items.All(i => i.Id != id))
             throw new Exception("Item not found in inventory.");
@@ -101,9 +104,11 @@ public class UserService(
         var item = await itemRepository.GetById(id)
                    ?? throw new Exception("Item not found");
 
-        await userRepository.RemoveFromInventory(user, id);
+        await userRepository.RemoveFromInventory(user, id, quantity);
 
-        await userRepository.UpdateBalance(user.Id, item.Price);
+        var totalPrice = item.Price * quantity;
+
+        await userRepository.UpdateBalance(user.Id, totalPrice);
     }
 
     public async Task Withdraw(User user, string cardId, int amount)

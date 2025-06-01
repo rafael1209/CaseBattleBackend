@@ -49,16 +49,16 @@ public class UsersController(IUserService userService) : Controller
         }
     }
 
-    [HttpGet("inventory/{itemId}/sell")]
+    [HttpPost("inventory/{itemId}/sell")]
     [AuthMiddleware]
-    public async Task<IActionResult> SellItem([FromRoute] string itemId)
+    public async Task<IActionResult> SellItem([FromRoute] string itemId, SellInvItemRequest request)
     {
         var user = HttpContext.Items["@me"] as User
                    ?? throw new SecurityTokenEncryptionKeyNotFoundException();
 
         try
         {
-            await userService.SellItem(user, itemId);
+            await userService.SellItem(user, itemId, request.Quantity);
 
             return Ok();
         }
@@ -68,4 +68,10 @@ public class UsersController(IUserService userService) : Controller
             return BadRequest(new { message = e.Message });
         }
     }
+}
+
+public class SellInvItemRequest
+{
+    [FromQuery(Name = "quantity")]
+    public required int Quantity { get; set; }
 }
