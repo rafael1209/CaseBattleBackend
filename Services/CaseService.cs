@@ -1,5 +1,6 @@
 ﻿using CaseBattleBackend.Dtos;
 using CaseBattleBackend.Enums;
+using CaseBattleBackend.Helpers;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
@@ -11,7 +12,8 @@ public class CaseService(
     ICaseRepository caseRepository,
     IItemRepository itemRepository,
     IUserService userService,
-    IGameResult gameResult) : ICaseService
+    IGameResult gameResult,
+    IMinecraftItems minecraftItems) : ICaseService
 {
     public async Task<Case> Create(CreateCaseRequest caseModel)
     {
@@ -152,10 +154,10 @@ public class CaseService(
 
         allItems.AddRange(newItems);
 
-        return CalculateItemDropChancesByRtp(allItems, (double)rtp, (double)casePrice);
+        return await CalculateItemDropChancesByRtp(allItems, (double)rtp, (double)casePrice);
     }
 
-    private static List<CaseItemViewDto> CalculateItemDropChancesByRtp(List<CaseItem> items, double rtp, double casePrice)
+    private async Task<List<CaseItemViewDto>> CalculateItemDropChancesByRtp(List<CaseItem> items, double rtp, double casePrice)
     {
         var targetTotalExpectedValue = casePrice * (rtp / 100.0);
 
@@ -220,7 +222,7 @@ public class CaseService(
             }).ToList();
         }
 
-        var result = items.Select(item =>
+        var tasks = items.Select(async item =>
         {
             var weight = Math.Pow(1.0 / item.Price, bestPower);
             var percentChance = (weight / finalSumWeights) * 100.0;
@@ -230,16 +232,18 @@ public class CaseService(
                 Id = item.Id.ToString(),
                 Name = item.Name,
                 Description = item.Description,
-                ImageUrl = item.ImageId != null
-                    ? new Uri(item.ImageId)
+                ImageUrl = item.MinecraftId != null
+                    ? await minecraftItems.GetItemImageAsync(item.MinecraftId)
                     : null,
                 Amount = item.Amount,
                 Price = item.Price,
                 PercentChance = percentChance,
                 Rarity = item.Rarity
             };
-        }).ToList();
+        });
 
-        return result;
+        var result = await Task.WhenAll(tasks);
+
+        return result.ToList();
     }
 }

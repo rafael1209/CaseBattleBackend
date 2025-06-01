@@ -1,4 +1,5 @@
 ﻿using CaseBattleBackend.Database;
+using CaseBattleBackend.Helpers;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Repositories;
 using CaseBattleBackend.Services;
@@ -49,6 +50,7 @@ public class Startup
         services.AddScoped<ICaseService, CaseService>();
         services.AddScoped<ISpPaymentService, SpPaymentService>();
         services.AddScoped<IGameResult, GameResultService>();
+        services.AddScoped<IMinecraftItems, MinecraftItems>();
 
         services.AddCors(options =>
         {
