@@ -27,6 +27,7 @@ public class ItemService(IItemRepository itemRepository) : IItemService
     public async Task<List<CaseItemViewDto>> GetItems()
     {
         var items = await itemRepository.Get();
+
         return items.Select(item => new CaseItemViewDto
         {
             Id = item.Id.ToString(),
