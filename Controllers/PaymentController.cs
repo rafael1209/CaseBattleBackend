@@ -100,10 +100,10 @@ public class PaymentController(IUserService userService, WebSocketServerService 
     }
 
     [HttpPost("broadcast")]
-    public async Task<IActionResult> Test1()
+    public Task<IActionResult> Test1()
     {
         webSocket.Broadcast(new { message = "Hello World", type = "0" });
 
-        return Ok("Live win sent to subscribers.");
+        return Task.FromResult<IActionResult>(Ok("Live win sent to subscribers."));
     }
 }
