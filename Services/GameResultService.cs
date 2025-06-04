@@ -2,7 +2,6 @@
 using CaseBattleBackend.Enums;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
-using CaseBattleBackend.Requests;
 using MongoDB.Bson;
 
 namespace CaseBattleBackend.Services;
