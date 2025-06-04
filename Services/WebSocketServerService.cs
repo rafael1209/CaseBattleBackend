@@ -197,7 +197,7 @@ public class WebSocketServerService : IHostedService
     {
         var json = JsonSerializer.Serialize(new
         {
-            type = "Keep Alive",
+            type = "KeepAlive",
             timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
         });
 
