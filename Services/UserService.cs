@@ -71,7 +71,7 @@ public class UserService(
                     Id = itemData.Id.ToString(),
                     Name = itemData.Name,
                     Description = itemData.Description,
-                    ImageUrl = null, // Assuming image URL is not stored in item data
+                    ImageUrl = null, //TODO: Fix this when images are implemented
                     Amount = itemData.Amount,
                     Price = itemData.Price,
                     PercentChance = 100,
@@ -111,7 +111,6 @@ public class UserService(
         var totalPrice = item.Price * quantity;
         await userRepository.UpdateBalance(user.Id, totalPrice);
     }
-
 
     public async Task Withdraw(User user, string cardId, int amount)
     {

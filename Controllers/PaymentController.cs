@@ -5,8 +5,6 @@ using CaseBattleBackend.Requests;
 using CaseBattleBackend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using System.Net.WebSockets;
-using System.Text.Json;
 using CaseBattleBackend.Dtos;
 using CaseBattleBackend.Enums;
 
@@ -101,10 +99,10 @@ public class PaymentController(IUserService userService, WebSocketServerService 
         return Task.FromResult<IActionResult>(Ok("Live win sent to subscribers."));
     }
 
-    [HttpPost("test1")]
+    [HttpPost("broadcast")]
     public async Task<IActionResult> Test1()
     {
-        webSocket.Broadcast(new{message = "Hello World", type = "0"});
+        webSocket.Broadcast(new { message = "Hello World", type = "0" });
 
         return Ok("Live win sent to subscribers.");
     }
