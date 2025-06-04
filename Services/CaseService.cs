@@ -130,7 +130,8 @@ public class CaseService(
 
                 resultItems.Add(item);
 
-                await gameResult.SaveResult(user.Id, caseData.Price, item.Price, GameType.Case, caseData.Id);
+                await gameResult.SaveResult(user, caseData, item, GameType.Case, caseData.Id);
+
                 break;
             }
         }
