@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Net.WebSockets;
 using System.Text.Json;
+using CaseBattleBackend.Dtos;
 using CaseBattleBackend.Enums;
 
 namespace CaseBattleBackend.Controllers;
@@ -70,27 +71,34 @@ public class PaymentController(IUserService userService, WebSocketServerService 
     }
 
     [HttpPost("test")]
-    public async Task<IActionResult> Test()
+    public Task<IActionResult> Test()
     {
-        var json = JsonSerializer.Serialize(new
+        var json = new LiveWin
         {
-            type = "live_win",
-            data = new
+            Case = new CaseDto
             {
-                UserInfo = new
-                {
-                    Id = "1234567890",
-                    Nickname = "TestUser",
-                    AvatarUrl = "https://example.com/avatar.png",
-                    Balance = 100.0,
-                    Level = 1
-                },
+                Id = "1",
+                Name = "rafael1209",
+                Description = null,
+                ImageUrl = new Uri("https://assets.zaralx.ru/api/v1/minecraft/vanilla/item/carrot/icon"),
+                Price = 8
+            },
+            Item = new CaseItemViewDto
+            {
+                Id = "1",
+                Name = "Cool Item",
+                Description = null,
+                ImageUrl = new Uri("https://assets.zaralx.ru/api/v1/minecraft/vanilla/item/carrot/icon"),
+                Amount = 64,
+                Price = 16,
+                PercentChance = 12.3,
+                Rarity = Rarity.Common
             }
-        });
+        };
 
         webSocket.PublishToChannel(SubscriptionChannel.LiveWins, json);
 
-        return Ok("Live win sent to subscribers.");
+        return Task.FromResult<IActionResult>(Ok("Live win sent to subscribers."));
     }
 
     [HttpPost("test1")]
