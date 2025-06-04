@@ -98,7 +98,7 @@ public class UserService(
         if (quantity <= 0)
             throw new ArgumentException("Quantity must be greater than zero.");
 
-        if (user.Items.All(i => i.Id != id))
+        if (user.Items.All(i => i.Id != id && i.Amount >= quantity))
             throw new Exception("Item not found in inventory.");
 
         var item = await itemRepository.GetById(id)

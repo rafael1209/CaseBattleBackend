@@ -1,6 +1,7 @@
 ﻿using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Middlewares;
 using CaseBattleBackend.Models;
+using CaseBattleBackend.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -68,10 +69,4 @@ public class UsersController(IUserService userService) : Controller
             return BadRequest(new { message = e.Message });
         }
     }
-}
-
-public class SellInvItemRequest
-{
-    [FromQuery(Name = "quantity")]
-    public required int Quantity { get; set; }
 }
