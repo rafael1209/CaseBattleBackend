@@ -197,7 +197,7 @@ public class WebSocketServerService : IHostedService
     {
         var json = JsonSerializer.Serialize(new
         {
-            type = "ping",
+            type = "Keep Alive",
             timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
         });
 
