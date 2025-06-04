@@ -2,13 +2,17 @@
 using CaseBattleBackend.Middlewares;
 using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
+using CaseBattleBackend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.Net.WebSockets;
+using System.Text.Json;
+using CaseBattleBackend.Enums;
 
 namespace CaseBattleBackend.Controllers;
 
 [Route("api/v1/payments")]
-public class PaymentController(IUserService userService) : Controller
+public class PaymentController(IUserService userService, WebSocketServerService webSocket) : Controller
 {
     [HttpPost("deposit")]
     [AuthMiddleware]
@@ -63,5 +67,37 @@ public class PaymentController(IUserService userService) : Controller
         await userService.HandlePayment(notification, base64Hash);
 
         return Ok(new { status = "success" });
+    }
+
+    [HttpPost("test")]
+    public async Task<IActionResult> Test()
+    {
+        var json = JsonSerializer.Serialize(new
+        {
+            type = "live_win",
+            data = new
+            {
+                UserInfo = new
+                {
+                    Id = "1234567890",
+                    Nickname = "TestUser",
+                    AvatarUrl = "https://example.com/avatar.png",
+                    Balance = 100.0,
+                    Level = 1
+                },
+            }
+        });
+
+        webSocket.PublishToChannel(SubscriptionChannel.LiveWins, json);
+
+        return Ok("Live win sent to subscribers.");
+    }
+
+    [HttpPost("test1")]
+    public async Task<IActionResult> Test1()
+    {
+        webSocket.Broadcast(new{message = "Hello World", type = "0"});
+
+        return Ok("Live win sent to subscribers.");
     }
 }
