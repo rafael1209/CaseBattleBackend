@@ -98,18 +98,20 @@ public class UserService(
         if (quantity <= 0)
             throw new ArgumentException("Quantity must be greater than zero.");
 
-        if (user.Items.All(i => i.Id != id && i.Amount >= quantity))
-            throw new Exception("Item not found in inventory.");
+        var inventoryItem = user.Items.FirstOrDefault(i => i.Id == id);
+
+        if (inventoryItem == null || inventoryItem.Amount < quantity)
+            throw new Exception("Item not found in inventory or insufficient quantity.");
 
         var item = await itemRepository.GetById(id)
-                   ?? throw new Exception("Item not found");
+                   ?? throw new Exception("Item not found in database");
 
         await userRepository.RemoveFromInventory(user, id, quantity);
 
         var totalPrice = item.Price * quantity;
-
         await userRepository.UpdateBalance(user.Id, totalPrice);
     }
+
 
     public async Task Withdraw(User user, string cardId, int amount)
     {
