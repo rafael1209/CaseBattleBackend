@@ -17,12 +17,19 @@ public class CaseRepository(IMongoDbContext context) : ICaseRepository
         return newCase;
     }
 
-    public async Task<List<Case>> GetAll()
+    public async Task<List<Case>> GetAll(int page = 1, int pageSize = 15)
     {
-        var cases = await _cases.FindAsync(_ => true);
+        var skip = (page - 1) * pageSize;
 
-        return await cases.ToListAsync();
+        var casesCursor = await _cases.FindAsync(_ => true, new FindOptions<Case>
+        {
+            Skip = skip,
+            Limit = pageSize
+        });
+
+        return await casesCursor.ToListAsync();
     }
+
 
     public async Task<Case?> GetById(ObjectId id)
     {

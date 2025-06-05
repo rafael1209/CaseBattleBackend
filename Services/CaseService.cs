@@ -44,9 +44,9 @@ public class CaseService(
         return await caseRepository.Create(newCase);
     }
 
-    public async Task<List<CaseDto>> GetAll()
+    public async Task<List<CaseDto>> GetAll(int page = 1, int pageSize = 15)
     {
-        var cases = await caseRepository.GetAll();
+        var cases = await caseRepository.GetAll(page, pageSize);
 
         return cases.Select(caseDto => new CaseDto
         {

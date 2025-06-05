@@ -49,11 +49,11 @@ public class CasesController(ICaseService caseService) : Controller
 
     [HttpGet]
     [AuthMiddleware]
-    public async Task<IActionResult> GetCases()
+    public async Task<IActionResult> GetCases([FromQuery] int page = 1, int pageSize = 15)
     {
         try
         {
-            var cases = await caseService.GetAll();
+            var cases = await caseService.GetAll(page, pageSize);
 
             return Ok(new { cases });
         }
