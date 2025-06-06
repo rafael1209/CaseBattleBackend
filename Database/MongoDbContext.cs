@@ -12,6 +12,7 @@ public class MongoDbContext : IMongoDbContext
     private const string ConstItemsCollection = "items";
     private const string ConstCasesCollection = "cases";
     private const string ConstGameResultsCollection = "gameResults";
+    private const string ConstBannerCollection = "banners";
 
     public MongoDbContext(IConfiguration configuration)
     {
@@ -23,4 +24,5 @@ public class MongoDbContext : IMongoDbContext
     public IMongoCollection<CaseItem> ItemsCollection => _database.GetCollection<CaseItem>(ConstItemsCollection);
     public IMongoCollection<Case> CasesCollection => _database.GetCollection<Case>(ConstCasesCollection);
     public IMongoCollection<GameResult> GameResultsCollection => _database.GetCollection<GameResult>(ConstGameResultsCollection);
+    public IMongoCollection<Banner> BannersCollection => _database.GetCollection<Banner>(ConstBannerCollection);
 }

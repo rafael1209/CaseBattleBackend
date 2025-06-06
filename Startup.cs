@@ -42,6 +42,9 @@ public class Startup
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<ICaseRepository, CaseRepository>();
         services.AddScoped<IGameResultRepository, GameResultRepository>();
+        services.AddScoped<IBannerRepository, BannerRepository>();
+
+        services.AddScoped<IStorageService, GoogleDriveService>();
 
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthorizeService, AuthorizeService>();
@@ -51,6 +54,7 @@ public class Startup
         services.AddScoped<ISpPaymentService, SpPaymentService>();
         services.AddScoped<IGameResult, GameResultService>();
         services.AddScoped<IMinecraftItems, MinecraftItems>();
+        services.AddScoped<IBannerService, BannerService>();
 
         services.AddSingleton<WebSocketServerService>();
         services.AddHostedService(provider => provider.GetRequiredService<WebSocketServerService>());
