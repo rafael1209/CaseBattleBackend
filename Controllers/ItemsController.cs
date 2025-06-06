@@ -19,7 +19,7 @@ public class ItemsController(IItemService itemService) : Controller
 
     [HttpPost]
     [AuthMiddleware]
-    public async Task<IActionResult> Create([FromBody] CreateItemRequest request)
+    public async Task<IActionResult> Create([FromForm] CreateItemRequest request)
     {
         var item = await itemService.Create(request);
 
