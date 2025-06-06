@@ -11,22 +11,28 @@
   },
   "AllowedHosts": "*",
   "Jwt": {
-    "SecretKey": "2aec48f69e8645ebbfdc4e5f96ed3a02",
-    "Issuer": "mr.rafaello"
+    "SecretKey": "#####################",
+    "Issuer": "#####################"
   },
   "MongoDb": {
-    "ConnectionString": "mongodb://localhost:27017/",
-    "DatabaseName": "case-battle-db"
+    "ConnectionString": "#####################",
+    "DatabaseName": "#####################"
   },
   "SPWorlds": {
-    "MiniAppToken": "APP_TOKEN",
-    "CardId": "CARD_ID",
-    "CardToken": "CARD_TOKEN",
-    "RedirectUrl": "#MINIAPP",
-    "WebhookUrl": "WEBHOOK_URL"
+    "MiniAppToken": "#####################",
+    "CardId": "#####################",
+    "CardToken": "#####################",
+    "RedirectUrl": "#####################", //"#MINIAPP",
+    "WebhookUrl": "#####################"
   },
   "Minecraft": {
-    "AvatarUrl": "https://avatars.spworlds.ru/face/"
+    "AvatarUrl": "#####################",
+    "ItemUrl": "#####################"
+  },
+  "Google": {
+    "FolderId": "#####################",
+    "Credentials": "#####################",
+    "BaseFileUrl": "#####################"
   }
 }
 ```
@@ -42,16 +48,22 @@ services:
     expose:
       - "8080"    
     environment:
-      Jwt:SecretKey: "JWT_TOKEN"
-      Jwt:Issuer: "mr.rafaello"
-      MongoDb:ConnectionString: "mongodb://mongodb:27017/"
-      MongoDb:DatabaseName: "case-battle-db"
-      SPWorlds:MiniAppToken: "APP_TOKEN"
-      SPWorlds:CardId: "CARD_ID"
-      SPWorlds:CardToken: "CARD_TOKEN"
-      SPWorlds:RedirectUrl: "REDIRECT_URL"
-      SPWorlds:WebhookUrl: "WEBHOOK_URL"
-      Minecraft:AvatarUrl: "https://avatars.spworlds.ru/face/"
+      Jwt:SecretKey: "#####################"
+      Jwt:Issuer: "#####################"
+      MongoDb:ConnectionString: "#####################"
+      MongoDb:DatabaseName: "#####################"
+      SPWorlds:MiniAppToken: "#####################"
+      SPWorlds:CardId: "#####################"
+      SPWorlds:CardToken: "#####################"
+      SPWorlds:RedirectUrl: "#####################"
+      SPWorlds:WebhookUrl: "#####################"
+      Minecraft:AvatarUrl: "#####################"
+      Minecraft:ItemUrl: "#####################"
+      Google:FolderId: "#####################"
+      Google:Credentials: "#####################"
+      Google:BaseFileUrl: "#####################"
+    volumes:
+      - ./case-battle/google-credentials.json:/app/google-credentials.json:ro
     networks:
       - app-network
       - mongo-network
