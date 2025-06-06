@@ -66,7 +66,7 @@ public class CasesController(ICaseService caseService) : Controller
 
     [HttpPost]
     [AuthMiddleware]
-    public async Task<IActionResult> CreateCase([FromBody] CreateCaseRequest request)
+    public async Task<IActionResult> CreateCase([FromForm] CreateCaseRequest request)
     {
         try
         {

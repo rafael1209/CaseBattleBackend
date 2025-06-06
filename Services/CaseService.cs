@@ -13,7 +13,8 @@ public class CaseService(
     IItemRepository itemRepository,
     IUserService userService,
     IGameResult gameResult,
-    IMinecraftItems minecraftItems) : ICaseService
+    IMinecraftItems minecraftItems,
+    IStorageService storageService) : ICaseService
 {
     public async Task<Case> Create(CreateCaseRequest caseModel)
     {
@@ -30,12 +31,14 @@ public class CaseService(
             caseItems.Add(id);
         }
 
+        var file = await storageService.UploadFile(caseModel.File, caseModel.File.FileName);
+
         var newCase = new Case
         {
             Id = ObjectId.GenerateNewId(),
             Name = caseModel.Name,
             Description = caseModel.Description,
-            ImageId = null,
+            ImageId = file.Id,
             Items = caseItems,
             RtpPercentage = caseModel.RtpPercentage,
             Price = caseModel.Price
@@ -48,15 +51,17 @@ public class CaseService(
     {
         var cases = await caseRepository.GetAll(page, pageSize);
 
-        return cases.Select(caseDto => new CaseDto
+        var tasks = cases.Select(async caseDto => new CaseDto
         {
             Id = caseDto.Id.ToString(),
             Name = caseDto.Name,
             Description = caseDto.Description,
-            ImageUrl = caseDto.ImageId != null ? new Uri(caseDto.ImageId) : null,
+            ImageUrl = caseDto.ImageId != null ? await storageService.GetFileUrl(caseDto.ImageId) : null,
             Price = caseDto.Price
-        })
-            .ToList();
+        });
+
+        var result = await Task.WhenAll(tasks);
+        return result.ToList();
     }
 
     public async Task<CaseViewDto?> GetById(string id)
@@ -75,7 +80,7 @@ public class CaseService(
             Id = caseData.Id.ToString(),
             Name = caseData.Name,
             Description = caseData.Description,
-            ImageUrl = caseData.ImageId != null ? new Uri(caseData.ImageId) : null,
+            ImageUrl = caseData.ImageId != null ? await storageService.GetFileUrl(caseData.ImageId) : null,
             Items = await GetCaseItems(caseItems, caseData.RtpPercentage, caseData.Price),
             Price = caseData.Price
         };
@@ -158,6 +163,17 @@ public class CaseService(
         return await CalculateItemDropChancesByRtp(allItems, (double)rtp, (double)casePrice);
     }
 
+    private async Task<Uri?> GetItemImageUrlAsync(CaseItem item)
+    {
+        if (item.MinecraftId != null)
+            return await minecraftItems.GetItemImageAsync(item.MinecraftId);
+
+        if (item.ImageId != null)
+            return await storageService.GetFileUrl(item.ImageId);
+
+        return null;
+    }
+
     private async Task<List<CaseItemViewDto>> CalculateItemDropChancesByRtp(List<CaseItem> items, double rtp, double casePrice)
     {
         var targetTotalExpectedValue = casePrice * (rtp / 100.0);
@@ -183,9 +199,7 @@ public class CaseService(
             }
 
             if (sumWeights == 0)
-            {
                 break;
-            }
 
             var currentExpectedValue = sumWeightedValues / sumWeights;
 
@@ -196,46 +210,33 @@ public class CaseService(
             }
 
             if (currentExpectedValue < targetTotalExpectedValue)
-            {
                 maxPower = currentPower;
-            }
             else
-            {
                 minPower = currentPower;
-            }
+
             bestPower = currentPower;
         }
 
         var finalSumWeights = items.Sum(item => Math.Pow(1.0 / item.Price, bestPower));
 
-        if (finalSumWeights == 0)
-        {
-            return items.Select(item => new CaseItemViewDto
-            {
-                Id = item.Id.ToString(),
-                Name = item.Name,
-                Description = item.Description,
-                ImageUrl = null,
-                Amount = item.Amount,
-                Price = item.Price,
-                PercentChance = 100.0 / items.Count,
-                Rarity = item.Rarity
-            }).ToList();
-        }
-
         var tasks = items.Select(async item =>
         {
-            var weight = Math.Pow(1.0 / item.Price, bestPower);
-            var percentChance = (weight / finalSumWeights) * 100.0;
+            var imageUrl = await GetItemImageUrlAsync(item);
+
+            var weight = finalSumWeights == 0
+                ? 1
+                : Math.Pow(1.0 / item.Price, bestPower);
+
+            var percentChance = finalSumWeights == 0
+                ? 100.0 / items.Count
+                : (weight / finalSumWeights) * 100.0;
 
             return new CaseItemViewDto
             {
                 Id = item.Id.ToString(),
                 Name = item.Name,
                 Description = item.Description,
-                ImageUrl = item.MinecraftId != null
-                    ? await minecraftItems.GetItemImageAsync(item.MinecraftId)
-                    : null,
+                ImageUrl = imageUrl,
                 Amount = item.Amount,
                 Price = item.Price,
                 PercentChance = percentChance,
@@ -244,7 +245,7 @@ public class CaseService(
         });
 
         var result = await Task.WhenAll(tasks);
-
         return result.ToList();
     }
+
 }
