@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /appsettings.json
 /google-cresentials.json
+/google-credentials.json
