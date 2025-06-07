@@ -66,7 +66,7 @@
   },
   "Google": {
     "FolderId": "#####################",
-    "Credentials": "CREDENTIALS_FILE_PATH",
+    "Credentials": "google-credentials.json",
     "BaseFileUrl": "#####################"
   }
 }
@@ -95,7 +95,7 @@ services:
       Minecraft:AvatarUrl: "#####################"
       Minecraft:ItemUrl: "#####################"
       Google:FolderId: "#####################"
-      Google:Credentials: "CREDENTIALS_FILE_PATH"
+      Google:Credentials: "/app/google-credentials.json"
       Google:BaseFileUrl: "#####################"
     volumes:
       - ./case-battle/google-credentials.json:/app/google-credentials.json:ro
