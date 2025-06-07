@@ -85,7 +85,7 @@ services:
     environment:
       Jwt:SecretKey: "#####################"
       Jwt:Issuer: "#####################"
-      MongoDb:ConnectionString: "#####################"
+      MongoDb:ConnectionString: "mongodb://mongodb:27017/"
       MongoDb:DatabaseName: "#####################"
       SPWorlds:MiniAppToken: "#####################"
       SPWorlds:CardId: "#####################"
