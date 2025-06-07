@@ -12,7 +12,7 @@ public class TokenService(IConfiguration configuration) : ITokenService
         configuration["Jwt:SecretKey"] ?? throw new InvalidOperationException("Jwt Key configuration is missing.");
     private readonly string _issuer =
         configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("Jwt Issuer configuration is missing.");
-
+    
     public string GenerateToken(string value)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -31,4 +31,33 @@ public class TokenService(IConfiguration configuration) : ITokenService
 
         return tokenHandler.WriteToken(token);
     }
+
+    public ClaimsPrincipal? ValidateToken(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.ASCII.GetBytes(_secretKey);
+
+        try
+        {
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = true,
+                ValidIssuer = _issuer,
+                ValidateAudience = false, // отключено, если не используете аудиторию
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero // без допущения отклонения времени
+            };
+
+            var principal = tokenHandler.ValidateToken(token, validationParameters, out _);
+            return principal;
+        }
+        catch
+        {
+            // Можно логировать ошибку
+            return null;
+        }
+    }
+
 }

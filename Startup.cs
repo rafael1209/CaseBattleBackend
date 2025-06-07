@@ -16,7 +16,7 @@ public class Startup
 
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "CaseBattle API", Version = "v1" });
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Diamond Drop API", Version = "v1" });
             c.AddSecurityDefinition(
                 "ApiKey",
                 new OpenApiSecurityScheme
