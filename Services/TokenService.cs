@@ -45,9 +45,9 @@ public class TokenService(IConfiguration configuration) : ITokenService
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateIssuer = true,
                 ValidIssuer = _issuer,
-                ValidateAudience = false, // отключено, если не используете аудиторию
+                ValidateAudience = false,
                 ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero // без допущения отклонения времени
+                ClockSkew = TimeSpan.Zero
             };
 
             var principal = tokenHandler.ValidateToken(token, validationParameters, out _);
@@ -55,7 +55,6 @@ public class TokenService(IConfiguration configuration) : ITokenService
         }
         catch
         {
-            // Можно логировать ошибку
             return null;
         }
     }
