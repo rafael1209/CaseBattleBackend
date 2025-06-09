@@ -1,7 +1,9 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using CaseBattleBackend.Enums;
 using CaseBattleBackend.Interfaces;
+using CaseBattleBackend.Models; // Для PermissionLevel
 using Microsoft.IdentityModel.Tokens;
 
 namespace CaseBattleBackend.Services;
@@ -12,23 +14,30 @@ public class TokenService(IConfiguration configuration) : ITokenService
         configuration["Jwt:SecretKey"] ?? throw new InvalidOperationException("Jwt Key configuration is missing.");
     private readonly string _issuer =
         configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("Jwt Issuer configuration is missing.");
-    
-    public string GenerateToken(string value)
+
+    public string GenerateToken(string userId, PermissionLevel permission = PermissionLevel.User)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_secretKey);
 
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, userId),
+            new("permission", permission.ToString())
+        };
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity([
-                new Claim(ClaimTypes.Name, value)
-            ]),
+            Subject = new ClaimsIdentity(claims),
             Issuer = _issuer,
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            SigningCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(key),
+                SecurityAlgorithms.HmacSha256Signature
+            ),
+            Expires = null
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
-
         return tokenHandler.WriteToken(token);
     }
 
@@ -58,5 +67,4 @@ public class TokenService(IConfiguration configuration) : ITokenService
             return null;
         }
     }
-
 }

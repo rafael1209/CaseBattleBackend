@@ -1,40 +1,67 @@
 ﻿using System.Security.Claims;
-using System.Security.Principal;
+using CaseBattleBackend.Enums;
 using CaseBattleBackend.Interfaces;
-using CaseBattleBackend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace CaseBattleBackend.Middlewares;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-public class AuthMiddlewareAttribute : Attribute, IFilterFactory
+public class AuthMiddlewareAttribute(PermissionLevel requiredPermission = PermissionLevel.User)
+    : Attribute, IFilterFactory
 {
     public bool IsReusable => false;
 
     public IFilterMetadata CreateInstance(IServiceProvider serviceProvider)
     {
         var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
-        var dbContext = serviceProvider.GetRequiredService<IUserRepository>();
-        return new AuthMiddlewareFilter(httpContextAccessor, dbContext);
+        var tokenService = serviceProvider.GetRequiredService<ITokenService>();
+        return new AuthMiddlewareFilter(httpContextAccessor, tokenService, requiredPermission);
     }
 
-    private class AuthMiddlewareFilter(IHttpContextAccessor httpContextAccessor, IUserRepository dbContext)
-        : IAsyncActionFilter
+    private class AuthMiddlewareFilter(
+        IHttpContextAccessor httpContextAccessor,
+        ITokenService tokenService,
+        PermissionLevel requiredPermission
+    ) : IAsyncActionFilter
     {
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             try
             {
                 var request = httpContextAccessor.HttpContext!.Request;
-                var userData = await IsUserAuthorizedByTokenFromHeaderAsync(request);
+                var principal = ValidateTokenFromHeader(request);
 
-                if (userData != null)
+                if (principal != null)
                 {
-                    httpContextAccessor.HttpContext.Items["@me"] = userData;
-                    request.HttpContext.User.AddIdentity(
-                        new ClaimsIdentity(new GenericIdentity(userData.Id.ToString())));
+                    var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    var permissionClaim = principal.FindFirst("permission")?.Value;
 
+                    if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(permissionClaim))
+                    {
+                        context.Result = new UnauthorizedResult();
+                        return;
+                    }
+
+                    var userPermission = Enum.Parse<PermissionLevel>(permissionClaim);
+
+                    if (userPermission < requiredPermission)
+                    {
+                        context.Result = new ObjectResult(new { message = "Access Forbidden" })
+                        {
+                            StatusCode = StatusCodes.Status403Forbidden
+                        };
+
+                        return;
+                    }
+
+                    httpContextAccessor.HttpContext.Items["@me"] = new
+                    {
+                        Id = userId,
+                        Permission = userPermission
+                    };
+
+                    request.HttpContext.User = principal;
                     await next();
                 }
                 else
@@ -42,22 +69,18 @@ public class AuthMiddlewareAttribute : Attribute, IFilterFactory
                     context.Result = new UnauthorizedResult();
                 }
             }
-            catch (Exception)
+            catch
             {
                 context.Result = new UnauthorizedResult();
             }
         }
 
-        private async Task<User?> IsUserAuthorizedByTokenFromHeaderAsync(HttpRequest request)
+        private ClaimsPrincipal? ValidateTokenFromHeader(HttpRequest request)
         {
             request.Headers.TryGetValue("Authorization", out var token);
-            var apiKey = token.FirstOrDefault();
+            var jwt = token.FirstOrDefault();
 
-            if (string.IsNullOrEmpty(apiKey)) return null;
-
-            var user = await dbContext.TryGetByAuthToken(apiKey);
-
-            return user;
+            return string.IsNullOrEmpty(jwt) ? null : tokenService.ValidateToken(jwt);
         }
     }
 }

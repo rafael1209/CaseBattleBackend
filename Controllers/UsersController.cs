@@ -19,7 +19,7 @@ public class UsersController(IUserService userService) : Controller
 
         try
         {
-            var userInfo = await userService.GetUserInfo(user);
+            var userInfo = await userService.GetUserInfo(user); // TODO: IMPORTANT: Create a model for jwt user info
 
             return Ok(userInfo);
         }

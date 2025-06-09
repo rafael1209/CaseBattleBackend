@@ -34,8 +34,10 @@ public class UserService(
         return await userRepository.GetById(id);
     }
 
-    public async Task<UserInfo> GetUserInfo(User user)
+    public async Task<UserInfo> GetUserInfo(ObjectId userId)
     {
+        var user = await userRepository.GetById(userId) ?? throw new Exception("User not found.");
+
         var userInfo = new UserInfo
         {
             Id = user.Id.ToString(),
