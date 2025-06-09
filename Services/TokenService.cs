@@ -33,7 +33,7 @@ public class TokenService(IConfiguration configuration) : ITokenService
                 new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature
             ),
-            Expires = DateTime.UtcNow.AddMinutes(1)
+            Expires = null //DateTime.UtcNow.AddMinutes(1)
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
