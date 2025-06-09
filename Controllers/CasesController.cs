@@ -34,10 +34,10 @@ public class CasesController(ICaseService caseService) : Controller
     {
         try
         {
-            var user = HttpContext.Items["@me"] as User
-                       ?? throw new SecurityTokenEncryptionKeyNotFoundException();
+            var jwtData = HttpContext.Items["@me"] as JwtData
+                          ?? throw new UnauthorizedAccessException();
 
-            var winItems = await caseService.OpenCase(user, caseId, amount, demo);
+            var winItems = await caseService.OpenCase(jwtData.Id, caseId, amount, demo);
 
             return Ok(winItems);
         }

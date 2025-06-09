@@ -1,6 +1,5 @@
 ﻿using CaseBattleBackend.Dtos;
 using CaseBattleBackend.Enums;
-using CaseBattleBackend.Helpers;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
@@ -88,13 +87,19 @@ public class CaseService(
         return caseView;
     }
 
-    public async Task<List<CaseItemViewDto>> OpenCase(User user, string caseId, int amount = 1, bool isDemo = true)
+    public async Task<List<CaseItemViewDto>> OpenCase(string userId, string caseId, int amount = 1, bool isDemo = true)
     {
         if (!ObjectId.TryParse(caseId, out var objectId))
             throw new ArgumentException("Invalid Case ID format.", nameof(caseId));
 
         if (amount is <= 0 or > 4)
             throw new ArgumentException("Amount must be between 1 and 4.", nameof(amount));
+
+        if (!ObjectId.TryParse(userId, out var id))
+            throw new ArgumentException("Invalid User ID format.", nameof(userId));
+
+        var user = await userService.GetById(id)
+                     ?? throw new Exception("User not found.");
 
         var caseData = await caseRepository.GetById(objectId)
                        ?? throw new Exception("Case not found.");
@@ -160,7 +165,7 @@ public class CaseService(
 
         allItems.AddRange(newItems);
 
-        return await CalculateItemDropChancesByRtp(allItems, (double)rtp, (double)casePrice);
+        return await CalculateItemDropChancesByRtp(allItems, rtp, casePrice);
     }
 
     private async Task<Uri?> GetItemImageUrlAsync(CaseItem item)

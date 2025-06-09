@@ -17,12 +17,12 @@ public class PaymentController(IUserService userService, WebSocketServerService 
     [AuthMiddleware]
     public async Task<IActionResult> Donate([FromBody] DepositRequest deposit)
     {
-        var user = HttpContext.Items["@me"] as User
-                   ?? throw new SecurityTokenEncryptionKeyNotFoundException();
+        var jwtData = HttpContext.Items["@me"] as JwtData
+                      ?? throw new UnauthorizedAccessException();
 
         try
         {
-            var response = await userService.CreatePayment(user, deposit.Amount);
+            var response = await userService.CreatePayment(jwtData.Id, deposit.Amount);
 
             return Ok(response);
         }
@@ -38,12 +38,12 @@ public class PaymentController(IUserService userService, WebSocketServerService 
     [AuthMiddleware]
     public async Task<IActionResult> Withdraw([FromBody] WithdrawRequest withdraw)
     {
-        var user = HttpContext.Items["@me"] as User
-                   ?? throw new SecurityTokenEncryptionKeyNotFoundException();
+        var jwtData = HttpContext.Items["@me"] as JwtData
+                      ?? throw new UnauthorizedAccessException();
 
         try
         {
-            await userService.Withdraw(user, withdraw.CardId, withdraw.Amount);
+            await userService.Withdraw(jwtData.Id, withdraw.CardId, withdraw.Amount);
 
             return Ok();
         }

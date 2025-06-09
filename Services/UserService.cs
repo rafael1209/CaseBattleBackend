@@ -1,5 +1,4 @@
 ﻿using CaseBattleBackend.Dtos;
-using CaseBattleBackend.Enums;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
@@ -58,12 +57,15 @@ public class UserService(
         return await userRepository.UpdateBalance(id, amount);
     }
 
-    public async Task<List<InventoryItemView>> GetInventoryItems(ObjectId userId, int page = 1, int pageSize = 32)
+    public async Task<List<InventoryItemView>> GetInventoryItems(string userId, int page = 1, int pageSize = 32)
     {
+        if (!ObjectId.TryParse(userId, out var userIdObj))
+            throw new ArgumentException("Invalid ObjectId format", nameof(userId));
+
         if (page < 1) page = 1;
         if (pageSize is < 1 or > 100) pageSize = 10;
 
-        var items = await userRepository.GetInventoryItems(userId, page, pageSize);
+        var items = await userRepository.GetInventoryItems(userIdObj, page, pageSize);
 
         var inventoryItems = new List<InventoryItemView>();
         foreach (var item in items)
@@ -95,13 +97,19 @@ public class UserService(
         await userRepository.AddToInventory(userId, items.Select(i => ObjectId.Parse(i.Id)).ToList());
     }
 
-    public async Task SellItem(User user, string itemId, int quantity = 1)
+    public async Task SellItem(string userId, string itemId, int quantity = 1)
     {
         if (!ObjectId.TryParse(itemId, out var id))
             throw new ArgumentException("Invalid ObjectId format", nameof(itemId));
 
+        if (!ObjectId.TryParse(userId, out var userIdObj))
+            throw new ArgumentException("Invalid ObjectId format", nameof(userId));
+
         if (quantity <= 0)
             throw new ArgumentException("Quantity must be greater than zero.");
+
+        var user = await userRepository.GetById(userIdObj)
+                   ?? throw new Exception("User not found.");
 
         var inventoryItem = user.Items.FirstOrDefault(i => i.Id == id);
 
@@ -117,8 +125,14 @@ public class UserService(
         await userRepository.UpdateBalance(user.Id, totalPrice);
     }
 
-    public async Task Withdraw(User user, string cardId, int amount)
+    public async Task Withdraw(string userId, string cardId, int amount)
     {
+        if (!ObjectId.TryParse(userId, out var userIdObj))
+            throw new ArgumentException("Invalid ObjectId format", nameof(userId));
+
+        var user = await userRepository.GetById(userIdObj)
+                   ?? throw new Exception("User not found.");
+
         if (user.Balance < amount)
             throw new Exception("Insufficient balance.");
 
@@ -127,9 +141,9 @@ public class UserService(
         await paymentService.SendTransaction(cardId, amount);
     }
 
-    public async Task<PaymentResponse> CreatePayment(User user, int amount)
+    public async Task<PaymentResponse> CreatePayment(string userId, int amount)
     {
-        return await paymentService.CreatePayment(user, amount);
+        return await paymentService.CreatePayment(userId, amount);
     }
 
     public async Task HandlePayment(PaymentNotification notification, string base64Hash)

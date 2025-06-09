@@ -23,7 +23,7 @@ public class SpPaymentService(IConfiguration configuration) : ISpPaymentService
 
     private const string SpBaseUrl = "https://spworlds.ru/api/";
 
-    public async Task<PaymentResponse> CreatePayment(User user, int amount)
+    public async Task<PaymentResponse> CreatePayment(string userId, int amount)
     {
         var token = SpValidate.GenerateToken(_spCardId, _spCardToken);
 
@@ -44,7 +44,7 @@ public class SpPaymentService(IConfiguration configuration) : ISpPaymentService
             ],
             RedirectUrl = _spRedirectUrl,
             WebhookUrl = _spWebhookUrl,
-            Data = $"{user.Id}"
+            Data = $"{userId}"
         });
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 

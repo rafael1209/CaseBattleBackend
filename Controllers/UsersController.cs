@@ -34,12 +34,12 @@ public class UsersController(IUserService userService) : Controller
     [AuthMiddleware]
     public async Task<IActionResult> GetInventory([FromQuery] int page = 1, int pageSize = 10)
     {
-        var user = HttpContext.Items["@me"] as User
-                   ?? throw new SecurityTokenEncryptionKeyNotFoundException();
+        var jwtData = HttpContext.Items["@me"] as JwtData
+                      ?? throw new UnauthorizedAccessException();
 
         try
         {
-            var inventoryItems = await userService.GetInventoryItems(user.Id, page, pageSize);
+            var inventoryItems = await userService.GetInventoryItems(jwtData.Id, page, pageSize);
 
             return Ok(inventoryItems);
         }
@@ -54,12 +54,12 @@ public class UsersController(IUserService userService) : Controller
     [AuthMiddleware]
     public async Task<IActionResult> SellItem([FromRoute] string itemId, SellInvItemRequest request)
     {
-        var user = HttpContext.Items["@me"] as User
-                   ?? throw new SecurityTokenEncryptionKeyNotFoundException();
+        var jwtData = HttpContext.Items["@me"] as JwtData
+                      ?? throw new UnauthorizedAccessException();
 
         try
         {
-            await userService.SellItem(user, itemId, request.Quantity);
+            await userService.SellItem(jwtData.Id, itemId, request.Quantity);
 
             return Ok();
         }
