@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using CaseBattleBackend.Enums;
 using CaseBattleBackend.Interfaces;
+using CaseBattleBackend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -55,7 +56,7 @@ public class AuthMiddlewareAttribute(PermissionLevel requiredPermission = Permis
                         return;
                     }
 
-                    httpContextAccessor.HttpContext.Items["@me"] = new
+                    httpContextAccessor.HttpContext.Items["@me"] = new JwtData
                     {
                         Id = userId,
                         Permission = userPermission

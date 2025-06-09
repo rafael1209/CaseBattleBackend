@@ -1,4 +1,5 @@
-﻿using CaseBattleBackend.Interfaces;
+﻿using CaseBattleBackend.Enums;
+using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Middlewares;
 using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
@@ -65,7 +66,7 @@ public class CasesController(ICaseService caseService) : Controller
     }
 
     [HttpPost]
-    [AuthMiddleware]
+    [AuthMiddleware(PermissionLevel.Admin)]
     public async Task<IActionResult> CreateCase([FromForm] CreateCaseRequest request)
     {
         try

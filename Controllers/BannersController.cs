@@ -1,4 +1,5 @@
-﻿using CaseBattleBackend.Interfaces;
+﻿using CaseBattleBackend.Enums;
+using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Middlewares;
 using CaseBattleBackend.Requests;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ public class BannersController(IBannerService bannerService) : Controller
     }
 
     [HttpPost]
-    [AuthMiddleware]
+    [AuthMiddleware(PermissionLevel.Admin)]
     public async Task<IActionResult> Create(CreateBannerRequest bannerRequest)
     {
         try

@@ -15,7 +15,7 @@ public class UsersController(IUserService userService) : Controller
     public async Task<IActionResult> GetMe()
     {
         var jwtData = HttpContext.Items["@me"] as JwtData
-                   ?? throw new SecurityTokenEncryptionKeyNotFoundException();
+                   ?? throw new UnauthorizedAccessException();
 
         try
         {

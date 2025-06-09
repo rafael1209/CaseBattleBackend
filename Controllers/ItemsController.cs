@@ -1,4 +1,5 @@
-﻿using CaseBattleBackend.Interfaces;
+﻿using CaseBattleBackend.Enums;
+using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Middlewares;
 using CaseBattleBackend.Requests;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CaseBattleBackend.Controllers;
 
 [Route("api/v1/items")]
+[AuthMiddleware(PermissionLevel.Admin)]
 public class ItemsController(IItemService itemService) : Controller
 {
     [HttpGet]
@@ -18,7 +20,7 @@ public class ItemsController(IItemService itemService) : Controller
     }
 
     [HttpPost]
-    [AuthMiddleware]
+    [AuthMiddleware(PermissionLevel.Admin)]
     public async Task<IActionResult> Create([FromForm] CreateItemRequest request)
     {
         var item = await itemService.Create(request);
