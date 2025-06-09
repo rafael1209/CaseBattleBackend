@@ -14,12 +14,12 @@ public class UsersController(IUserService userService) : Controller
     [AuthMiddleware]
     public async Task<IActionResult> GetMe()
     {
-        var user = HttpContext.Items["@me"] as User
+        var jwtData = HttpContext.Items["@me"] as JwtData
                    ?? throw new SecurityTokenEncryptionKeyNotFoundException();
 
         try
         {
-            var userInfo = await userService.GetUserInfo(user); // TODO: IMPORTANT: Create a model for jwt user info
+            var userInfo = await userService.GetUserInfo(jwtData.Id); // TODO: IMPORTANT: Create a model for jwt user info
 
             return Ok(userInfo);
         }

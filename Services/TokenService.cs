@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Text;
 using CaseBattleBackend.Enums;
 using CaseBattleBackend.Interfaces;
-using CaseBattleBackend.Models; // Для PermissionLevel
 using Microsoft.IdentityModel.Tokens;
 
 namespace CaseBattleBackend.Services;
@@ -34,7 +33,7 @@ public class TokenService(IConfiguration configuration) : ITokenService
                 new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature
             ),
-            Expires = null
+            Expires = null // Set to null for no expiration, or specify a DateTime for expiration
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);

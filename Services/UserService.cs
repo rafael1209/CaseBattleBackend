@@ -34,9 +34,12 @@ public class UserService(
         return await userRepository.GetById(id);
     }
 
-    public async Task<UserInfo> GetUserInfo(ObjectId userId)
+    public async Task<UserInfo> GetUserInfo(string userId)
     {
-        var user = await userRepository.GetById(userId) ?? throw new Exception("User not found.");
+        if (!ObjectId.TryParse(userId, out var objectId))
+            throw new ArgumentException("Invalid ObjectId format", nameof(userId));
+
+        var user = await userRepository.GetById(objectId) ?? throw new Exception("User not found.");
 
         var userInfo = new UserInfo
         {

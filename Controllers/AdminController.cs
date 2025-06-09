@@ -55,12 +55,6 @@ public class AdminController(IUserService userService, ITokenService tokenServic
     [HttpPost("set-access")]
     public async Task<IActionResult> SetAccess([FromBody] SetAccessRequest request)
     {
-
+        return BadRequest("Under developing");
     }
-}
-
-public class SetAccessRequest
-{
-    public string UserId { get; set; } = string.Empty;
-    public PermissionLevel Permission { get; set; } = PermissionLevel.User;
 }

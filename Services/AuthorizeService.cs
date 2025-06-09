@@ -2,6 +2,7 @@
 using CaseBattleBackend.Models;
 using System.Text.Json;
 using CaseBattleBackend.Helpers;
+using MongoDB.Bson;
 
 namespace CaseBattleBackend.Services;
 
@@ -23,9 +24,12 @@ public class AuthorizeService(IConfiguration configuration, ITokenService tokenS
         if (!isValidate)
             throw new Exception("User validation failed.");
 
+        var userId = ObjectId.GenerateNewId();
+
         var user = await userService.TryGetByMinecraftUuid(properties["minecraftUUID"]) ?? await userService.Create(new User
         {
-            AuthToken = tokenService.GenerateToken(properties["discordId"]),
+            Id = userId,
+            AuthToken = tokenService.GenerateToken(userId.ToString()),
             DiscordId = long.Parse(properties["discordId"]),
             MinecraftUuid = properties["minecraftUUID"],
             Username = properties["username"]
