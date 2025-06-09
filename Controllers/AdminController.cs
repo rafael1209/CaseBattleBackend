@@ -9,7 +9,6 @@ namespace CaseBattleBackend.Controllers;
 [Route("api/v1/admin")]
 public class AdminController(IUserService userService, ITokenService tokenService) : Controller
 {
-
     [HttpPost("set-access")]
     public async Task<IActionResult> SetAccess([FromBody] SetAccessRequest request)
     {

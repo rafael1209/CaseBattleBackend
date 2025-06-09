@@ -33,7 +33,7 @@ public class TokenService(IConfiguration configuration) : ITokenService
                 new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature
             ),
-            Expires = null // Set to null for no expiration, or specify a DateTime for expiration
+            Expires = DateTime.UtcNow.AddMinutes(1)
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -58,8 +58,7 @@ public class TokenService(IConfiguration configuration) : ITokenService
                 ClockSkew = TimeSpan.Zero
             };
 
-            var principal = tokenHandler.ValidateToken(token, validationParameters, out _);
-            return principal;
+            return tokenHandler.ValidateToken(token, validationParameters, out _);
         }
         catch
         {
