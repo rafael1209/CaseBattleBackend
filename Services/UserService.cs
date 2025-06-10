@@ -163,7 +163,12 @@ public class UserService(
         if (!ObjectId.TryParse(request.UserId, out var userIdObj))
             throw new ArgumentException("Invalid ObjectId format", nameof(request.UserId));
 
-        if (request.Permission >= userData.Permission && userData.Permission == PermissionLevel.Owner)
+        var secondUser = await GetById(userIdObj) ??
+                         throw new Exception("User not found.");
+
+        var permissionLevel = tokenService.GetUserPermissionFromToken(secondUser.AuthToken);
+
+        if (permissionLevel >= userData.Permission && userData.Permission != PermissionLevel.Owner)
             throw new UnauthorizedAccessException("You cannot set a higher permission level than your own.");
 
         var authToken = tokenService.GenerateToken(userData.Id, request.Permission);

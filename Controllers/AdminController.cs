@@ -32,7 +32,7 @@ public class AdminController(IUserService userService, ITokenService tokenServic
     }
 
     [HttpPost("test")]
-    [AuthMiddleware(PermissionLevel.Owner)]
+    //[AuthMiddleware(PermissionLevel.Owner)]
     public async Task<IActionResult> Test([FromBody] string userId)
     {
         try
