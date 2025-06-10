@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CaseBattleBackend.Controllers;
 
 [Route("api/v1/admin")]
-public class AdminController(IUserService userService) : Controller
+public class AdminController(IUserService userService, ITokenService tokenService) : Controller
 {
     [HttpPost("set-access")]
     [AuthMiddleware(PermissionLevel.Moderator)]
@@ -22,6 +22,24 @@ public class AdminController(IUserService userService) : Controller
             await userService.SetAccess(jwtData, request);
 
             return Ok(new { message = "Access level updated successfully." });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+
+            return BadRequest(new { message = e.Message });
+        }
+    }
+
+    [HttpPost("test")]
+    [AuthMiddleware(PermissionLevel.Owner)]
+    public async Task<IActionResult> Test([FromBody] string userId)
+    {
+        try
+        {
+            var authToken = tokenService.GenerateToken(userId, PermissionLevel.Owner);
+
+            return Ok(new { authToken });
         }
         catch (Exception e)
         {
