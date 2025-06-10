@@ -7,4 +7,5 @@ public class UserInfo
     public string Nickname { get; set; } 
     public string AvatarUrl { get; set; }  
     public int Level { get; set; }  
+    public string Permission { get; set; }
 }

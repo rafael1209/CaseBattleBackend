@@ -19,7 +19,9 @@ public class UsersController(IUserService userService) : Controller
 
         try
         {
-            var userInfo = await userService.GetUserInfo(jwtData.Id); // TODO: IMPORTANT: Create a model for jwt user info
+            var userInfo = await userService.GetUserInfo(jwtData.Id);
+
+            userInfo.Permission = jwtData.Permission.ToString(); //TODO: remove this line when frontend is updated to use enum
 
             return Ok(userInfo);
         }
