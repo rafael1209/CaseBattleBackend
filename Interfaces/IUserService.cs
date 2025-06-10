@@ -19,4 +19,5 @@ public interface IUserService
     Task Withdraw(string userId, string cardId, int amount);
     Task<PaymentResponse> CreatePayment(string userId, int amount);
     Task HandlePayment(PaymentNotification notification, string base64Hash);
+    Task SetAccess(JwtData userData, SetAccessRequest request);
 }

@@ -4,14 +4,30 @@ using CaseBattleBackend.Middlewares;
 using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
 using Microsoft.AspNetCore.Mvc;
+
 namespace CaseBattleBackend.Controllers;
 
 [Route("api/v1/admin")]
-public class AdminController(IUserService userService, ITokenService tokenService) : Controller
+public class AdminController(IUserService userService) : Controller
 {
     [HttpPost("set-access")]
+    [AuthMiddleware(PermissionLevel.Moderator)]
     public async Task<IActionResult> SetAccess([FromBody] SetAccessRequest request)
     {
-        return BadRequest("Under developing");
+        try
+        {
+            var jwtData = HttpContext.Items["@me"] as JwtData
+                          ?? throw new UnauthorizedAccessException();
+
+            await userService.SetAccess(jwtData, request);
+
+            return Ok(new { message = "Access level updated successfully." });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+
+            return BadRequest(new { message = e.Message });
+        }
     }
 }

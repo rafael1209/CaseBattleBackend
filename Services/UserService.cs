@@ -1,4 +1,5 @@
 ﻿using CaseBattleBackend.Dtos;
+using CaseBattleBackend.Enums;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
@@ -11,7 +12,8 @@ public class UserService(
     IConfiguration configuration,
     IUserRepository userRepository,
     IItemRepository itemRepository,
-    ISpPaymentService paymentService)
+    ISpPaymentService paymentService,
+    ITokenService tokenService)
     : IUserService
 {
     private readonly string _avatarBaseUrl =
@@ -154,5 +156,18 @@ public class UserService(
             throw new Exception("Invalid user ID in payment notification.");
 
         await UpdateBalance(id, (int)notification.Amount);
+    }
+
+    public async Task SetAccess(JwtData userData, SetAccessRequest request)
+    {
+        if (!ObjectId.TryParse(request.UserId, out var userIdObj))
+            throw new ArgumentException("Invalid ObjectId format", nameof(request.UserId));
+
+        if (request.Permission >= userData.Permission && userData.Permission == PermissionLevel.Owner)
+            throw new UnauthorizedAccessException("You cannot set a higher permission level than your own.");
+
+        var authToken = tokenService.GenerateToken(userData.Id, request.Permission);
+
+        await userRepository.UpdateAuthToken(userIdObj, authToken);
     }
 }

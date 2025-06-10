@@ -1,4 +1,5 @@
-﻿using CaseBattleBackend.Models;
+﻿using CaseBattleBackend.Enums;
+using CaseBattleBackend.Models;
 using MongoDB.Bson;
 
 namespace CaseBattleBackend.Interfaces;
@@ -13,4 +14,5 @@ public interface IUserRepository
     Task<List<InventoryItem>> GetInventoryItems(ObjectId id, int page = 1, int pageSize = 32);
     Task AddToInventory(ObjectId userId, List<ObjectId> items);
     Task RemoveFromInventory(User user, ObjectId itemId, int quantity);
+    Task UpdateAuthToken(ObjectId userId, string authToken);
 }

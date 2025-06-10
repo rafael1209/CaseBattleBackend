@@ -33,7 +33,7 @@ public class TokenService(IConfiguration configuration) : ITokenService
                 new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature
             ),
-            Expires = null //DateTime.UtcNow.AddMinutes(1)
+            Expires = null
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -64,5 +64,17 @@ public class TokenService(IConfiguration configuration) : ITokenService
         {
             return null;
         }
+    }
+
+    public PermissionLevel? GetUserPermissionFromToken(string token)
+    {
+        var principal = ValidateToken(token);
+
+        var permissionClaim = principal?.FindFirst("permission");
+
+        if (permissionClaim != null && Enum.TryParse(permissionClaim.Value, out PermissionLevel permissionLevel))
+            return permissionLevel;
+
+        return null;
     }
 }

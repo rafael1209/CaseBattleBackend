@@ -1,4 +1,5 @@
 ﻿using CaseBattleBackend.Database;
+using CaseBattleBackend.Enums;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
 using MongoDB.Bson;
@@ -98,5 +99,16 @@ public class UserRepository(IMongoDbContext context) : IUserRepository
 
         var update = Builders<User>.Update.Set(u => u.Items, user.Items);
         await _users.UpdateOneAsync(u => u.Id == user.Id, update);
+    }
+
+    public async Task UpdateAuthToken(ObjectId userId, string authToken)
+    {
+        var filter = Builders<User>.Filter.Eq(u => u.Id, userId);
+        var update = Builders<User>.Update.Set(u => u.AuthToken, authToken);
+
+        var result = await _users.UpdateOneAsync(filter, update);
+
+        if (result.ModifiedCount == 0)
+            throw new Exception("Failed to update auth token for user.");
     }
 }
