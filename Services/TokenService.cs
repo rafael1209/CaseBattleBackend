@@ -54,7 +54,7 @@ public class TokenService(IConfiguration configuration) : ITokenService
                 ValidateIssuer = true,
                 ValidIssuer = _issuer,
                 ValidateAudience = false,
-                ValidateLifetime = true,
+                ValidateLifetime = false,
                 ClockSkew = TimeSpan.Zero
             };
 
