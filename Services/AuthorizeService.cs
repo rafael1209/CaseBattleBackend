@@ -30,7 +30,6 @@ public class AuthorizeService(IConfiguration configuration, ITokenService tokenS
         {
             Id = userId,
             AuthToken = tokenService.GenerateToken(userId.ToString()),
-            DiscordId = long.Parse(properties["discordId"]),
             MinecraftUuid = properties["minecraftUUID"],
             Username = properties["username"]
         });
