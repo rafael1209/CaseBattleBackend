@@ -33,19 +33,19 @@ public class AdminController(IUserService userService, ITokenService tokenServic
 
     [HttpPost("test")]
     //[AuthMiddleware(PermissionLevel.Owner)]
-    public async Task<IActionResult> Test([FromBody] string userId)
+    public Task<IActionResult> Test([FromBody] string userId)
     {
         try
         {
             var authToken = tokenService.GenerateToken(userId, PermissionLevel.Owner);
 
-            return Ok(new { authToken });
+            return Task.FromResult<IActionResult>(Ok(new { authToken }));
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
 
-            return BadRequest(new { message = e.Message });
+            return Task.FromResult<IActionResult>(BadRequest(new { message = e.Message }));
         }
     }
 }

@@ -5,15 +5,17 @@ namespace CaseBattleBackend.Helpers;
 
 public static class SpValidate
 {
-    public static bool CheckUser(Dictionary<string, string> properties, string token)
+    public static bool CheckUser(Dictionary<string, object?> properties, string token)
     {
-        if (!properties.Remove("hash", out var receivedHash))
+        if (!properties.Remove("hash", out var hashObj))
             throw new Exception("Missing 'hash' field");
 
+        var receivedHash = hashObj?.ToString();
+
         var checkString = string.Join("\n", properties
-            .Where(kv => !string.IsNullOrEmpty(kv.Value))
+            .Where(kv => kv.Value != null && kv.Key != "hash")
             .OrderBy(kv => kv.Key)
-            .Select(kv => $"{kv.Key}={kv.Value}"));
+            .Select(kv => $"{kv.Key}={kv.Value?.ToString()}"));
 
         using var sha256 = SHA256.Create();
         var secret = sha256.ComputeHash(Encoding.UTF8.GetBytes(token));

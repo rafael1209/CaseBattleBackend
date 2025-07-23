@@ -48,7 +48,8 @@ public class UserService(
             Balance = user.Balance,
             Nickname = user.Username,
             AvatarUrl = _avatarBaseUrl + user.MinecraftUuid,
-            Level = 0
+            Level = 0,
+            Permission = "user"
         };
 
         return userInfo;

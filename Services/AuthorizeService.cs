@@ -14,25 +14,46 @@ public class AuthorizeService(IConfiguration configuration, ITokenService tokenS
 
     public async Task<string> AuthorizeUser(JsonElement body)
     {
-        var properties = new Dictionary<string, string>();
+        var properties = new Dictionary<string, object?>();
 
         foreach (var prop in body.EnumerateObject())
-            properties[prop.Name] = prop.Value.ToString();
+        {
+            var value = prop.Value;
+
+            properties[prop.Name] = value.ValueKind switch
+            {
+                JsonValueKind.String => value.GetString(),
+                JsonValueKind.Number => value.GetRawText(),
+                JsonValueKind.False => "false",
+                JsonValueKind.True => "true",
+                JsonValueKind.Array when value.GetArrayLength() == 0 => "",
+                _ => value.ToString()
+            };
+        }
 
         var isValidate = SpValidate.CheckUser(properties, _miniAppToken);
 
         if (!isValidate)
             throw new Exception("User validation failed.");
 
+        if (!properties.TryGetValue("minecraftUUID", out var uuidObj) || uuidObj is not string minecraftUuid ||
+            string.IsNullOrWhiteSpace(minecraftUuid))
+            throw new Exception("Missing or invalid minecraftUUID");
+
+        if (!properties.TryGetValue("username", out var usernameObj) || usernameObj is not string username ||
+            string.IsNullOrWhiteSpace(username))
+            throw new Exception("Missing or invalid username");
+
         var userId = ObjectId.GenerateNewId();
 
-        var user = await userService.TryGetByMinecraftUuid(properties["minecraftUUID"]) ?? await userService.Create(new User
-        {
-            Id = userId,
-            AuthToken = tokenService.GenerateToken(userId.ToString()),
-            MinecraftUuid = properties["minecraftUUID"],
-            Username = properties["username"]
-        });
+        var user = await userService.TryGetByMinecraftUuid(minecraftUuid)
+                   ?? await userService.Create(new User
+                   {
+                       Id = userId,
+                       AuthToken = tokenService.GenerateToken(userId.ToString()),
+                       MinecraftUuid = minecraftUuid,
+                       Username = username
+                   });
 
         return user.AuthToken;
     }
