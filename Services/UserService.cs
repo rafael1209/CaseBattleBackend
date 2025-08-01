@@ -9,17 +9,13 @@ using MongoDB.Bson;
 namespace CaseBattleBackend.Services;
 
 public class UserService(
-    IConfiguration configuration,
     IUserRepository userRepository,
     IItemRepository itemRepository,
     ISpPaymentService paymentService,
-    ITokenService tokenService)
+    ITokenService tokenService,
+    IMinecraftAssets minecraftAssets)
     : IUserService
 {
-    private readonly string _avatarBaseUrl =
-        configuration["Minecraft:AvatarUrl"] ??
-        throw new InvalidOperationException("Minecraft avatarUrl configuration is missing.");
-
     public async Task<User?> TryGetByMinecraftUuid(string minecraftUuid)
     {
         return await userRepository.TryGetByMinecraftUuid(minecraftUuid);
@@ -47,9 +43,9 @@ public class UserService(
             Id = user.Id.ToString(),
             Balance = user.Balance,
             Nickname = user.Username,
-            AvatarUrl = _avatarBaseUrl + user.MinecraftUuid,
+            AvatarUrl = await minecraftAssets.GetAvatarUrlById(user.MinecraftUuid),
             Level = 0,
-            Permission = "user"
+            Permission = null
         };
 
         return userInfo;
@@ -76,7 +72,7 @@ public class UserService(
             var itemData = await itemRepository.GetById(item.Id);
             var inventoryItemView = new InventoryItemView
             {
-                Item = new CaseItemViewDto
+                Item = new CaseItemView
                 {
                     Id = itemData.Id.ToString(),
                     Name = itemData.Name,
@@ -95,7 +91,7 @@ public class UserService(
         return inventoryItems;
     }
 
-    public async Task AddToInventory(ObjectId userId, List<CaseItemViewDto> items)
+    public async Task AddToInventory(ObjectId userId, List<CaseItemView> items)
     {
         await userRepository.AddToInventory(userId, items.Select(i => ObjectId.Parse(i.Id)).ToList());
     }

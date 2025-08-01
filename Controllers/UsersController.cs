@@ -21,8 +21,6 @@ public class UsersController(IUserService userService) : Controller
         {
             var userInfo = await userService.GetUserInfo(jwtData.Id);
 
-            userInfo.Permission = jwtData.Permission.ToString(); //TODO: remove this line when frontend is updated to use enum
-
             return Ok(userInfo);
         }
         catch (Exception e)

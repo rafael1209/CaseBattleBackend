@@ -11,5 +11,5 @@ public class LiveWin
     public CaseDto Case { get; set; }
 
     [JsonPropertyName("item")]
-    public CaseItemViewDto Item { get; set; }
+    public CaseItemView Item { get; set; }
 }

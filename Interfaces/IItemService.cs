@@ -7,5 +7,5 @@ namespace CaseBattleBackend.Interfaces;
 public interface IItemService
 {
     Task<CaseItem> Create(CreateItemRequest request);
-    Task<List<CaseItemViewDto>> GetItems();
+    Task<List<CaseItemView>> GetItems();
 }

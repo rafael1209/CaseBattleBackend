@@ -53,7 +53,7 @@ public class Startup
         services.AddScoped<ICaseService, CaseService>();
         services.AddScoped<ISpPaymentService, SpPaymentService>();
         services.AddScoped<IGameResult, GameResultService>();
-        services.AddScoped<IMinecraftItems, MinecraftItems>();
+        services.AddScoped<IMinecraftAssets, MinecraftAssets>();
         services.AddScoped<IBannerService, BannerService>();
 
         services.AddSingleton<WebSocketServerService>();

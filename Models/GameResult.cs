@@ -11,8 +11,11 @@ public class GameResult
     [BsonElement("userId")]
     public ObjectId UserId { get; set; }
 
-    [BsonElement("gameType")]
-    public Game Game { get; set; } = new();
+    [BsonElement("itemId")]
+    public ObjectId ItemId { get; set; }
+
+    [BsonElement("caseId")]
+    public ObjectId CaseId { get; set; }
 
     [BsonElement("bet")]
     public double Bet { get; set; }

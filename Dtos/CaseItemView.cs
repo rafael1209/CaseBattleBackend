@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace CaseBattleBackend.Dtos;
 
-public class CaseItemViewDto
+public class CaseItemView
 {
     public required string Id { get; set; }
     public required string Name { get; set; }

@@ -6,21 +6,18 @@ using MongoDB.Bson;
 
 namespace CaseBattleBackend.Services;
 
-public class GameResultService(IGameResultRepository gameResultRepository, WebSocketServerService webSocketServer) : IGameResult
+public class GameResultService(
+    IGameResultRepository gameResultRepository,
+    IMinecraftAssets minecraftAssets,
+    WebSocketServerService webSocketServer) : IGameResult
 {
-    public async Task SaveResult(User user, Case caseData, CaseItemViewDto item, GameType type, ObjectId gameId)
+    public async Task SaveResult(User user, Case caseData, CaseItemView item, ObjectId gameId)
     {
-        if (gameId == ObjectId.Empty)
-            throw new ArgumentException("Game ID cannot be empty.", nameof(gameId));
-
         var gameResult = new GameResult
         {
             UserId = user.Id,
-            Game = new Game()
-            {
-                Id = gameId,
-                Type = type
-            },
+            ItemId = ObjectId.Parse(item.Id),
+            CaseId = caseData.Id,
             Bet = caseData.Price,
             WinMoney = item.Price,
         };
@@ -33,7 +30,7 @@ public class GameResultService(IGameResultRepository gameResultRepository, WebSo
             {
                 Id = user.Id.ToString(),
                 Username = user.Username,
-                AvatarUrl = null
+                AvatarUrl = await minecraftAssets.GetAvatarUrlById(user.MinecraftUuid),
             },
             Case = new CaseDto
             {
@@ -43,8 +40,17 @@ public class GameResultService(IGameResultRepository gameResultRepository, WebSo
                 ImageUrl = null,
                 Price = caseData.Price
             },
-            Item = item
+            Item = new CaseItemView
+            {
+                Id = item.Id,
+                Name = item.Name,
+                Description = item.Description,
+                ImageUrl = item.ImageUrl,
+                Amount = item.Amount,
+                Price = item.Price,
+                PercentChance = item.PercentChance,
+                Rarity = item.Rarity
+            }
         });
     }
-
 }

@@ -81,7 +81,7 @@ public class PaymentController(IUserService userService, WebSocketServerService 
                 ImageUrl = new Uri("https://assets.zaralx.ru/api/v1/minecraft/vanilla/item/carrot/icon"),
                 Price = 8
             },
-            Item = new CaseItemViewDto
+            Item = new CaseItemView
             {
                 Id = "1",
                 Name = "Cool Item",

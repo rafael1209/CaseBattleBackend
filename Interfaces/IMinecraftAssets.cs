@@ -1,6 +1,7 @@
 ﻿namespace CaseBattleBackend.Interfaces;
 
-public interface IMinecraftItems
+public interface IMinecraftAssets
 {
     Task<Uri> GetItemImageAsync(string minecraftId);
+    Task<Uri> GetAvatarUrlById(string minecraftUuid);
 }

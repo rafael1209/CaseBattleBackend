@@ -6,7 +6,7 @@ using MongoDB.Bson;
 
 namespace CaseBattleBackend.Services;
 
-public class ItemService(IItemRepository itemRepository, IStorageService storageService, IMinecraftItems minecraftItems) : IItemService
+public class ItemService(IItemRepository itemRepository, IStorageService storageService, IMinecraftAssets minecraftAssets) : IItemService
 {
     public async Task<CaseItem> Create(CreateItemRequest request)
     {
@@ -25,18 +25,18 @@ public class ItemService(IItemRepository itemRepository, IStorageService storage
         });
     }
 
-    public async Task<List<CaseItemViewDto>> GetItems()
+    public async Task<List<CaseItemView>> GetItems()
     {
         var items = await itemRepository.Get();
 
-        var itemDtos = await Task.WhenAll(items.Select(async item => new CaseItemViewDto
+        var itemDtos = await Task.WhenAll(items.Select(async item => new CaseItemView
         {
             Id = item.Id.ToString(),
             Name = item.Name,
             Description = item.Description,
             ImageUrl = item.ImageId != null
                 ? await storageService.GetFileUrl(item.ImageId) : item.MinecraftId != null
-                    ? await minecraftItems.GetItemImageAsync(item.MinecraftId) : null,
+                    ? await minecraftAssets.GetItemImageAsync(item.MinecraftId) : null,
             Amount = item.Amount,
             Price = item.Price,
             Rarity = item.Rarity

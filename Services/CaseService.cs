@@ -1,5 +1,4 @@
 ﻿using CaseBattleBackend.Dtos;
-using CaseBattleBackend.Enums;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
@@ -12,7 +11,7 @@ public class CaseService(
     IItemRepository itemRepository,
     IUserService userService,
     IGameResult gameResult,
-    IMinecraftItems minecraftItems,
+    IMinecraftAssets minecraftAssets,
     IStorageService storageService) : ICaseService
 {
     public async Task<Case> Create(CreateCaseRequest caseModel)
@@ -87,7 +86,7 @@ public class CaseService(
         return caseView;
     }
 
-    public async Task<List<CaseItemViewDto>> OpenCase(string userId, string caseId, int amount = 1, bool isDemo = true)
+    public async Task<List<CaseItemView>> OpenCase(string userId, string caseId, int amount = 1, bool isDemo = true)
     {
         if (!ObjectId.TryParse(caseId, out var objectId))
             throw new ArgumentException("Invalid Case ID format.", nameof(caseId));
@@ -123,7 +122,7 @@ public class CaseService(
         if (Math.Abs(sumOfChances - 100.0) > 0.01)
             throw new ArgumentException($"The sum of drop chances ({sumOfChances:F2}%) is not equal to 100%.");
 
-        var resultItems = new List<CaseItemViewDto>();
+        var resultItems = new List<CaseItemView>();
         var random = new Random();
 
         for (var i = 0; i < amount; i++)
@@ -140,7 +139,7 @@ public class CaseService(
 
                 resultItems.Add(item);
 
-                await gameResult.SaveResult(user, caseData, item, GameType.Case, caseData.Id);
+                await gameResult.SaveResult(user, caseData, item, caseData.Id);
 
                 break;
             }
@@ -155,7 +154,7 @@ public class CaseService(
         return resultItems;
     }
 
-    private async Task<List<CaseItemViewDto>> GetCaseItems(List<CaseItem> items, int rtp, int casePrice)
+    private async Task<List<CaseItemView>> GetCaseItems(List<CaseItem> items, int rtp, int casePrice)
     {
         var cheepItems = await itemRepository.GetTopByMaxPrice(0.5, 10);
 
@@ -171,7 +170,7 @@ public class CaseService(
     private async Task<Uri?> GetItemImageUrlAsync(CaseItem item)
     {
         if (item.MinecraftId != null)
-            return await minecraftItems.GetItemImageAsync(item.MinecraftId);
+            return await minecraftAssets.GetItemImageAsync(item.MinecraftId);
 
         if (item.ImageId != null)
             return await storageService.GetFileUrl(item.ImageId);
@@ -179,7 +178,7 @@ public class CaseService(
         return null;
     }
 
-    private async Task<List<CaseItemViewDto>> CalculateItemDropChancesByRtp(List<CaseItem> items, double rtp, double casePrice)
+    private async Task<List<CaseItemView>> CalculateItemDropChancesByRtp(List<CaseItem> items, double rtp, double casePrice)
     {
         var targetTotalExpectedValue = casePrice * (rtp / 100.0);
 
@@ -210,8 +209,7 @@ public class CaseService(
 
             if (Math.Abs(currentExpectedValue - targetTotalExpectedValue) < tolerance)
             {
-                bestPower = currentPower;
-                break;
+                bestPower = currentPower; break;
             }
 
             if (currentExpectedValue < targetTotalExpectedValue)
@@ -228,15 +226,11 @@ public class CaseService(
         {
             var imageUrl = await GetItemImageUrlAsync(item);
 
-            var weight = finalSumWeights == 0
-                ? 1
-                : Math.Pow(1.0 / item.Price, bestPower);
+            var weight = finalSumWeights == 0 ? 1 : Math.Pow(1.0 / item.Price, bestPower);
 
-            var percentChance = finalSumWeights == 0
-                ? 100.0 / items.Count
-                : (weight / finalSumWeights) * 100.0;
+            var percentChance = finalSumWeights == 0 ? 100.0 / items.Count : (weight / finalSumWeights) * 100.0;
 
-            return new CaseItemViewDto
+            return new CaseItemView
             {
                 Id = item.Id.ToString(),
                 Name = item.Name,
