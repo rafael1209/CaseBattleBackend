@@ -139,7 +139,8 @@ public class CaseService(
 
                 resultItems.Add(item);
 
-                await gameResult.SaveResult(user, caseData, item, caseData.Id);
+                if (!isDemo)
+                    await gameResult.SaveResult(user, caseData, item, caseData.Id);
 
                 break;
             }
