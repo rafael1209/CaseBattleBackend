@@ -2,11 +2,27 @@
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
+using MongoDB.Bson;
 
 namespace CaseBattleBackend.Services;
 
 public class BannerService(IBannerRepository bannerRepository, IStorageService storageService) : IBannerService
 {
+    public async Task<BannerView> GetById(string id)
+    {
+        if (!ObjectId.TryParse(id, out var objectId))
+            throw new ArgumentException("Invalid banner ID format.");
+
+        var banner = await bannerRepository.GetById(objectId);
+
+        return new BannerView
+        {
+            Id = banner.Id.ToString(),
+            ImageUrl = await storageService.GetFileUrl(banner.ImageId),
+            Url = banner.Url
+        };
+    }
+
     public async Task<List<BannerView>> GetBanners()
     {
         var banners = await bannerRepository.Get();
@@ -38,5 +54,16 @@ public class BannerService(IBannerRepository bannerRepository, IStorageService s
             ImageUrl = await storageService.GetFileUrl(file.Id),
             Url = bannerRequest.Url
         };
+    }
+
+    public async Task DeleteBanner(string id)
+    {
+        if (!ObjectId.TryParse(id, out var objectId))
+            throw new ArgumentException("Invalid banner ID format.");
+
+        var banner = await bannerRepository.GetById(objectId);
+        await storageService.DeleteFile(banner.ImageId);
+
+        await bannerRepository.Delete(objectId);
     }
 }

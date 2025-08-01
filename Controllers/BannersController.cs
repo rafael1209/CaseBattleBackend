@@ -42,4 +42,21 @@ public class BannersController(IBannerService bannerService) : Controller
             return NotFound(new { message = e.Message });
         }
     }
+
+    [HttpDelete("{id}")]
+    [AuthMiddleware(PermissionLevel.Admin)]
+    public async Task<IActionResult> Delete(string id)
+    {
+        try
+        {
+            await bannerService.DeleteBanner(id);
+
+            return Ok(new { message = "Banner deleted successfully." });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return NotFound(new { message = e.Message });
+        }
+    }
 }

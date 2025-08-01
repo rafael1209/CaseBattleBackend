@@ -5,6 +5,6 @@ namespace CaseBattleBackend.Interfaces;
 public interface IStorageService
 {
     Task<FileDto> UploadFile(IFormFile file, string name);
-    Task DeleteFileAsync(string fileId);
+    Task DeleteFile(string fileId);
     Task<Uri> GetFileUrl(string? id);
 }

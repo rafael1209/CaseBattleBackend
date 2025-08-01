@@ -77,7 +77,7 @@ public class GoogleDriveService : IStorageService
         }
     }
 
-    public async Task DeleteFileAsync(string fileId)
+    public async Task DeleteFile(string fileId)
     {
         try
         {
