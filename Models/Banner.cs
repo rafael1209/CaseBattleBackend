@@ -9,10 +9,10 @@ public class Banner
     public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
 
     [BsonElement("imageId")]
-    public string ImageId { get; set; }
+    public required string ImageId { get; set; }
 
     [BsonElement("url")]
-    public Uri Url { get; set; }
+    public Uri? Url { get; set; }
 
     [BsonElement("createdAt")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

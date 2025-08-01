@@ -2,7 +2,7 @@
 
 public class BannerView
 {
-    public string Id { get; set; }
-    public Uri ImageUrl { get; set; }
-    public Uri Url { get; set; }
+    public required string Id { get; set; }
+    public required Uri ImageUrl { get; set; }
+    public Uri? Url { get; set; }
 }
