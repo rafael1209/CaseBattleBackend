@@ -4,7 +4,6 @@ using CaseBattleBackend.Middlewares;
 using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace CaseBattleBackend.Controllers;
 
