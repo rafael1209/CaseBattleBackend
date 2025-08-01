@@ -13,7 +13,8 @@ public class UserService(
     IItemRepository itemRepository,
     ISpPaymentService paymentService,
     ITokenService tokenService,
-    IMinecraftAssets minecraftAssets)
+    IMinecraftAssets minecraftAssets,
+    IStorageService storageService)
     : IUserService
 {
     public async Task<User?> TryGetByMinecraftUuid(string minecraftUuid)
@@ -77,7 +78,9 @@ public class UserService(
                     Id = itemData.Id.ToString(),
                     Name = itemData.Name,
                     Description = itemData.Description,
-                    ImageUrl = null, //TODO: Fix this when images are implemented
+                    ImageUrl = itemData.ImageId is not null
+                        ? await storageService.GetFileUrl(itemData.ImageId)
+                        : itemData.MinecraftId is not null ? await minecraftAssets.GetItemImageAsync(itemData.MinecraftId) : null,
                     Amount = itemData.Amount,
                     Price = itemData.Price,
                     PercentChance = 100,

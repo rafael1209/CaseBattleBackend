@@ -21,9 +21,8 @@ public class BannerRepository(IMongoDbContext context) : IBannerRepository
         var filter = Builders<Banner>.Filter.Eq(b => b.Id, id);
         var banner = await _banners.Find(filter).FirstOrDefaultAsync();
         if (banner == null)
-        {
             throw new Exception("Banner not found.");
-        }
+
         return banner;
     }
 
