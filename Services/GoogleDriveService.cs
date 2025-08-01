@@ -64,11 +64,7 @@ public class GoogleDriveService : IStorageService
             if (string.IsNullOrEmpty(fileId))
                 throw new Exception("File ID is null after upload.");
 
-            var permission = new Google.Apis.Drive.v3.Data.Permission
-            {
-                Role = "reader",
-                Type = "anyone"
-            };
+            var permission = new Google.Apis.Drive.v3.Data.Permission { Role = "reader", Type = "anyone" };
 
             await _driveService.Permissions.Create(permission, fileId).ExecuteAsync();
 

@@ -73,7 +73,7 @@ public class WebSocketServerService : IHostedService
                             break;
 
                         case "unsubscribe" when !IsNullOrWhiteSpace(channelStr):
-                            if (!Enum.TryParse<SubscriptionChannel>(channelStr, ignoreCase: true, out parsedChannel))
+                            if (!Enum.TryParse(channelStr, ignoreCase: true, out parsedChannel))
                             {
                                 socket.Send(JsonSerializer.Serialize(new
                                 {
