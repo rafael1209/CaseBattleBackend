@@ -6,22 +6,29 @@ namespace CaseBattleBackend.Models;
 public class GameResult
 {
     [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
     public ObjectId Id { get; set; }
 
     [BsonElement("userId")]
-    public ObjectId UserId { get; set; }
-
-    [BsonElement("itemId")]
-    public ObjectId ItemId { get; set; }
+    [BsonRepresentation(BsonType.ObjectId)]
+    public required ObjectId UserId { get; set; }
 
     [BsonElement("caseId")]
-    public ObjectId CaseId { get; set; }
+    [BsonRepresentation(BsonType.ObjectId)]
+    public required ObjectId CaseId { get; set; }
+
+    [BsonElement("itemId")]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public required ObjectId ItemId { get; set; }
 
     [BsonElement("bet")]
-    public double Bet { get; set; }
+    public required double Bet { get; set; }
 
     [BsonElement("winMoney")]
-    public double WinMoney { get; set; }
+    public required double WinMoney { get; set; }
+
+    [BsonElement("dropChance")]
+    public required double DropChance { get; set; }
 
     [BsonElement("createdAt")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

@@ -32,7 +32,7 @@ public class AdminController(IUserService userService, ITokenService tokenServic
     }
 
     [HttpPost("generate-owner")]
-    [AuthMiddleware(PermissionLevel.Owner)]
+    [AuthMiddleware(PermissionLevel.Admin)]
     public Task<IActionResult> Test([FromBody] string userId)
     {
         try

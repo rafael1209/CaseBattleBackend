@@ -14,4 +14,12 @@ public class GameResultRepository(IMongoDbContext context) : IGameResultReposito
 
         return gameResult;
     }
+
+    public async Task<List<GameResult>> GetGameHistory(int limit = 12)
+    {
+        var filter = Builders<GameResult>.Filter.Empty;
+        var sort = Builders<GameResult>.Sort.Descending(x => x.CreatedAt);
+        
+        return await _result.Find(filter).Sort(sort).Limit(limit).ToListAsync();
+    }
 }

@@ -5,11 +5,11 @@ namespace CaseBattleBackend.Dtos;
 public class LiveWin
 {
     [JsonPropertyName("user")]
-    public UserDto User { get; set; }
+    public UserDto? User { get; set; }
 
     [JsonPropertyName("case")]
-    public CaseDto Case { get; set; }
+    public CaseDto? Case { get; set; }
 
     [JsonPropertyName("item")]
-    public CaseItemView Item { get; set; }
+    public required CaseItemView Item { get; set; }
 }
