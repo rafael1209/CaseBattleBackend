@@ -4,9 +4,6 @@ using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
 using CaseBattleBackend.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using CaseBattleBackend.Dtos;
-using CaseBattleBackend.Enums;
 
 namespace CaseBattleBackend.Controllers;
 
@@ -66,44 +63,5 @@ public class PaymentController(IUserService userService, WebSocketServerService 
         await userService.HandlePayment(notification, base64Hash);
 
         return Ok(new { status = "success" });
-    }
-
-    [HttpPost("test")]
-    public Task<IActionResult> Test()
-    {
-        var json = new LiveWin
-        {
-            Case = new CaseDto
-            {
-                Id = "1",
-                Name = "rafael1209",
-                Description = null,
-                ImageUrl = new Uri("https://assets.zaralx.ru/api/v1/minecraft/vanilla/item/carrot/icon"),
-                Price = 8
-            },
-            Item = new CaseItemView
-            {
-                Id = "1",
-                Name = "Cool Item",
-                Description = null,
-                ImageUrl = new Uri("https://assets.zaralx.ru/api/v1/minecraft/vanilla/item/carrot/icon"),
-                Amount = 64,
-                Price = 16,
-                PercentChance = 12.3,
-                Rarity = Rarity.Common
-            }
-        };
-
-        webSocket.PublishToChannel(SubscriptionChannel.LiveWins, json);
-
-        return Task.FromResult<IActionResult>(Ok("Live win sent to subscribers."));
-    }
-
-    [HttpPost("broadcast")]
-    public Task<IActionResult> Test1()
-    {
-        webSocket.Broadcast(new { message = "Hello World", type = "0" });
-
-        return Task.FromResult<IActionResult>(Ok("Live win sent to subscribers."));
     }
 }
