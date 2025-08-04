@@ -167,17 +167,43 @@ public class UserService(
 
     public async Task<PaymentResponse> CreatePayment(string userId, int amount)
     {
-        return await paymentService.CreatePayment(userId, amount);
+        if (!ObjectId.TryParse(userId, out var userIdObj))
+            throw new ArgumentException("Invalid ObjectId format", nameof(userId));
+
+        var transaction = await transactionService.CreateTransactionAsync(new Transaction
+        {
+            UserId = userIdObj,
+            Type = TransactionType.Deposit,
+            Amount = amount,
+            Status = TransactionStatus.Created
+        });
+
+        try
+        {
+            return await paymentService.CreatePayment($"{userId}:{transaction.Id}", amount);
+        }
+        catch (Exception)
+        {
+            await transactionService.UpdateTransactionStatusAsync(transaction.Id, TransactionStatus.Failed);
+            throw new Exception("Payment creation failed.");
+        }
     }
 
     public async Task HandlePayment(PaymentNotification notification, string base64Hash)
     {
         await paymentService.HandlePaymentNotification(notification, base64Hash);
 
-        if (Equals(!ObjectId.TryParse(notification.Data, out var id)))
+        var data = notification.Data?.Split(':');
+
+        if (Equals(!ObjectId.TryParse(data?[0], out var userId)))
             throw new Exception("Invalid user ID in payment notification.");
 
-        await UpdateBalance(id, (int)notification.Amount);
+        if (Equals(!ObjectId.TryParse(data?[0], out var paymentId)))
+            throw new Exception("Invalid transaction ID in payment notification.");
+
+        await transactionService.UpdateTransactionStatusAsync(paymentId, TransactionStatus.Success);
+
+        await UpdateBalance(userId, (int)notification.Amount);
     }
 
     public async Task SetAccess(JwtData userData, SetAccessRequest request)

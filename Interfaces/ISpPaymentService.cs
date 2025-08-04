@@ -6,7 +6,7 @@ namespace CaseBattleBackend.Interfaces;
 
 public interface ISpPaymentService
 {
-    Task<PaymentResponse> CreatePayment(string userId, int amount);
+    Task<PaymentResponse> CreatePayment(string data, int amount);
     Task HandlePaymentNotification(PaymentNotification notification, string base64Hash);
     Task<TransactionsResponse> SendTransaction(string cardNumber, int amount);
 }

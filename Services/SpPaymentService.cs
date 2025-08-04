@@ -22,7 +22,7 @@ public class SpPaymentService(IConfiguration configuration) : ISpPaymentService
 
     private const string SpBaseUrl = "https://spworlds.ru/api/";
 
-    public async Task<PaymentResponse> CreatePayment(string userId, int amount)
+    public async Task<PaymentResponse> CreatePayment(string data, int amount)
     {
         const int maxPricePerItem = 1728;
 
@@ -56,7 +56,7 @@ public class SpPaymentService(IConfiguration configuration) : ISpPaymentService
             Items = items,
             RedirectUrl = _spRedirectUrl,
             WebhookUrl = _spWebhookUrl,
-            Data = userId
+            Data = data
         };
 
         var json = JsonSerializer.Serialize(transaction);
