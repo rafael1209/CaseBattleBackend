@@ -38,6 +38,7 @@ public class UserService(
             throw new ArgumentException("Invalid ObjectId format", nameof(userId));
 
         var user = await userRepository.GetById(objectId) ?? throw new Exception("User not found.");
+        var permission = tokenService.GetUserPermissionFromToken(user.AuthToken);
 
         var userInfo = new UserInfo
         {
@@ -46,7 +47,7 @@ public class UserService(
             Nickname = user.Username,
             AvatarUrl = await minecraftAssets.GetAvatarUrlById(user.MinecraftUuid),
             Level = 0,
-            Permission = null
+            Permission = permission
         };
 
         return userInfo;

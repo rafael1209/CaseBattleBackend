@@ -8,9 +8,6 @@ public class User
     [BsonId]
     public ObjectId Id { get; set; }
 
-    //[BsonElement("discordId")]
-    //public long? DiscordId { get; set; }
-
     [BsonElement("minecraftUuid")]
     public required string MinecraftUuid { get; set; }
 

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace CaseBattleBackend.Models;
+namespace CaseBattleBackend.Responses;
 
 public class TransactionErrorResponse
 {

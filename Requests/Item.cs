@@ -7,7 +7,7 @@ public class Item
 {
     [JsonPropertyName("name")]
     [StringLength(32, MinimumLength = 3)]
-    public required string Name { get; set; }
+    public string Name { get; set; } = "Diamond Drop";
 
     [JsonPropertyName("count")]
     [Range(1, 9999)]
@@ -19,5 +19,5 @@ public class Item
 
     [JsonPropertyName("comment")]
     [StringLength(64, MinimumLength = 3)]
-    public string? Comment { get; set; }
+    public string? Comment { get; set; } = "Пополнение баланса";
 }

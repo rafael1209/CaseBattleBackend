@@ -6,7 +6,6 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text;
 using MongoDB.Bson;
-using CaseBattleBackend.Models;
 
 namespace CaseBattleBackend.Services;
 
@@ -25,27 +24,42 @@ public class SpPaymentService(IConfiguration configuration) : ISpPaymentService
 
     public async Task<PaymentResponse> CreatePayment(string userId, int amount)
     {
+        const int maxPricePerItem = 1728;
+
         var token = SpValidate.GenerateToken(_spCardId, _spCardToken);
 
         using var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-        var json = JsonSerializer.Serialize(new TransactionRequest()
+        var items = new List<Item>();
+        while (amount > maxPricePerItem)
         {
-            Items =
-            [
-                new Item
-                {
-                    Name = "Поменять это позже",
-                    Count = 1,
-                    Price = amount,
-                    Comment = "Пополнение баланса"
-                }
-            ],
+            items.Add(new Item
+            {
+                Count = 1,
+                Price = maxPricePerItem,
+            });
+            amount -= maxPricePerItem;
+        }
+
+        if (amount > 0)
+        {
+            items.Add(new Item
+            {
+                Count = 1,
+                Price = amount,
+            });
+        }
+
+        var transaction = new TransactionRequest
+        {
+            Items = items,
             RedirectUrl = _spRedirectUrl,
             WebhookUrl = _spWebhookUrl,
-            Data = $"{userId}"
-        });
+            Data = userId
+        };
+
+        var json = JsonSerializer.Serialize(transaction);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         var response = await httpClient.PostAsync($"{SpBaseUrl}public/payments", content);
@@ -55,8 +69,8 @@ public class SpPaymentService(IConfiguration configuration) : ISpPaymentService
 
         var responseContent = await response.Content.ReadAsStringAsync();
 
-        return JsonSerializer.Deserialize<PaymentResponse>(responseContent) ??
-               throw new Exception($"Error creating payment: {response.StatusCode}");
+        return JsonSerializer.Deserialize<PaymentResponse>(responseContent)
+               ?? throw new Exception($"Error creating payment: {response.StatusCode}");
     }
 
     public Task HandlePaymentNotification(PaymentNotification notification, string base64Hash)
