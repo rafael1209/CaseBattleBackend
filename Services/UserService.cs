@@ -200,7 +200,7 @@ public class UserService(
         if (Equals(!ObjectId.TryParse(data?[0], out var userId)))
             throw new Exception("Invalid user ID in payment notification.");
 
-        if (Equals(!ObjectId.TryParse(data?[0], out var paymentId)))
+        if (Equals(!ObjectId.TryParse(data?[1], out var paymentId)))
             throw new Exception("Invalid transaction ID in payment notification.");
 
         await transactionService.UpdateTransactionStatusAsync(paymentId, TransactionStatus.Success);

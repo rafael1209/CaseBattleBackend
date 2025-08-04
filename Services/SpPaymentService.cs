@@ -80,9 +80,6 @@ public class SpPaymentService(IConfiguration configuration) : ISpPaymentService
         if (!SpValidate.ValidateWebhook(bodyString, base64Hash, _spCardToken))
             throw new Exception();
 
-        if (!ObjectId.TryParse(notification.Data, out var id))
-            throw new Exception("Error Handle Payment notification.Data parse to ObjectId");
-
         return Task.CompletedTask;
     }
 
