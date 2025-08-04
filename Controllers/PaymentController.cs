@@ -43,9 +43,9 @@ public class PaymentController(IUserService userService) : Controller
 
             return Ok();
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            return BadRequest();
+            return BadRequest(new { message = e.Message });
         }
     }
 

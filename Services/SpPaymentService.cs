@@ -83,20 +83,31 @@ public class SpPaymentService(IConfiguration configuration) : ISpPaymentService
         {
             Receiver = cardNumber,
             Amount = amount,
-            Comment = "Change this"
+            Comment = "Вывод средств DiamondDrop"
         };
 
         var json = JsonSerializer.Serialize(transaction);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         var response = await httpClient.PostAsync($"{SpBaseUrl}public/transactions", content);
-
-        if (!response.IsSuccessStatusCode)
-            throw new Exception($"Error creating payment: {response.StatusCode}");
-
         var responseContent = await response.Content.ReadAsStringAsync();
 
-        return JsonSerializer.Deserialize<TransactionsResponse>(responseContent) ??
-               throw new Exception($"Error creating payment: {response.StatusCode}");
+        if (response.IsSuccessStatusCode)
+            return JsonSerializer.Deserialize<TransactionsResponse>(responseContent) ??
+                   throw new Exception($"Error creating payment: {response.StatusCode}");
+
+        try
+        {
+            var errorResponse = JsonSerializer.Deserialize<TransactionErrorResponse>(responseContent);
+
+            if (errorResponse?.Error == "error.public.transactions.receiverCardNotFound")
+                throw new Exception("Receiver card not found.");
+
+            throw new Exception($"Payment failed: {errorResponse?.Error ?? response.StatusCode.ToString()}");
+        }
+        catch (JsonException)
+        {
+            throw new Exception($"Error creating payment: {response.StatusCode} - {responseContent}");
+        }
     }
 }
