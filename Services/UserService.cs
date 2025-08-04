@@ -162,6 +162,8 @@ public class UserService(
             await userRepository.UpdateBalance(user.Id, amount);
 
             await transactionService.UpdateTransactionStatusAsync(transaction.Id, TransactionStatus.Failed);
+
+            throw new Exception("Withdrawal failed. Transaction has been rolled back.");
         }
     }
 
