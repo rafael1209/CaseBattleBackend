@@ -171,7 +171,7 @@ public class UserService(
         if (permissionLevel >= userData.Permission && userData.Permission != PermissionLevel.Owner)
             throw new UnauthorizedAccessException("You cannot set a higher permission level than your own.");
 
-        var authToken = tokenService.GenerateToken(userData.Id, request.Permission);
+        var authToken = tokenService.GenerateToken(request.UserId, request.Permission);
 
         await userRepository.UpdateAuthToken(userIdObj, authToken);
     }

@@ -11,7 +11,7 @@ namespace CaseBattleBackend.Controllers;
 public class AdminController(IUserService userService, ITokenService tokenService) : Controller
 {
     [HttpPost("set-access")]
-    [AuthMiddleware(PermissionLevel.Moderator)]
+    [AuthMiddleware(PermissionLevel.Admin)]
     public async Task<IActionResult> SetAccess([FromBody] SetAccessRequest request)
     {
         try
@@ -30,7 +30,7 @@ public class AdminController(IUserService userService, ITokenService tokenServic
     }
 
     [HttpPost("generate-owner")]
-    [AuthMiddleware(PermissionLevel.Admin)]
+    [AuthMiddleware(PermissionLevel.Owner)]
     public Task<IActionResult> Test([FromBody] string userId)
     {
         try
