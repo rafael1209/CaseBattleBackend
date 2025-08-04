@@ -14,7 +14,8 @@ public class UserService(
     ISpPaymentService paymentService,
     ITokenService tokenService,
     IMinecraftAssets minecraftAssets,
-    IStorageService storageService)
+    IStorageService storageService,
+    ITransactionService transactionService)
     : IUserService
 {
     public async Task<User?> TryGetByMinecraftUuid(string minecraftUuid)
@@ -139,9 +140,29 @@ public class UserService(
         if (user.Balance < amount)
             throw new Exception("Insufficient balance.");
 
+        var transaction = await transactionService.CreateTransactionAsync(new Transaction
+        {
+            UserId = user.Id,
+            Type = TransactionType.Withdrawal,
+            Amount = amount,
+            CardNumber = cardId,
+            Status = TransactionStatus.Created
+        });
+
         await userRepository.UpdateBalance(user.Id, -amount);
 
-        await paymentService.SendTransaction(cardId, amount);
+        await transactionService.UpdateTransactionStatusAsync(transaction.Id, TransactionStatus.Success);
+
+        try
+        {
+            await paymentService.SendTransaction(cardId, amount);
+        }
+        catch (Exception)
+        {
+            await userRepository.UpdateBalance(user.Id, amount);
+
+            await transactionService.UpdateTransactionStatusAsync(transaction.Id, TransactionStatus.Failed);
+        }
     }
 
     public async Task<PaymentResponse> CreatePayment(string userId, int amount)

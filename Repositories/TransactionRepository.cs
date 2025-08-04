@@ -10,14 +10,14 @@ public class TransactionRepository(IMongoDbContext context) : ITransactionReposi
 {
     private readonly IMongoCollection<Transaction> _transactions = context.TransactionsCollection;
 
-    public async Task<bool> CreateTransactionAsync(Transaction transaction)
+    public async Task<Transaction> CreateTransactionAsync(Transaction transaction)
     {
         if (transaction == null)
             throw new ArgumentNullException(nameof(transaction), "Transaction cannot be null");
         try
         {
             await _transactions.InsertOneAsync(transaction);
-            return true;
+            return transaction;
         }
         catch (Exception ex)
         {

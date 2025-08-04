@@ -7,7 +7,7 @@ namespace CaseBattleBackend.Services;
 
 public class TransactionService(ITransactionRepository transactionRepository) : ITransactionService
 {
-    public async Task<bool> CreateTransactionAsync(Transaction transaction)
+    public async Task<Transaction> CreateTransactionAsync(Transaction transaction)
     {
         return await transactionRepository.CreateTransactionAsync(transaction);
     }

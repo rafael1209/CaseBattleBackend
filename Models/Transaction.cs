@@ -7,7 +7,7 @@ namespace CaseBattleBackend.Models;
 public class Transaction
 {
     [BsonId]
-    public ObjectId Id { get; set; }
+    public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
 
     [BsonElement("userId")]
     public ObjectId UserId { get; set; }
