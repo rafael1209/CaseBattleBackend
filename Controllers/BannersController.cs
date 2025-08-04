@@ -19,10 +19,9 @@ public class BannersController(IBannerService bannerService) : Controller
 
             return Ok(banners);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e.Message);
-            return NotFound(new { message = e.Message });
+            return BadRequest();
         }
     }
 

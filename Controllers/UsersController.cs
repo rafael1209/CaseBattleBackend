@@ -3,7 +3,6 @@ using CaseBattleBackend.Middlewares;
 using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace CaseBattleBackend.Controllers;
 
@@ -23,10 +22,9 @@ public class UsersController(IUserService userService) : Controller
 
             return Ok(userInfo);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
-            return BadRequest(new { message = e.Message });
+            return BadRequest();
         }
     }
 
@@ -43,10 +41,9 @@ public class UsersController(IUserService userService) : Controller
 
             return Ok(inventoryItems);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
-            return BadRequest(new { message = e.Message });
+            return BadRequest();
         }
     }
 
@@ -63,10 +60,9 @@ public class UsersController(IUserService userService) : Controller
 
             return Ok();
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
-            return BadRequest(new { message = e.Message });
+            return BadRequest();
         }
     }
 }

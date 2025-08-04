@@ -2,16 +2,16 @@
 using CaseBattleBackend.Middlewares;
 using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
-using CaseBattleBackend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CaseBattleBackend.Controllers;
 
 [Route("api/v1/payments")]
-public class PaymentController(IUserService userService, WebSocketServerService webSocket) : Controller
+public class PaymentController(IUserService userService) : Controller
 {
     [HttpPost("deposit")]
     [AuthMiddleware]
+    [RateLimit(5)]
     public async Task<IActionResult> Donate([FromBody] DepositRequest deposit)
     {
         var jwtData = HttpContext.Items["@me"] as JwtData
@@ -23,16 +23,15 @@ public class PaymentController(IUserService userService, WebSocketServerService 
 
             return Ok(response);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
-
-            return BadRequest(new { message = e.Message });
+            return BadRequest();
         }
     }
 
     [HttpPost("withdraw")]
     [AuthMiddleware]
+    [RateLimit(5)]
     public async Task<IActionResult> Withdraw([FromBody] WithdrawRequest withdraw)
     {
         var jwtData = HttpContext.Items["@me"] as JwtData
@@ -44,11 +43,9 @@ public class PaymentController(IUserService userService, WebSocketServerService 
 
             return Ok();
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
-
-            return BadRequest(new { message = e.Message });
+            return BadRequest();
         }
     }
 

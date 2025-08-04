@@ -25,8 +25,6 @@ public class AdminController(IUserService userService, ITokenService tokenServic
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-
             return BadRequest(new { message = e.Message });
         }
     }

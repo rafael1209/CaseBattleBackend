@@ -20,10 +20,9 @@ public class CasesController(ICaseService caseService) : Controller
 
             return Ok(caseData);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e.Message);
-            return NotFound(new { message = e.Message });
+            return BadRequest();
         }
     }
 
@@ -42,7 +41,6 @@ public class CasesController(ICaseService caseService) : Controller
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
             return BadRequest(new { message = e.Message });
         }
     }
@@ -57,10 +55,9 @@ public class CasesController(ICaseService caseService) : Controller
 
             return Ok(new { cases });
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
-            return BadRequest(new { message = e.Message });
+            return BadRequest();
         }
     }
 
@@ -76,7 +73,6 @@ public class CasesController(ICaseService caseService) : Controller
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
             return BadRequest(new { message = e.Message });
         }
     }

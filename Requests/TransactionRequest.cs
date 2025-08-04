@@ -6,13 +6,13 @@ namespace CaseBattleBackend.Requests;
 public class TransactionRequest
 {
     [JsonPropertyName("items")]
-    public List<Item> Items { get; set; }
+    public List<Item>? Items { get; set; }
 
     [JsonPropertyName("redirectUrl")]
-    public string RedirectUrl { get; set; }
+    public string? RedirectUrl { get; set; }
 
     [JsonPropertyName("webhookUrl")]
-    public string WebhookUrl { get; set; }
+    public string? WebhookUrl { get; set; }
 
     [JsonPropertyName("data")]
     [MaxLength(100)]

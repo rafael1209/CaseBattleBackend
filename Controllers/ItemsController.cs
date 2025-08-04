@@ -11,20 +11,34 @@ namespace CaseBattleBackend.Controllers;
 public class ItemsController(IItemService itemService) : Controller
 {
     [HttpGet]
-    [AuthMiddleware]
+    [AuthMiddleware(PermissionLevel.Admin)]
     public async Task<IActionResult> GetItems()
     {
-        var items = await itemService.GetItems();
+        try
+        {
+            var items = await itemService.GetItems();
 
-        return Ok(new { items });
+            return Ok(new { items });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new { message = e.Message });
+        }
     }
 
     [HttpPost]
     [AuthMiddleware(PermissionLevel.Admin)]
     public async Task<IActionResult> Create([FromForm] CreateItemRequest request)
     {
-        var item = await itemService.Create(request);
+        try
+        {
+            var item = await itemService.Create(request);
 
-        return Ok(new { item });
+            return Ok(new { item });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new { message = e.Message });
+        }
     }
 }

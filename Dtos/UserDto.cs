@@ -2,7 +2,7 @@
 
 public class UserDto
 {
-    public string Id { get; set; }
-    public string Username { get; set; }
-    public Uri AvatarUrl { get; set; }
+    public string? Id { get; set; }
+    public string? Username { get; set; }
+    public Uri? AvatarUrl { get; set; }
 }

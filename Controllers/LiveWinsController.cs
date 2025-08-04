@@ -7,12 +7,19 @@ namespace CaseBattleBackend.Controllers;
 [Route("api/v1/game-results")]
 public class LiveWinsController(IGameResult gameResult) : Controller
 {
-    [AuthMiddleware]
     [HttpGet]
+    [AuthMiddleware]
     public async Task<IActionResult> GetLiveWins()
     {
-        var wins = await gameResult.GetLastWins();
+        try
+        {
+            var wins = await gameResult.GetLastWins();
 
-        return Ok(new { wins });
+            return Ok(new { wins });
+        }
+        catch (Exception)
+        {
+            return BadRequest();
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using CaseBattleBackend.Database;
+using CaseBattleBackend.Database;
 using CaseBattleBackend.Helpers;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Repositories;
@@ -61,11 +61,15 @@ public class Startup
 
         services.AddCors(options =>
         {
-            options.AddPolicy("AllowAll", builder =>
+            options.AddPolicy("AllowSpecificOrigins", builder =>
             {
-                builder.AllowAnyMethod()
-                    .AllowAnyOrigin()
-                    .AllowAnyHeader();
+                builder.WithOrigins(
+                        "https://diamond-drop-spm.vercel.app",
+                        "https://spworlds.ru"
+                    )
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
             });
         });
     }
@@ -85,7 +89,7 @@ public class Startup
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.UseCors("AllowAll");
+        app.UseCors("AllowSpecificOrigins");
 
         app.UseEndpoints(endpoints =>
         {
