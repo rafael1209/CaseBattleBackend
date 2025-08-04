@@ -9,4 +9,5 @@ public interface IBannerService
     Task<List<BannerView>> GetBanners();
     Task<BannerView> CreateBanner(CreateBannerRequest bannerRequest);
     Task DeleteBanner(string id);
+    Task IncrementClickCount(string id);
 }

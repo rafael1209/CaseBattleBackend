@@ -58,4 +58,21 @@ public class BannersController(IBannerService bannerService) : Controller
             return NotFound(new { message = e.Message });
         }
     }
+
+    [HttpPost("{id}/click")]
+    [AuthMiddleware]
+    public async Task<IActionResult> IncrementClickCount(string id)
+    {
+        try
+        {
+            await bannerService.IncrementClickCount(id);
+
+            return Ok(new { message = "Banner click count incremented successfully." });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return NotFound(new { message = e.Message });
+        }
+    }
 }

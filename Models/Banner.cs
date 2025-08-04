@@ -16,4 +16,7 @@ public class Banner
 
     [BsonElement("createdAt")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    [BsonElement("clickCount")]
+    public int ClickCount { get; set; } = 0;
 }

@@ -42,4 +42,16 @@ public class BannerRepository(IMongoDbContext context) : IBannerRepository
             throw new Exception("Banner not found or already deleted.");
         }
     }
+
+    public async Task IncrementClickCount(ObjectId id)
+    {
+        var filter = Builders<Banner>.Filter.Eq(b => b.Id, id);
+        var update = Builders<Banner>.Update.Inc(b => b.ClickCount, 1);
+        var result = await _banners.UpdateOneAsync(filter, update);
+        
+        if (result.MatchedCount == 0)
+        {
+            throw new Exception("Banner not found.");
+        }
+    }
 }

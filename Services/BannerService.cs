@@ -19,7 +19,8 @@ public class BannerService(IBannerRepository bannerRepository, IStorageService s
         {
             Id = banner.Id.ToString(),
             ImageUrl = await storageService.GetFileUrl(banner.ImageId),
-            Url = banner.Url
+            Url = banner.Url,
+            ClickCount = banner.ClickCount
         };
     }
 
@@ -31,7 +32,8 @@ public class BannerService(IBannerRepository bannerRepository, IStorageService s
         {
             Id = b.Id.ToString(),
             ImageUrl = await storageService.GetFileUrl(b.ImageId),
-            Url = b.Url
+            Url = b.Url,
+            ClickCount = b.ClickCount
         });
 
         var bannerViews = await Task.WhenAll(tasks);
@@ -52,7 +54,8 @@ public class BannerService(IBannerRepository bannerRepository, IStorageService s
         {
             Id = banner.Id.ToString(),
             ImageUrl = await storageService.GetFileUrl(file.Id),
-            Url = bannerRequest.Url
+            Url = bannerRequest.Url,
+            ClickCount = banner.ClickCount
         };
     }
 
@@ -65,5 +68,13 @@ public class BannerService(IBannerRepository bannerRepository, IStorageService s
         await storageService.DeleteFile(banner.ImageId);
 
         await bannerRepository.Delete(objectId);
+    }
+
+    public async Task IncrementClickCount(string id)
+    {
+        if (!ObjectId.TryParse(id, out var objectId))
+            throw new ArgumentException("Invalid banner ID format.");
+
+        await bannerRepository.IncrementClickCount(objectId);
     }
 }

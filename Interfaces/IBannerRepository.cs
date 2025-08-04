@@ -9,4 +9,5 @@ public interface IBannerRepository
     Task<Banner> GetById(ObjectId id);
     Task<Banner> Create(Banner banner);
     Task Delete(ObjectId id);
+    Task IncrementClickCount(ObjectId id);
 }
