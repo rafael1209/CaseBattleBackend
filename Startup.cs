@@ -56,6 +56,7 @@ public class Startup
         services.AddScoped<IMinecraftAssets, MinecraftAssets>();
         services.AddScoped<IBannerService, BannerService>();
         services.AddScoped<ITransactionService, TransactionService>();
+        services.AddScoped<IUpgradeService, UpgradeService>();
 
         services.AddSingleton<WebSocketServerService>();
         services.AddHostedService(provider => provider.GetRequiredService<WebSocketServerService>());

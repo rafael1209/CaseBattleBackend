@@ -9,7 +9,6 @@ public class LiveWinsController(IGameResult gameResult) : Controller
 {
     [HttpGet]
     [AuthMiddleware]
-    [RateLimit(10)]
     public async Task<IActionResult> GetLiveWins()
     {
         try

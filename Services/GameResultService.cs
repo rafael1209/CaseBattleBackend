@@ -65,6 +65,10 @@ public class GameResultService(
         foreach (var game in gameResults)
         {
             var item = await itemRepository.GetById(game.ItemId);
+
+            if (item is null)
+                continue;
+
             liveWins.Add(new LiveWin
             {
                 Item = new CaseItemView

@@ -110,6 +110,11 @@ public class UserService(
         await userRepository.AddToInventory(userId, items.Select(i => ObjectId.Parse(i.Id)).ToList());
     }
 
+    public Task RemoveFromInventory(User user, ObjectId itemId, int quantity = 1)
+    {
+        return userRepository.RemoveFromInventory(user, itemId, quantity);
+    }
+
     public async Task SellItem(string userId, string itemId, int quantity = 1)
     {
         if (!ObjectId.TryParse(itemId, out var id))
@@ -124,7 +129,7 @@ public class UserService(
         var user = await userRepository.GetById(userIdObj)
                    ?? throw new Exception("User not found.");
 
-        var inventoryItem = user.Items.FirstOrDefault(i => i.Id == id);
+        var inventoryItem = user.Inventory.FirstOrDefault(i => i.Id == id);
 
         if (inventoryItem == null || inventoryItem.Amount < quantity)
             throw new Exception("Item not found in inventory or insufficient quantity.");

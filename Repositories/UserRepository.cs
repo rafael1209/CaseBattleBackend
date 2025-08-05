@@ -57,7 +57,7 @@ public class UserRepository(IMongoDbContext context) : IUserRepository
         var filter = Builders<User>.Filter.Eq(u => u.Id, id);
         var user = await _users.Find(filter).FirstOrDefaultAsync();
 
-        var items = user.Items
+        var items = user.Inventory
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToList();
@@ -72,32 +72,32 @@ public class UserRepository(IMongoDbContext context) : IUserRepository
 
         foreach (var itemId in newItems)
         {
-            var existingItem = user.Items.FirstOrDefault(i => i.Id == itemId);
+            var existingItem = user.Inventory.FirstOrDefault(i => i.Id == itemId);
             if (existingItem != null)
             {
                 existingItem.Amount++;
             }
             else
             {
-                user.Items.Add(new InventoryItem(itemId, 1));
+                user.Inventory.Add(new InventoryItem(itemId, 1));
             }
         }
 
-        var update = Builders<User>.Update.Set(u => u.Items, user.Items);
+        var update = Builders<User>.Update.Set(u => u.Inventory, user.Inventory);
         await _users.UpdateOneAsync(u => u.Id == userId, update);
     }
 
     public async Task RemoveFromInventory(User user, ObjectId itemId, int quantity = 1)
     {
-        var existingItem = user.Items.FirstOrDefault(i => i.Id == itemId);
+        var existingItem = user.Inventory.FirstOrDefault(i => i.Id == itemId);
         if (existingItem == null) return;
 
         if (existingItem.Amount - quantity <= 0)
-            user.Items.Remove(existingItem);
+            user.Inventory.Remove(existingItem);
         else
             existingItem.Amount -= quantity;
 
-        var update = Builders<User>.Update.Set(u => u.Items, user.Items);
+        var update = Builders<User>.Update.Set(u => u.Inventory, user.Inventory);
         await _users.UpdateOneAsync(u => u.Id == user.Id, update);
     }
 

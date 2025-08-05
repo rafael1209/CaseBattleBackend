@@ -6,7 +6,10 @@ using MongoDB.Bson;
 
 namespace CaseBattleBackend.Services;
 
-public class ItemService(IItemRepository itemRepository, IStorageService storageService, IMinecraftAssets minecraftAssets) : IItemService
+public class ItemService(
+    IItemRepository itemRepository,
+    IStorageService storageService,
+    IMinecraftAssets minecraftAssets) : IItemService
 {
     public async Task<CaseItem> Create(CreateItemRequest request)
     {
@@ -25,9 +28,9 @@ public class ItemService(IItemRepository itemRepository, IStorageService storage
         });
     }
 
-    public async Task<List<CaseItemView>> GetItems()
+    public async Task<List<CaseItemView>> GetItems(int fromPrice = 0, int page = 1, int pageSize = 20)
     {
-        var items = await itemRepository.Get();
+        var items = await itemRepository.Get(fromPrice, page, pageSize);
 
         var itemDtos = await Task.WhenAll(items.Select(async item => new CaseItemView
         {
@@ -43,5 +46,13 @@ public class ItemService(IItemRepository itemRepository, IStorageService storage
         }));
 
         return itemDtos.ToList();
+    }
+
+    public async Task<CaseItem?> GetById(string id)
+    {
+        if (!ObjectId.TryParse(id, out var objectId))
+            return null;
+
+        return await itemRepository.GetById(objectId);
     }
 }

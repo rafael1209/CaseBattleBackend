@@ -34,21 +34,16 @@ public class ItemRepository(IMongoDbContext context) : IItemRepository
             .ToListAsync();
     }
 
-    public async Task<List<CaseItem>> Get()
+    public async Task<List<CaseItem>> Get(int fromPrice = 0, int page = 1, int pageSize = 20)
     {
+        if (page < 1) page = 1;
+        if (pageSize is < 1 or > 20) pageSize = 20;
+
         return await _items
-            .Find(_ => true)
+            .Find(i => i.Price >= fromPrice)
             .SortBy(i => i.Price)
+            .Skip((page - 1) * pageSize)
+            .Limit(pageSize)
             .ToListAsync();
-    }
-
-    public async Task AddToInventory(ObjectId userId, List<InventoryItem> items)
-    {
-        var userFilter = Builders<User>.Filter.Eq(u => u.Id, userId);
-        var update = Builders<User>.Update.PushEach(u => u.Items, items);
-        var result = await context.UsersCollection.UpdateOneAsync(userFilter, update);
-
-        if (result.ModifiedCount == 0)
-            throw new Exception("Failed to add items to inventory.");
     }
 }

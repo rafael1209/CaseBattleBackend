@@ -71,7 +71,11 @@ public class CaseService(
 
         var caseItems = new List<CaseItem>();
         foreach (var itemId in caseData.Items)
-            caseItems.Add(await itemRepository.GetById(itemId));
+        {
+            var item = await itemRepository.GetById(itemId) ?? throw new Exception("Can't find case item");
+
+            caseItems.Add(item);
+        }
 
         var caseView = new CaseViewDto
         {
@@ -114,7 +118,11 @@ public class CaseService(
 
         var allCaseItems = new List<CaseItem>();
         foreach (var itemId in caseData.Items)
-            allCaseItems.Add(await itemRepository.GetById(itemId));
+        {
+            var item = await itemRepository.GetById(itemId) ?? throw new Exception("Can't find case item");
+
+            allCaseItems.Add(item);
+        }
 
         var caseItemsWithChances = await GetCaseItems(allCaseItems, caseData.RtpPercentage, caseData.Price);
 

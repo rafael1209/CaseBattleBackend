@@ -15,6 +15,7 @@ public interface IUserService
     Task<bool> UpdateBalance(ObjectId id, double amount);
     Task<List<InventoryItemView>> GetInventoryItems(string userId, int page = 1, int pageSize = 32);
     Task AddToInventory(ObjectId userId, List<CaseItemView> items);
+    Task RemoveFromInventory(User user, ObjectId itemId, int quantity = 1);
     Task SellItem(string userId, string itemId, int quantity);
     Task Withdraw(string userId, string cardId, int amount);
     Task<PaymentResponse> CreatePayment(string userId, int amount);

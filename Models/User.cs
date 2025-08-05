@@ -18,7 +18,7 @@ public class User
     public double Balance { get; set; }
 
     [BsonElement("inventory")]
-    public List<InventoryItem> Items { get; set; } = [];
+    public List<InventoryItem> Inventory { get; set; } = [];
 
     [BsonElement("authToken")]
     public required string AuthToken { get; set; }
