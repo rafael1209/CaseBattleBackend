@@ -70,26 +70,35 @@ public class UserService(
         var items = await userRepository.GetInventoryItems(userIdObj, page, pageSize);
 
         var inventoryItems = new List<InventoryItemView>();
+
         foreach (var item in items)
         {
             var itemData = await itemRepository.GetById(item.Id);
+
             var inventoryItemView = new InventoryItemView
             {
-                Item = new CaseItemView
+                Item = itemData != null ? new CaseItemView
                 {
                     Id = itemData.Id.ToString(),
                     Name = itemData.Name,
                     Description = itemData.Description,
-                    ImageUrl = itemData.ImageId is not null
-                        ? await storageService.GetFileUrl(itemData.ImageId)
-                        : itemData.MinecraftId is not null ? await minecraftAssets.GetItemImageAsync(itemData.MinecraftId) : null,
+                    ImageUrl = itemData.ImageId is not null ? await storageService.GetFileUrl(itemData.ImageId) : itemData.MinecraftId is not null ? await minecraftAssets.GetItemImageAsync(itemData.MinecraftId) : null,
                     Amount = itemData.Amount,
                     Price = itemData.Price,
-                    PercentChance = 100,
                     Rarity = itemData.Rarity,
+                } : new CaseItemView
+                {
+                    Id = string.Empty,
+                    Name = "Предмет не найден",
+                    Description = "Свяжитесь с Тех. Поддержкой",
+                    ImageUrl = await minecraftAssets.GetItemImageAsync("barrier"),
+                    Amount = 0,
+                    Price = 0,
+                    Rarity = Rarity.Common
                 },
                 Amount = item.Amount
             };
+
             inventoryItems.Add(inventoryItemView);
         }
 

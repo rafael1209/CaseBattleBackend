@@ -16,11 +16,11 @@ public class ItemRepository(IMongoDbContext context) : IItemRepository
         return item;
     }
 
-    public async Task<CaseItem> GetById(ObjectId id)
+    public async Task<CaseItem?> GetById(ObjectId id)
     {
         var filter = Builders<CaseItem>.Filter.Eq(u => u.Id, id);
 
-        return await _items.Find(filter).FirstAsync();
+        return await _items.Find(filter).FirstOrDefaultAsync();
     }
 
     public async Task<List<CaseItem>> GetTopByMaxPrice(double maxPrice, int limit)

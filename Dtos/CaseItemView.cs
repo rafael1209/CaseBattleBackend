@@ -11,7 +11,7 @@ public class CaseItemView
     public Uri? ImageUrl { get; set; }
     public int Amount { get; set; }
     public double Price { get; set; }
-    public double PercentChance { get; set; }
+    public double? PercentChance { get; set; }
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public required Rarity Rarity { get; set; }
 }
