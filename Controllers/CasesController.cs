@@ -28,6 +28,7 @@ public class CasesController(ICaseService caseService) : Controller
 
     [HttpPost("{caseId}/opens")]
     [AuthMiddleware]
+    [RateLimit(30)]
     public async Task<IActionResult> OpenCase(string caseId, [FromQuery] int amount = 1, [FromQuery] bool demo = false)
     {
         try
