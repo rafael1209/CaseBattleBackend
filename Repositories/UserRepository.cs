@@ -39,7 +39,7 @@ public class UserRepository(IMongoDbContext context) : IUserRepository
         return await _users.Find(filter).FirstOrDefaultAsync();
     }
 
-    public async Task<bool> UpdateBalance(ObjectId id, double amount)
+    public async Task<bool> UpdateBalance(ObjectId id, decimal amount)
     {
         var filter = Builders<User>.Filter.And(
             Builders<User>.Filter.Eq(u => u.Id, id),

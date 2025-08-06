@@ -25,7 +25,7 @@ public class GameResult
     public required double Bet { get; set; }
 
     [BsonElement("winMoney")]
-    public required double WinMoney { get; set; }
+    public required decimal WinMoney { get; set; }
 
     [BsonElement("dropChance")]
     public required double DropChance { get; set; }

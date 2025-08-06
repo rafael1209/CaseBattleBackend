@@ -163,9 +163,9 @@ public class CaseService(
         return resultItems;
     }
 
-    private async Task<List<CaseItemView>> GetCaseItems(List<CaseItem> items, int rtp, int casePrice)
+    private async Task<List<CaseItemView>> GetCaseItems(List<CaseItem> items, int rtp, decimal casePrice)
     {
-        var cheepItems = await itemRepository.GetTopByMaxPrice(0.5, 10);
+        var cheepItems = await itemRepository.GetTopByMaxPrice(0.5m, 10);
 
         var allItems = new List<CaseItem>(items);
         var existingIds = new HashSet<string>(allItems.Select(i => i.Id.ToString()));
@@ -187,9 +187,9 @@ public class CaseService(
         return null;
     }
 
-    private async Task<List<CaseItemView>> CalculateItemDropChancesByRtp(List<CaseItem> items, double rtp, double casePrice)
+    private async Task<List<CaseItemView>> CalculateItemDropChancesByRtp(List<CaseItem> items, double rtp, decimal casePrice)
     {
-        var targetTotalExpectedValue = casePrice * (rtp / 100.0);
+        var targetTotalExpectedValue = (double)casePrice * (rtp / 100.0);
 
         var minPower = 0.01;
         var maxPower = 5.0;
@@ -206,9 +206,9 @@ public class CaseService(
 
             foreach (var item in items)
             {
-                var weight = Math.Pow(1.0 / item.Price, currentPower);
+                var weight = Math.Pow(1.0 / (double)item.Price, currentPower);
                 sumWeights += weight;
-                sumWeightedValues += weight * item.Price;
+                sumWeightedValues += weight * (double)item.Price;
             }
 
             if (sumWeights == 0)
@@ -229,13 +229,13 @@ public class CaseService(
             bestPower = currentPower;
         }
 
-        var finalSumWeights = items.Sum(item => Math.Pow(1.0 / item.Price, bestPower));
+        var finalSumWeights = items.Sum(item => Math.Pow(1.0 / (double)item.Price, bestPower));
 
         var tasks = items.Select(async item =>
         {
             var imageUrl = await GetItemImageUrlAsync(item);
 
-            var weight = finalSumWeights == 0 ? 1 : Math.Pow(1.0 / item.Price, bestPower);
+            var weight = finalSumWeights == 0 ? 1 : Math.Pow(1.0 / (double)item.Price, bestPower);
 
             var percentChance = finalSumWeights == 0 ? 100.0 / items.Count : (weight / finalSumWeights) * 100.0;
 
@@ -255,5 +255,4 @@ public class CaseService(
         var result = await Task.WhenAll(tasks);
         return result.ToList();
     }
-
 }

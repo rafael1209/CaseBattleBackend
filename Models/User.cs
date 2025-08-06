@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+﻿    using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace CaseBattleBackend.Models;
@@ -15,7 +15,7 @@ public class User
     public required string Username { get; set; }
 
     [BsonElement("balance")]
-    public double Balance { get; set; }
+    public decimal Balance { get; set; }
 
     [BsonElement("inventory")]
     public List<InventoryItem> Inventory { get; set; } = [];

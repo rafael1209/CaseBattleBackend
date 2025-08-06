@@ -23,7 +23,7 @@ public class ItemRepository(IMongoDbContext context) : IItemRepository
         return await _items.Find(filter).FirstOrDefaultAsync();
     }
 
-    public async Task<List<CaseItem>> GetTopByMaxPrice(double maxPrice, int limit)
+    public async Task<List<CaseItem>> GetTopByMaxPrice(decimal maxPrice, int limit)
     {
         var filter = Builders<CaseItem>.Filter.Lte(i => i.Price, maxPrice);
 

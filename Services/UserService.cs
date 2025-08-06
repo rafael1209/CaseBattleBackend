@@ -54,7 +54,7 @@ public class UserService(
         return userInfo;
     }
 
-    public async Task<bool> UpdateBalance(ObjectId id, double amount)
+    public async Task<bool> UpdateBalance(ObjectId id, decimal amount)
     {
         return await userRepository.UpdateBalance(id, amount);
     }
@@ -219,7 +219,7 @@ public class UserService(
 
         await transactionService.UpdateTransactionStatusAsync(paymentId, TransactionStatus.Success);
 
-        await UpdateBalance(userId, (int)notification.Amount);
+        await UpdateBalance(userId, (decimal)notification.Amount);
     }
 
     public async Task SetAccess(JwtData userData, SetAccessRequest request)

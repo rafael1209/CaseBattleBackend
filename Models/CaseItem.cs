@@ -25,8 +25,8 @@ public class CaseItem
     public required int Amount { get; set; }
 
     [BsonElement("price")]
-    public required double Price { get; set; }
-
+    public required decimal Price { get; set; }
+        
     [BsonElement("rarity")]
     [BsonRepresentation(BsonType.String)]
     public required Rarity Rarity { get; set; }

@@ -7,11 +7,11 @@ namespace CaseBattleBackend.Services;
 
 public class UpgradeService(IUserService userService, IItemService itemService) : IUpgradeService
 {
-    public async Task<UpdateConfig> GetConfig()
+    public Task<UpdateConfig> GetConfig()
     {
         var config = new UpdateConfig { Rtp = 80 };
 
-        return config;
+        return Task.FromResult(config);
     }
 
     public async Task<List<CaseItemView>> GetItems(int minPrice = 0, int page = 1, int pageSize = 20)
@@ -31,7 +31,7 @@ public class UpgradeService(IUserService userService, IItemService itemService) 
         if (selectedItemIds.Any(id => !inventoryItemIds.Contains(id)))
             throw new Exception("One or more selected items not found in user's inventory.");
 
-        double totalPrice = 0;
+        var totalPrice = 0m;
         var selectedIds = new List<ObjectId>();
         foreach (var selectedItemId in selectedItemIds)
         {

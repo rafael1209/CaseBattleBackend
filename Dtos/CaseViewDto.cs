@@ -1,4 +1,4 @@
-﻿namespace CaseBattleBackend.Dtos;
+﻿    namespace CaseBattleBackend.Dtos;
 
 public class CaseViewDto
 {

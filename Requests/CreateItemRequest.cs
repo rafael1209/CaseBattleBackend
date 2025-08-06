@@ -10,5 +10,5 @@ public class CreateItemRequest
     public IFormFile? File { get; set; }
     public Rarity Rarity { get; set; }
     public int Amount { get; set; }
-    public double Price { get; set; }
+    public decimal Price { get; set; }
 }

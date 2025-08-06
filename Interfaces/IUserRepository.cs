@@ -10,7 +10,7 @@ public interface IUserRepository
     Task<User?> TryGetByAuthToken(string authToken);
     Task<User> Create(User user);
     Task<User?> GetById(ObjectId id);
-    Task<bool> UpdateBalance(ObjectId id, double amount);
+    Task<bool> UpdateBalance(ObjectId id, decimal amount);
     Task<List<InventoryItem>> GetInventoryItems(ObjectId id, int page = 1, int pageSize = 32);
     Task AddToInventory(ObjectId userId, List<ObjectId> items);
     Task RemoveFromInventory(User user, ObjectId itemId, int quantity = 1);
