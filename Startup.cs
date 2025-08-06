@@ -68,7 +68,7 @@ public class Startup
                 builder.WithOrigins(
                         "https://diamond-drop-spm.vercel.app",
                         "https://spworlds.ru",
-                        "https://preview--casecraft-admin.lovable.app"
+                        "https://diamonddrop-admin.vercel.app"
                     )
                     .AllowAnyMethod()
                     .AllowAnyHeader()
