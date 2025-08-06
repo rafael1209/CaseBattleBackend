@@ -12,11 +12,11 @@ public class ItemsController(IItemService itemService) : Controller
 {
     [HttpGet]
     [AuthMiddleware(PermissionLevel.Admin)]
-    public async Task<IActionResult> GetItems()
+    public async Task<IActionResult> GetItems([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
     {
         try
         {
-            var items = await itemService.GetItems();
+            var items = await itemService.GetItems(0, page, pageSize);
 
             return Ok(new { items });
         }
