@@ -13,14 +13,16 @@ public class ItemService(
 {
     public async Task<CaseItem> Create(CreateItemRequest request)
     {
-        var file = await storageService.UploadFile(request.File, request.File.FileName);
+        FileDto? file = null;
+        if (request.File is not null)
+            file = await storageService.UploadFile(request.File, request.File.FileName);
 
         return await itemRepository.Create(new CaseItem
         {
             Id = ObjectId.GenerateNewId(),
             Name = request.Name,
             Description = request.Description,
-            ImageId = file.Id,
+            ImageId = file?.Id,
             MinecraftId = request.MinecraftId,
             Amount = request.Amount,
             Price = request.Price,
