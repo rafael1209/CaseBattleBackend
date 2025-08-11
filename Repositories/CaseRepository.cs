@@ -22,14 +22,10 @@ public class CaseRepository(IMongoDbContext context) : ICaseRepository
         var skip = (page - 1) * pageSize;
 
         var casesCursor = await _cases.FindAsync(_ => true, new FindOptions<Case>
-        {
-            Skip = skip,
-            Limit = pageSize
-        });
+        { Skip = skip, Limit = pageSize });
 
         return await casesCursor.ToListAsync();
     }
-
 
     public async Task<Case?> GetById(ObjectId id)
     {
