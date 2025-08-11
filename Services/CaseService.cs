@@ -95,7 +95,7 @@ public class CaseService(
         if (!ObjectId.TryParse(caseId, out var objectId))
             throw new ArgumentException("Invalid Case ID format.", nameof(caseId));
 
-        if (amount is <= 0 or > 4 && userId != "688c97431e463ba17c65d811") //TODO: remove this check after testing
+        if (amount is <= 0 or > 4)
             throw new ArgumentException("Amount must be between 1 and 4.", nameof(amount));
 
         if (!ObjectId.TryParse(userId, out var id))
