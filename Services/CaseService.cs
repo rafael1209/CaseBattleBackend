@@ -165,15 +165,14 @@ public class CaseService(
 
     private async Task<List<CaseItemView>> GetCaseItems(List<CaseItem> items, int rtp, decimal casePrice)
     {
-        var cheepItems = await itemRepository.GetTopByMaxPrice(0.5m, 10);
+        var cheapestItem = items.OrderBy(i => i.Price).FirstOrDefault();
 
-        var allItems = new List<CaseItem>(items);
-        var existingIds = new HashSet<string>(allItems.Select(i => i.Id.ToString()));
-        var newItems = cheepItems.Where(i => !existingIds.Contains(i.Id.ToString()));
+        var itemPrice = cheapestItem?.Price ?? 0;
 
-        allItems.AddRange(newItems);
+        if (cheapestItem == null || itemPrice > casePrice)
+            throw new Exception("No items found in the case.");
 
-        return await CalculateItemDropChancesByRtp(allItems, rtp, casePrice);
+        return await CalculateItemDropChancesByRtp(items, rtp, casePrice);
     }
 
     private async Task<Uri?> GetItemImageUrlAsync(CaseItem item)
