@@ -16,6 +16,13 @@ public class ItemRepository(IMongoDbContext context) : IItemRepository
         return item;
     }
 
+    public async Task Delete(ObjectId id)
+    {
+        var filter = Builders<CaseItem>.Filter.Eq(u => u.Id, id);
+
+        await _items.DeleteOneAsync(filter);
+    }
+
     public async Task<CaseItem?> GetById(ObjectId id)
     {
         var filter = Builders<CaseItem>.Filter.Eq(u => u.Id, id);

@@ -30,6 +30,19 @@ public class ItemService(
         });
     }
 
+    public async Task Delete(string id)
+    {
+        if (!ObjectId.TryParse(id, out var itemId))
+            throw new ArgumentException("Invalid ObjectId format", nameof(id));
+
+        var item = await itemRepository.GetById(itemId) ??
+            throw new ArgumentException($"Item with ID {id} not found.", nameof(id));
+
+        if (item.ImageId != null) await storageService.DeleteFile(item.ImageId);
+
+        await itemRepository.Delete(itemId);
+    }
+
     public async Task<List<CaseItemView>> GetItems(int fromPrice = 0, int page = 1, int pageSize = 20)
     {
         var items = await itemRepository.Get(fromPrice, page, pageSize);

@@ -41,4 +41,20 @@ public class ItemsController(IItemService itemService) : Controller
             return BadRequest(new { message = e.Message });
         }
     }
+
+    [HttpDelete("{id}")]
+    [AuthMiddleware(PermissionLevel.Admin)]
+    public async Task<IActionResult> Delete([FromRoute] string id)
+    {
+        try
+        {
+            await itemService.Delete(id);
+
+            return Ok(new { message = "Succeed deleted." });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new { message = e.Message });
+        }
+    }
 }
