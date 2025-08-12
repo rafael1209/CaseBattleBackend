@@ -53,11 +53,14 @@ public class ItemService(
             Name = item.Name,
             Description = item.Description,
             ImageUrl = item.ImageId != null
-                ? await storageService.GetFileUrl(item.ImageId) : item.MinecraftId != null
-                    ? await minecraftAssets.GetItemImageAsync(item.MinecraftId) : null,
+                ? await storageService.GetFileUrl(item.ImageId)
+                : item.MinecraftId != null
+                    ? await minecraftAssets.GetItemImageAsync(item.MinecraftId)
+                    : null,
             Amount = item.Amount,
             Price = item.Price,
-            Rarity = item.Rarity
+            Rarity = item.Rarity,
+            IsWithdrawable = item.MinecraftId != null
         }));
 
         return itemDtos.ToList();

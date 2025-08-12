@@ -243,11 +243,12 @@ public class CaseService(
                 Id = item.Id.ToString(),
                 Name = item.Name,
                 Description = item.Description,
-                ImageUrl = imageUrl,
+                ImageUrl = imageUrl!,
                 Amount = item.Amount,
                 Price = item.Price,
                 PercentChance = percentChance,
-                Rarity = item.Rarity
+                Rarity = item.Rarity,
+                IsWithdrawable = item.MinecraftId != null
             };
         });
 

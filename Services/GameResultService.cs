@@ -43,17 +43,7 @@ public class GameResultService(
                 ImageUrl = await storageService.GetFileUrl(caseData.ImageId),
                 Price = caseData.Price
             },
-            Item = new CaseItemView
-            {
-                Id = item.Id,
-                Name = item.Name,
-                Description = item.Description,
-                ImageUrl = item.ImageUrl,
-                Amount = item.Amount,
-                Price = item.Price,
-                PercentChance = item.PercentChance,
-                Rarity = item.Rarity
-            }
+            Item = item
         });
     }
 
@@ -76,11 +66,12 @@ public class GameResultService(
                     Id = game.ItemId.ToString(),
                     Name = item.Name,
                     Description = item.Description,
-                    ImageUrl = item.ImageId != null ? await storageService.GetFileUrl(item.ImageId) : item.MinecraftId != null ? await minecraftAssets.GetItemImageAsync(item.MinecraftId) : null,
+                    ImageUrl = item.ImageId != null ? await storageService.GetFileUrl(item.ImageId) : item.MinecraftId != null ? await minecraftAssets.GetItemImageAsync(item.MinecraftId) : null!,
                     Amount = item.Amount,
                     Price = item.Price,
                     PercentChance = game.DropChance,
-                    Rarity = item.Rarity
+                    Rarity = item.Rarity,
+                    IsWithdrawable = item.MinecraftId != null
                 }
             });
         }

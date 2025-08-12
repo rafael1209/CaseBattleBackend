@@ -78,24 +78,31 @@ public class UserService(
             var inventoryItemView = new InventoryItemView
             {
                 Item = itemData != null ? new CaseItemView
-                {
-                    Id = itemData.Id.ToString(),
-                    Name = itemData.Name,
-                    Description = itemData.Description,
-                    ImageUrl = itemData.ImageId is not null ? await storageService.GetFileUrl(itemData.ImageId) : itemData.MinecraftId is not null ? await minecraftAssets.GetItemImageAsync(itemData.MinecraftId) : null,
-                    Amount = itemData.Amount,
-                    Price = itemData.Price,
-                    Rarity = itemData.Rarity,
-                } : new CaseItemView
-                {
-                    Id = string.Empty,
-                    Name = "Предмет не найден",
-                    Description = "Свяжитесь с Тех. Поддержкой",
-                    ImageUrl = await minecraftAssets.GetItemImageAsync("barrier"),
-                    Amount = 0,
-                    Price = 0,
-                    Rarity = Rarity.Common
-                },
+                    {
+                        Id = itemData.Id.ToString(),
+                        Name = itemData.Name,
+                        Description = itemData.Description,
+                        ImageUrl = itemData.ImageId is not null
+                            ? await storageService.GetFileUrl(itemData.ImageId)
+                            : itemData.MinecraftId is not null
+                                ? await minecraftAssets.GetItemImageAsync(itemData.MinecraftId)
+                                : null,
+                        Amount = itemData.Amount,
+                        Price = itemData.Price,
+                        Rarity = itemData.Rarity,
+                        IsWithdrawable = itemData.MinecraftId!=null,
+                    }
+                    : new CaseItemView
+                    {
+                        Id = string.Empty,
+                        Name = "Предмет не найден",
+                        Description = "Свяжитесь с Тех. Поддержкой",
+                        ImageUrl = await minecraftAssets.GetItemImageAsync("barrier"),
+                        Amount = 0,
+                        Price = 0,
+                        Rarity = Rarity.Common,
+                        IsWithdrawable = false
+                    },
                 Amount = item.Amount
             };
 
