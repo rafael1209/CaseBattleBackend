@@ -3,6 +3,9 @@ using CaseBattleBackend.Helpers;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Repositories;
 using CaseBattleBackend.Services;
+using Discord;
+using Discord.Interactions;
+using Discord.WebSocket;
 using Microsoft.OpenApi.Models;
 
 namespace CaseBattleBackend;
@@ -58,8 +61,24 @@ public class Startup
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<IUpgradeService, UpgradeService>();
 
+        services.AddSingleton<IDiscordNotificationService, DiscordNotificationService>();
         services.AddSingleton<WebSocketServerService>();
         services.AddHostedService(provider => provider.GetRequiredService<WebSocketServerService>());
+
+        services.AddSingleton<DiscordSocketClient>(_ => new DiscordSocketClient(new DiscordSocketConfig
+        {
+            GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent | GatewayIntents.GuildMembers,
+            AlwaysDownloadUsers = true
+        }));
+
+        services.AddSingleton<InteractionService>(provider =>
+        {
+            var client = provider.GetRequiredService<DiscordSocketClient>();
+            return new InteractionService(client);
+        });
+
+        services.AddSingleton<DiscordBotHostedService>();
+        services.AddHostedService(provider => provider.GetRequiredService<DiscordBotHostedService>());
 
         services.AddCors(options =>
         {
