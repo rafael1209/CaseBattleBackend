@@ -10,7 +10,7 @@ public static class DiscordEmbedBuilder
     {
         var title = LanguageHelper.GetLocalizedMessage("NewOrderMessage_Title");
         var body = string.Format(LanguageHelper.GetLocalizedMessage("NewOrderMessage_Body"), item.Name,
-            item.Amount * amount, item.Description ?? "none", item.Price);
+            item.Amount * amount, item.Description ?? "none", item.Price * amount);
 
         var embed = new EmbedBuilder()
             .WithTitle(title)
