@@ -8,7 +8,7 @@ using MongoDB.Bson;
 
 namespace CaseBattleBackend.Services;
 
-public class OrderService(IOrderRepository orderRepository, IItemService itemService, IUserService userService, IDiscordNotificationService notificationService) : IOrderService
+public class OrderService(IOrderRepository orderRepository, IItemService itemService, IUserService userService, IDiscordNotificationService notificationService, IMinecraftAssets minecraftAssets, IStorageService storageService) : IOrderService
 {
     public async Task<List<Order>> GetAllOrdersAsync()
     {
@@ -35,7 +35,8 @@ public class OrderService(IOrderRepository orderRepository, IItemService itemSer
         if (!ObjectId.TryParse(request.ItemId, out var itemId))
             throw new ArgumentException(@"Invalid ObjectId format", nameof(request.ItemId));
 
-        var inventoryItem = user.Inventory.Find(item => item.Id == itemId && item.Amount > request.Amount) ??
+        var inventoryItem = user.Inventory
+                .Find(item => item.Id == itemId && item.Amount > 0 && item.Amount >= request.Amount) ??
                    throw new ArgumentException($@"Item with ID {request.ItemId} not found in user's inventory.", nameof(request.ItemId));
 
         var item = await itemService.GetById(request.ItemId) ??
@@ -43,10 +44,21 @@ public class OrderService(IOrderRepository orderRepository, IItemService itemSer
 
         if (item.MinecraftId == null)
             throw new ArgumentException(@"Item is not withdrawable.", nameof(request.ItemId));
-        
+
         await userService.RemoveFromInventory(user, inventoryItem.Id, request.Amount);
 
-        var (embed, components) = DiscordEmbedBuilder.BuildItemWithdraw(user, item, request.Amount);
+        var (embed, components) = DiscordEmbedBuilder.BuildItemWithdraw(user, new CaseItemView
+        {
+            Id = item.Id.ToString(),
+            Name = item.Name,
+            Description = item.Description,
+            ImageUrl = item.ImageId != null ? await storageService.GetFileUrl(item.ImageId) : item.MinecraftId != null ? await minecraftAssets.GetItemImageAsync(item.MinecraftId) : null,
+            Amount = item.Amount,
+            Price = item.Price,
+            PercentChance = 0,
+            Rarity = Rarity.Common,
+            IsWithdrawable = false
+        }, request.Amount);
 
         await notificationService.SendAsync(embed, 1256744815715160064, components);
 

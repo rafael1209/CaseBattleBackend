@@ -118,9 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="NewOrderMessage_Body" xml:space="preserve">
-    <value>Игрок: {0}
-Предмет: {1}
-Сумма: {2}</value>
+    <value>**{0}** `x{1}`
+-# {2}
+
+Вы получите: **{3}** &lt;:ar:1405258723773120603&gt;</value>
   </data>
   <data name="NewOrderMessage_Title" xml:space="preserve">
     <value>📦 Новый заказ на вывод</value>

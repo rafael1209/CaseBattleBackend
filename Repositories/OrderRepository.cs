@@ -25,9 +25,11 @@ public class OrderRepository(IMongoDbContext context) : IOrderRepository
         return order;
     }
 
-    public Task<Order> CreateOrderAsync(Order order)
+    public async Task<Order> CreateOrderAsync(Order order)
     {
-        throw new NotImplementedException();
+        await _orders.InsertOneAsync(order);
+
+        return order;
     }
 
     public Task UpdateOrderAsync(Order order)
