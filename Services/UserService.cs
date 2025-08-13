@@ -36,7 +36,7 @@ public class UserService(
     public async Task<UserInfo> GetUserInfo(string userId)
     {
         if (!ObjectId.TryParse(userId, out var objectId))
-            throw new ArgumentException("Invalid ObjectId format", nameof(userId));
+            throw new ArgumentException(@"Invalid ObjectId format", nameof(userId));
 
         var user = await userRepository.GetById(objectId) ?? throw new Exception("User not found.");
         var permission = tokenService.GetUserPermissionFromToken(user.AuthToken);
@@ -62,7 +62,7 @@ public class UserService(
     public async Task<List<InventoryItemView>> GetInventoryItems(string userId, int page = 1, int pageSize = 32)
     {
         if (!ObjectId.TryParse(userId, out var userIdObj))
-            throw new ArgumentException("Invalid ObjectId format", nameof(userId));
+            throw new ArgumentException(@"Invalid ObjectId format", nameof(userId));
 
         if (page < 1) page = 1;
         if (pageSize is < 1 or > 100) pageSize = 10;
@@ -125,10 +125,10 @@ public class UserService(
     public async Task SellItem(string userId, string itemId, int quantity = 1)
     {
         if (!ObjectId.TryParse(itemId, out var id))
-            throw new ArgumentException("Invalid ObjectId format", nameof(itemId));
+            throw new ArgumentException(@"Invalid ObjectId format", nameof(itemId));
 
         if (!ObjectId.TryParse(userId, out var userIdObj))
-            throw new ArgumentException("Invalid ObjectId format", nameof(userId));
+            throw new ArgumentException(@"Invalid ObjectId format", nameof(userId));
 
         if (quantity <= 0)
             throw new ArgumentException("Quantity must be greater than zero.");
@@ -153,7 +153,7 @@ public class UserService(
     public async Task Withdraw(string userId, string cardId, int amount)
     {
         if (!ObjectId.TryParse(userId, out var userIdObj))
-            throw new ArgumentException("Invalid ObjectId format", nameof(userId));
+            throw new ArgumentException(@"Invalid ObjectId format", nameof(userId));
 
         var user = await userRepository.GetById(userIdObj)
                    ?? throw new Exception("User not found.");
@@ -191,7 +191,7 @@ public class UserService(
     public async Task<PaymentResponse> CreatePayment(string userId, int amount)
     {
         if (!ObjectId.TryParse(userId, out var userIdObj))
-            throw new ArgumentException("Invalid ObjectId format", nameof(userId));
+            throw new ArgumentException(@"Invalid ObjectId format", nameof(userId));
 
         var transaction = await transactionService.CreateTransactionAsync(new Transaction
         {
@@ -232,7 +232,7 @@ public class UserService(
     public async Task SetAccess(JwtData userData, SetAccessRequest request)
     {
         if (!ObjectId.TryParse(request.UserId, out var userIdObj))
-            throw new ArgumentException("Invalid ObjectId format", nameof(request.UserId));
+            throw new ArgumentException(@"Invalid ObjectId format", nameof(request.UserId));
 
         var secondUser = await GetById(userIdObj) ??
                          throw new Exception("User not found.");

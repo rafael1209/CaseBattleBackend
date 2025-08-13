@@ -26,8 +26,7 @@ public class Startup
                 {
                     Type = SecuritySchemeType.ApiKey,
                     In = ParameterLocation.Header,
-                    Description =
-                        "API Key needed to access the endpoints. API Key must be in the 'Authorization' header. For public endpoints you can didn't use API Key, or just type '0'",
+                    Description = "API Key needed to access the endpoints. API Key must be in the 'Authorization' header. For public endpoints you can didn't use API Key, or just type '0'",
                     Name = "Authorization"
                 }
             );
@@ -40,13 +39,13 @@ public class Startup
         services.AddMemoryCache();
 
         services.AddSingleton<IMongoDbContext, MongoDbContext>();
-
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<ICaseRepository, CaseRepository>();
         services.AddScoped<IGameResultRepository, GameResultRepository>();
         services.AddScoped<IBannerRepository, BannerRepository>();
         services.AddScoped<ITransactionRepository, TransactionRepository>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
 
         services.AddScoped<IStorageService, GoogleDriveService>();
         services.AddScoped<ITokenService, TokenService>();
@@ -60,6 +59,7 @@ public class Startup
         services.AddScoped<IBannerService, BannerService>();
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<IUpgradeService, UpgradeService>();
+        services.AddScoped<IOrderService, OrderService>();
 
         services.AddSingleton<IDiscordNotificationService, DiscordNotificationService>();
         services.AddSingleton<WebSocketServerService>();
@@ -72,10 +72,7 @@ public class Startup
         }));
 
         services.AddSingleton<InteractionService>(provider =>
-        {
-            var client = provider.GetRequiredService<DiscordSocketClient>();
-            return new InteractionService(client);
-        });
+            new InteractionService(provider.GetRequiredService<DiscordSocketClient>()));
 
         services.AddSingleton<DiscordBotHostedService>();
         services.AddHostedService(provider => provider.GetRequiredService<DiscordBotHostedService>());

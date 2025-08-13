@@ -20,11 +20,11 @@ public class CaseService(
         foreach (var itemId in caseModel.Items)
         {
             if (!ObjectId.TryParse(itemId, out var id))
-                throw new ArgumentException("Invalid ObjectId format", nameof(itemId));
+                throw new ArgumentException(@"Invalid ObjectId format", nameof(itemId));
 
             var item = await itemRepository.GetById(id);
             if (item == null)
-                throw new ArgumentException($"Item with ID {itemId} not found.", nameof(itemId));
+                throw new ArgumentException($@"Item with ID {itemId} not found.", nameof(itemId));
 
             caseItems.Add(id);
         }
@@ -65,7 +65,7 @@ public class CaseService(
     public async Task<CaseViewDto?> GetById(string id)
     {
         if (!ObjectId.TryParse(id, out var objectId))
-            throw new ArgumentException("Invalid ObjectId format", nameof(id));
+            throw new ArgumentException(@"Invalid ObjectId format", nameof(id));
 
         var caseData = await caseRepository.GetById(objectId) ?? throw new Exception("Case not found");
 
@@ -93,13 +93,13 @@ public class CaseService(
     public async Task<List<CaseItemView>> OpenCase(string userId, string caseId, int amount = 1, bool isDemo = true)
     {
         if (!ObjectId.TryParse(caseId, out var objectId))
-            throw new ArgumentException("Invalid Case ID format.", nameof(caseId));
+            throw new ArgumentException(@"Invalid Case ID format.", nameof(caseId));
 
         if (amount is <= 0 or > 4)
-            throw new ArgumentException("Amount must be between 1 and 4.", nameof(amount));
+            throw new ArgumentException(@"Amount must be between 1 and 4.", nameof(amount));
 
         if (!ObjectId.TryParse(userId, out var id))
-            throw new ArgumentException("Invalid User ID format.", nameof(userId));
+            throw new ArgumentException(@"Invalid User ID format.", nameof(userId));
 
         var user = await userService.GetById(id)
                      ?? throw new Exception("User not found.");
@@ -177,11 +177,11 @@ public class CaseService(
 
     private async Task<Uri?> GetItemImageUrlAsync(CaseItem item)
     {
-        if (item.MinecraftId != null)
-            return await minecraftAssets.GetItemImageAsync(item.MinecraftId);
-
         if (item.ImageId != null)
             return await storageService.GetFileUrl(item.ImageId);
+
+        if (item.MinecraftId != null)
+            return await minecraftAssets.GetItemImageAsync(item.MinecraftId);
 
         return null;
     }
