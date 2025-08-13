@@ -6,7 +6,7 @@ namespace CaseBattleBackend.Helpers;
 
 public static class DiscordEmbedBuilder
 {
-    public static (Embed embed, MessageComponent components) BuildItemWithdraw(User user, CaseItemView item, int amount)
+    public static (Embed embed, MessageComponent components) BuildItemWithdraw(User user, CaseItem item, int amount)
     {
         var title = LanguageHelper.GetLocalizedMessage("NewOrderMessage_Title");
         var body = string.Format(LanguageHelper.GetLocalizedMessage("NewOrderMessage_Body"), item.Name, amount);

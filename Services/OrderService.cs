@@ -8,7 +8,7 @@ using MongoDB.Bson;
 
 namespace CaseBattleBackend.Services;
 
-public class OrderService(IOrderRepository orderRepository, IUserService userService, IDiscordNotificationService notificationService) : IOrderService
+public class OrderService(IOrderRepository orderRepository, IItemService itemService, IUserService userService, IDiscordNotificationService notificationService) : IOrderService
 {
     public async Task<List<Order>> GetAllOrdersAsync()
     {
@@ -35,26 +35,26 @@ public class OrderService(IOrderRepository orderRepository, IUserService userSer
         if (!ObjectId.TryParse(request.ItemId, out var itemId))
             throw new ArgumentException(@"Invalid ObjectId format", nameof(request.ItemId));
 
-        var item = user.Inventory.Find(item => item.Id == itemId && item.Amount > request.Amount) ??
+        var inventoryItem = user.Inventory.Find(item => item.Id == itemId && item.Amount > request.Amount) ??
                    throw new ArgumentException($@"Item with ID {request.ItemId} not found in user's inventory.", nameof(request.ItemId));
 
-        await userService.RemoveFromInventory(user, item.Id, request.Amount);
+        var item = await itemService.GetById(request.ItemId) ??
+                   throw new ArgumentException($@"Item with ID {request.ItemId} not found in the database.", nameof(request.ItemId));
 
-        //var (embed, components) = DiscordEmbedBuilder.BuildItemWithdraw("rafael1209", 160, new CaseItemView
-        //{
-        //    Name = "test tovar",
-        //    Rarity = Rarity.Common,
-        //    IsWithdrawable = false,
-        //    Id = null
-        //});
+        if (item.MinecraftId == null)
+            throw new ArgumentException(@"Item is not withdrawable.", nameof(request.ItemId));
+        
+        await userService.RemoveFromInventory(user, inventoryItem.Id, request.Amount);
 
-        //await notificationService.SendAsync(user, item, request.Amount);
+        var (embed, components) = DiscordEmbedBuilder.BuildItemWithdraw(user, item, request.Amount);
+
+        await notificationService.SendAsync(embed, 1256744815715160064, components);
 
         var order = new Order
         {
             UserId = user.Id,
-            ItemId = item.Id,
-            Amount = item.Amount,
+            ItemId = inventoryItem.Id,
+            Amount = inventoryItem.Amount,
             Status = OrderStatus.Created,
         };
 
