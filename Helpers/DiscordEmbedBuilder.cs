@@ -21,7 +21,7 @@ public static class DiscordEmbedBuilder
 
         var button = new ButtonBuilder()
             .WithLabel("Принять заказ")
-            .WithCustomId($"accept_order_{amount}_test")
+            .WithCustomId($"accept_order_{amount}")
             .WithStyle(ButtonStyle.Success);
 
         return (embed, new ComponentBuilder().WithButton(button).Build());

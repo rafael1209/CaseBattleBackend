@@ -42,24 +42,22 @@ public class ButtonModule : InteractionModuleBase<SocketInteractionContext>
         await FollowupAsync("Вы нажали кнопку 2!");
     }
 
-    [ComponentInteraction("accept_withdraw_*", true)]
+    [ComponentInteraction("accept_order_*", true)]
     public async Task HandleAcceptWithdraw(string customId)
     {
-        var match = Regex.Match(customId, @"(.+?)_(\d+)_(.+)");
+        var match = Regex.Match(customId, @"(\d+)");
         if (!match.Success)
         {
             await RespondAsync("Ошибка: неверный формат кнопки.", ephemeral: true);
             return;
         }
         var userName = match.Groups[1].Value;
-        var amount = match.Groups[2].Value;
-        var cardId = match.Groups[3].Value;
 
         await DeferAsync(ephemeral: true);
 
         await ModifyOriginalResponseAsync(msg =>
         {
-            msg.Content = $"✅ Заказ на вывод для пользователя **{userName}** на сумму **{amount}** принят курьером <@{Context.User.Id}>.";
+            msg.Content = $"✅ Заказ на вывод для пользователя **{userName}** принят курьером <@{Context.User.Id}>.";
             msg.Components = new ComponentBuilder().Build();
         });
     }
