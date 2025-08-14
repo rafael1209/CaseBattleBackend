@@ -1,12 +1,11 @@
 ﻿using Discord;
 using Discord.Interactions;
-using System.Text.RegularExpressions;
+using CaseBattleBackend.Interfaces;
 
 namespace CaseBattleBackend.Handlers;
 
-public class ButtonModule : InteractionModuleBase<SocketInteractionContext>
+public class ButtonModule(IButtonService buttonService) : InteractionModuleBase<SocketInteractionContext>
 {
-    //TODO: Remove this test module in production
     [SlashCommand("buttons", "Отправить сообщение с кнопками")]
     public async Task SendButtons()
     {
@@ -43,21 +42,15 @@ public class ButtonModule : InteractionModuleBase<SocketInteractionContext>
     }
 
     [ComponentInteraction("accept_order_*", true)]
-    public async Task HandleAcceptWithdraw(string customId)
+    public async Task HandleAcceptWithdraw(string orderId)
     {
-        var match = Regex.Match(customId, @"(\d+)");
-        if (!match.Success)
-        {
-            await RespondAsync("Ошибка: неверный формат кнопки.", ephemeral: true);
-            return;
-        }
-        var userName = match.Groups[1].Value;
+        var order = await buttonService.GetItemByOrder(orderId);
 
         await DeferAsync(ephemeral: true);
 
         await ModifyOriginalResponseAsync(msg =>
         {
-            msg.Content = $"✅ Заказ на вывод для пользователя **{userName}** принят курьером <@{Context.User.Id}>.";
+            msg.Content = $"✅ Заказ принят курьером <@{Context.User.Id}>.";
             msg.Components = new ComponentBuilder().Build();
         });
     }

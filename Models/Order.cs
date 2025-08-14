@@ -6,16 +6,13 @@ namespace CaseBattleBackend.Models;
 
 public class Order
 {
-    public ObjectId Id { get; set; }
+    public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
 
     [BsonElement("userId")]
     public ObjectId UserId { get; set; }
 
-    [BsonElement("itemId")]
-    public ObjectId ItemId { get; set; }
-
-    [BsonElement("amount")]
-    public int Amount { get; set; }
+    [BsonElement("item")]
+    public required InventoryItem Item { get; set; }
 
     [BsonElement("status")]
     [BsonRepresentation(BsonType.String)]

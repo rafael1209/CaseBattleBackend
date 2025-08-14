@@ -1,14 +1,9 @@
-﻿using CaseBattleBackend.Dtos;
-using CaseBattleBackend.Enums;
-using CaseBattleBackend.Helpers;
-using CaseBattleBackend.Interfaces;
-using CaseBattleBackend.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace CaseBattleBackend.Controllers;
 
 [Route("api/[controller]")]
-public class TestController(IDiscordNotificationService notificationService) : Controller
+public class TestController() : Controller
 {
     [HttpGet("ping")]
     public async Task<IActionResult> Test([FromQuery] ulong channelId)

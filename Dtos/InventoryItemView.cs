@@ -2,6 +2,6 @@
 
 public class InventoryItemView
 {
-    public CaseItemView? Item { get; set; }
+    public required CaseItemView Item { get; set; }
     public int Amount { get; set; }
 }

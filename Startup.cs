@@ -60,6 +60,7 @@ public class Startup
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<IUpgradeService, UpgradeService>();
         services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IButtonService, ButtonService>();
 
         services.AddSingleton<IDiscordNotificationService, DiscordNotificationService>();
         services.AddSingleton<WebSocketServerService>();

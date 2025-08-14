@@ -26,6 +26,9 @@ public class OrderService(IOrderRepository orderRepository, IItemService itemSer
 
     public async Task<Order> CreateOrderAsync(JwtData jwtData, CreateOrderRequest request)
     {
+        if (request.Amount is <= 0 or > 99)
+            throw new ArgumentException(@"Amount must be between 1 and 99.", nameof(request.Amount));
+
         if (!ObjectId.TryParse(jwtData.Id, out var userId))
             throw new ArgumentException(@"Invalid ObjectId format", nameof(jwtData.Id));
 
@@ -36,7 +39,7 @@ public class OrderService(IOrderRepository orderRepository, IItemService itemSer
             throw new ArgumentException(@"Invalid ObjectId format", nameof(request.ItemId));
 
         var inventoryItem = user.Inventory
-                .Find(item => item.Id == itemId && item.Amount > 0 && item.Amount >= request.Amount) ??
+                .Find(item => item.Id == itemId && item.Amount >= request.Amount) ??
                    throw new ArgumentException($@"Item with ID {request.ItemId} not found in user's inventory.", nameof(request.ItemId));
 
         var item = await itemService.GetById(request.ItemId) ??
@@ -47,28 +50,35 @@ public class OrderService(IOrderRepository orderRepository, IItemService itemSer
 
         await userService.RemoveFromInventory(user, inventoryItem.Id, request.Amount);
 
-        var (embed, components) = DiscordEmbedBuilder.BuildItemWithdraw(user, new CaseItemView
-        {
-            Id = item.Id.ToString(),
-            Name = item.Name,
-            Description = item.Description,
-            ImageUrl = item.ImageId != null ? await storageService.GetFileUrl(item.ImageId) : item.MinecraftId != null ? await minecraftAssets.GetItemImageAsync(item.MinecraftId) : null,
-            Amount = item.Amount,
-            Price = item.Price,
-            PercentChance = 0,
-            Rarity = Rarity.Common,
-            IsWithdrawable = false
-        }, request.Amount);
-
-        await notificationService.SendAsync(embed, 1256744815715160064, components);
-
         var order = new Order
         {
             UserId = user.Id,
-            ItemId = inventoryItem.Id,
-            Amount = inventoryItem.Amount,
+            Item = new InventoryItem(inventoryItem.Id, request.Amount),
             Status = OrderStatus.Created,
         };
+
+        var (embed, components) = DiscordEmbedBuilder.BuildItemWithdraw(user, new InventoryItemView()
+        {
+            Item = new CaseItemView()
+            {
+                Id = item.Id.ToString(),
+                Name = item.Name,
+                Description = item.Description,
+                ImageUrl = item.ImageId != null
+                    ? await storageService.GetFileUrl(item.ImageId)
+                    : item.MinecraftId != null
+                        ? await minecraftAssets.GetItemImageAsync(item.MinecraftId)
+                        : null,
+                Amount = item.Amount,
+                Price = item.Price,
+                PercentChance = 0,
+                Rarity = Rarity.Common,
+                IsWithdrawable = false,
+            },
+            Amount = request.Amount
+        }, order);
+
+        await notificationService.SendAsync(embed, 1256744815715160064, components); //TODO: Move channel ID to config
 
         return await orderRepository.CreateOrderAsync(order);
     }
