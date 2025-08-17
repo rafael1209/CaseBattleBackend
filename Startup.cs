@@ -47,7 +47,8 @@ public class Startup
         services.AddScoped<ITransactionRepository, TransactionRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IBranchRepository, BranchRepository>();
-
+        services.AddScoped<ICellRepository, CellRepository>();
+         
         services.AddScoped<IStorageService, GoogleDriveService>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthorizeService, AuthorizeService>();
@@ -63,6 +64,7 @@ public class Startup
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IButtonService, ButtonService>();
         services.AddScoped<IBranchService, BranchService>();
+        services.AddScoped<ICellService, CellService>(); 
 
         services.AddSingleton<IDiscordNotificationService, DiscordNotificationService>();
         services.AddSingleton<WebSocketServerService>();

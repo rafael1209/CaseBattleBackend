@@ -1,18 +1,15 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
+using System.Text.Json.Serialization;
 
 namespace CaseBattleBackend.Models;
 
 public class Coordinate
 {
-    [BsonElement("world")]
-    public required string World { get; set; }
+    [BsonElement("overworld")]
+    [JsonPropertyName("overworld")]
+    public required OverworldCoordinate OverWorld { get; set; }
 
-    [BsonElement("x")]
-    public required double X { get; set; }
-
-    [BsonElement("y")]
-    public required double Y { get; set; }
-
-    [BsonElement("z")]
-    public required double Z { get; set; }
+    [BsonElement("the_nether")]
+    [JsonPropertyName("the_nether")]
+    public required NetherCoordinate Nether { get; set; }
 }

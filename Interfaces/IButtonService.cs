@@ -1,8 +1,6 @@
-﻿using CaseBattleBackend.Dtos;
-
-namespace CaseBattleBackend.Interfaces;
+﻿namespace CaseBattleBackend.Interfaces;
 
 public interface IButtonService
 {
-    Task<InventoryItemView> GetItemByOrder(string id);
+    Task AcceptOrder(string id, long userId);
 }

@@ -15,7 +15,7 @@ public class Order
     public ObjectId? CourierId { get; set; }
 
     [BsonElement("cellId")]
-    public ObjectId CellId { get; set; }
+    public ObjectId? CellId { get; set; }
 
     [BsonElement("item")]
     public required InventoryItem Item { get; set; }

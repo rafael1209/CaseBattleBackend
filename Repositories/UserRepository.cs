@@ -23,6 +23,15 @@ public class UserRepository(IMongoDbContext context) : IUserRepository
         return await _users.Find(filter).FirstOrDefaultAsync();
     }
 
+    public async Task<User?> GetByDiscordId(long discordId)
+    {
+        if (discordId <= 0)
+            throw new ArgumentException(@"Discord ID must be a positive number.", nameof(discordId));
+
+        var filter = Builders<User>.Filter.Eq(u => u.DiscordId, discordId);
+        return await _users.Find(filter).FirstOrDefaultAsync();
+    }
+
     public async Task<User> Create(User user)
     {
         await _users.InsertOneAsync(user);

@@ -1,37 +1,22 @@
-﻿using CaseBattleBackend.Dtos;
-using CaseBattleBackend.Enums;
-using CaseBattleBackend.Interfaces;
-using CaseBattleBackend.Models;
-using MongoDB.Bson;
+﻿using CaseBattleBackend.Interfaces;
+using Google.Apis.Auth.OAuth2;
 
 namespace CaseBattleBackend.Services;
 
-public class ButtonService(IOrderService orderService, IItemService itemService) : IButtonService
+public class ButtonService(IUserService userService, IOrderService orderService, IItemService itemService) : IButtonService
 {
-    public async Task<InventoryItemView> GetItemByOrder(string id)
+    public async Task AcceptOrder(string id, long currierId)
     {
-        if (!ObjectId.TryParse(id, out var orderId))
-            throw new ArgumentException(@"Invalid ObjectId format", nameof(id));
+        var currier = await userService.GetByDiscordId(currierId) ??
+                                  throw new Exception($"Courier with Discord ID {currierId} not found.");
 
-        var order = await orderService.GetOrderByIdAsync(orderId) ??
-                    throw new ArgumentException($@"Order with ID {id} not found.", nameof(id));
+        var order = await orderService.GetOrderByIdAsync(id) ??
+            throw new Exception($"Order with ID {id} not found.");
 
-        var item = await itemService.GetById(order.Item.Id.ToString())
-            ?? throw new ArgumentException($@"Item with ID {order.Item.Id} not found in the database.", nameof(order.Item.Id));
+        if (order.CourierId != null)
+            return;
 
-        return new InventoryItemView
-        {
-            Item = new CaseItemView
-            {
-                Id = item.Id.ToString(),
-                Name = item.Name,
-                Description = item.Description,
-                Amount = item.Amount,
-                Price = item.Price,
-                Rarity = item.Rarity,
-                IsWithdrawable = true,
-            },
-            Amount = order.Item.Amount
-        };
+        await orderService.AddCourier(id, currier.Id);
+        await orderService.GetOrdersByStatusAsync(order);
     }
 }

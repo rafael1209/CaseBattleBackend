@@ -23,11 +23,24 @@ public class OrderService(
         return orders;
     }
 
-    public async Task<Order?> GetOrderByIdAsync(ObjectId orderId)
+    public async Task<Order?> GetOrderByIdAsync(string orderId)
     {
-        var order = await orderRepository.GetOrderByIdAsync(orderId);
+        if (!ObjectId.TryParse(orderId, out var orderObjectId))
+            throw new ArgumentException(@"Invalid ObjectId format", nameof(orderId));
+
+        var order = await orderRepository.GetOrderByIdAsync(orderObjectId);
 
         return order;
+    }
+
+    public async Task AddCourier(string orderId, ObjectId courierId)
+    {
+        if (!ObjectId.TryParse(orderId, out var orderObjectId))
+            throw new ArgumentException(@"Invalid ObjectId format", nameof(orderId));
+        var order = await orderRepository.GetOrderByIdAsync(orderObjectId) ??
+                    throw new ArgumentException($@"Order with ID {orderId} not found.", nameof(orderId));
+        order.CourierId = courierId;
+        await orderRepository.UpdateOrderAsync(order);
     }
 
     public async Task<Order> CreateOrderAsync(JwtData jwtData, CreateOrderRequest request)
@@ -70,16 +83,10 @@ public class OrderService(
                 Id = item.Id.ToString(),
                 Name = item.Name,
                 Description = item.Description,
-                ImageUrl = item.ImageId != null
-                    ? await storageService.GetFileUrl(item.ImageId)
-                    : item.MinecraftId != null
-                        ? await minecraftAssets.GetItemImageAsync(item.MinecraftId)
-                        : null,
+                ImageUrl = await itemService.GetItemImageAsync(item),
                 Amount = item.Amount,
                 Price = item.Price,
-                PercentChance = 0,
-                Rarity = Rarity.Common,
-                IsWithdrawable = false,
+                Rarity = item.Rarity
             },
             Amount = request.Amount
         }, order);
@@ -130,40 +137,24 @@ public class OrderService(
                     Id = "id",
                     Name = "test name",
                     Description = null,
-                    Coordinates =
-                    [
-                        new Coordinate
-                        {
-                            World = "world",
-                            X = 100,
-                            Y = 83,
-                            Z = 1923
-                        },
-                        new Coordinate
-                        {
-                            World = "nether",
-                            X = 21,
-                            Y = 120,
-                            Z = 93
-                        }
-                    ],
+                    Coordinates = new Coordinate
+                    {
+                        OverWorld = new DimensionCoordinate { X = 0, Y = 0, Z = 0 },
+                        Nether = new DimensionCoordinate { X = 0, Y = 0, Z = 0 }
+                    },
                     ImageUrls =
                     [
-                        "https://assets.zaralx.ru/api/v1/minecraft/vanilla/item/barrier/icon",
-                        "https://assets.zaralx.ru/api/v1/minecraft/vanilla/item/diamond_ore/icon"
-                    ],
-                    Cell = new CellView
-                    {
-                        Id = "cellId",
-                        Name = "test cell"
-                    }
+                        new Uri("https://assets.zaralx.ru/api/v1/minecraft/vanilla/item/barrier/icon"),
+                        new Uri("https://assets.zaralx.ru/api/v1/minecraft/vanilla/item/diamond_ore/icon")
+                    ]
                 },
                 Item = new InventoryItemView
                 {
                     Item = await itemService.GetItemViewById(order.Item.Id.ToString()),
                     Amount = order.Item.Amount
                 },
-                Status = order.Status
+                Status = order.Status,
+                Cell = null
             });
         }
 

@@ -16,6 +16,7 @@ public class MongoDbContext : IMongoDbContext
     private const string ConstTransactionCollection = "transaction";
     private const string ConstOrdersCollection = "orders";
     private const string ConstBranchesCollection = "branches";
+    private const string ConstCellsCollection = "cells";
 
     public MongoDbContext(IConfiguration configuration)
     {
@@ -31,4 +32,5 @@ public class MongoDbContext : IMongoDbContext
     public IMongoCollection<Transaction> TransactionsCollection => _database.GetCollection<Transaction>(ConstTransactionCollection);
     public IMongoCollection<Order> OrdersCollection => _database.GetCollection<Order>(ConstOrdersCollection);
     public IMongoCollection<Branch> BranchesCollection => _database.GetCollection<Branch>(ConstBranchesCollection);
+    public IMongoCollection<BranchCell> BranchCellsCollection => _database.GetCollection<BranchCell>(ConstCellsCollection);
 }

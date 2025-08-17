@@ -33,9 +33,11 @@ public class OrderRepository(IMongoDbContext context) : IOrderRepository
         return order;
     }
 
-    public Task UpdateOrderAsync(Order order)
+    public async Task UpdateOrderAsync(Order order)
     {
-        throw new NotImplementedException();
+        var filter = Builders<Order>.Filter.Eq(o => o.Id, order.Id);
+
+        await _orders.ReplaceOneAsync(filter, order);
     }
 
     public Task DeleteOrderAsync(ObjectId orderId)

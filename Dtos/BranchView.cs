@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using CaseBattleBackend.Models;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace CaseBattleBackend.Dtos;
 
@@ -16,11 +15,8 @@ public class BranchView
     public string? Description { get; set; }
 
     [JsonPropertyName("coordinates")]
-    public required List<Coordinate> Coordinates { get; set; }
+    public Coordinate? Coordinates { get; set; }
 
     [JsonPropertyName("imageUrls")]
-    public List<string>? ImageUrls { get; set; }
-
-    [BsonElement("cell")]
-    public required CellView Cell { get; set; }
+    public List<Uri>? ImageUrls { get; set; }
 }

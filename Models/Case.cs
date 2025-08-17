@@ -26,10 +26,6 @@ public class Case
     [BsonElement("price")]
     public required int Price { get; set; }
 
-    [BsonElement("openedCount")]
-    [BsonIgnoreIfDefault]
-    public int OpenedCount { get; set; }
-
     [BsonElement("createdAt")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

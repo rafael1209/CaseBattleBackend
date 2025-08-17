@@ -11,6 +11,9 @@ public class OrderView
     [JsonPropertyName("branch")]
     public required BranchView Branch { get; set; }
 
+    [JsonPropertyName("cell")]
+    public required CellView Cell { get; set; }
+
     [JsonPropertyName("item")]
     public required InventoryItemView Item { get; set; }
 

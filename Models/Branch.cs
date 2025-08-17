@@ -14,14 +14,14 @@ public class Branch
     public string? Description { get; set; }
 
     [BsonElement("coordinates")]
-    public required List<Coordinate> Coordinates { get; set; }
+    public Coordinate? Coordinates { get; set; }
 
     [BsonElement("imageIds")]
     public List<string> ImageIds { get; set; } = [];
 
-    [BsonElement("cells")]
-    public required List<BranchCell> Cells { get; set; } = [];
+    [BsonElement("cellIds")]
+    public List<ObjectId>? Cells { get; set; }
 
     [BsonElement("createdAt")]
-    public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

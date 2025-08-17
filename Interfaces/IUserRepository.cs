@@ -8,6 +8,7 @@ public interface IUserRepository
 {
     Task<User?> TryGetByMinecraftUuid(string minecraftUuid);
     Task<User?> TryGetByAuthToken(string authToken);
+    Task<User?> GetByDiscordId(long discordId);
     Task<User> Create(User user);
     Task<User?> GetById(ObjectId id);
     Task<bool> UpdateBalance(ObjectId id, decimal amount);

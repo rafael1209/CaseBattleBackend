@@ -94,10 +94,10 @@ public class ItemService(
         };
     }
 
-    public Task<Uri> GetItemImageAsync(CaseItem item)
+    public async Task<Uri> GetItemImageAsync(CaseItem item)
     {
         if (item.ImageId != null)
-            return minecraftAssets.GetItemImageAsync(item.ImageId);
-        return item.MinecraftId != null ? minecraftAssets.GetItemImageAsync(item.MinecraftId) : Task.FromResult<Uri>(new Uri("https://assets.zaralx.ru/api/v1/minecraft/vanilla/item/barrier/icon"));
+            return await minecraftAssets.GetItemImageAsync(item.ImageId);
+        return item.MinecraftId != null ? await minecraftAssets.GetItemImageAsync(item.MinecraftId) : new Uri("https://assets.zaralx.ru/api/v1/minecraft/vanilla/item/barrier/icon");
     }
 }
