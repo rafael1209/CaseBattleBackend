@@ -1,6 +1,7 @@
 ﻿using CaseBattleBackend.Enums;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
+using CaseBattleBackend.Requests;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -42,10 +43,18 @@ public class OrderRepository(IMongoDbContext context) : IOrderRepository
         throw new NotImplementedException();
     }
 
-    public Task<List<Order>> GetOrdersByUserIdAsync(ObjectId userId)
+    public async Task<List<Order>> GetOrdersByUserIdAsync(ObjectId userId, int page = 1, int pageSize = 8)
     {
-        throw new NotImplementedException();
+        if (page < 1) page = 1;
+        if (pageSize is < 1 or > 16) pageSize = 16;
+
+        return await _orders
+            .Find(o => o.UserId == userId)
+            .Skip((page - 1) * pageSize)
+            .Limit(pageSize)
+            .ToListAsync();
     }
+
 
     public Task<List<Order>> GetOrdersByStatusAsync(OrderStatus status)
     {

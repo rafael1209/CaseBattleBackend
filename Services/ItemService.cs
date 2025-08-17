@@ -1,4 +1,5 @@
 ﻿using CaseBattleBackend.Dtos;
+using CaseBattleBackend.Enums;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
@@ -52,9 +53,7 @@ public class ItemService(
             Id = item.Id.ToString(),
             Name = item.Name,
             Description = item.Description,
-            ImageUrl = item.ImageId != null
-                ? await storageService.GetFileUrl(item.ImageId)
-                : item.MinecraftId != null ? await minecraftAssets.GetItemImageAsync(item.MinecraftId) : null,
+            ImageUrl = await GetItemImageAsync(item),
             Amount = item.Amount,
             Price = item.Price,
             Rarity = item.Rarity,
@@ -70,5 +69,35 @@ public class ItemService(
             return null;
 
         return await itemRepository.GetById(objectId);
+    }
+
+    public async Task<CaseItemView> GetItemViewById(string id)
+    {
+        var item = await GetById(id);
+        if (item == null)
+            return new CaseItemView
+            {
+                Name = "Предмет не найден",
+                Description = "Свяжитесь с Тех. Поддержкой",
+                ImageUrl = await minecraftAssets.GetItemImageAsync("barrier"),
+            };
+
+        return new CaseItemView
+        {
+            Id = item.Id.ToString(),
+            Name = item.Name,
+            Description = item.Description,
+            ImageUrl = await GetItemImageAsync(item),
+            Amount = item.Amount,
+            Price = item.Price,
+            Rarity = item.Rarity,
+        };
+    }
+
+    public Task<Uri> GetItemImageAsync(CaseItem item)
+    {
+        if (item.ImageId != null)
+            return minecraftAssets.GetItemImageAsync(item.ImageId);
+        return item.MinecraftId != null ? minecraftAssets.GetItemImageAsync(item.MinecraftId) : Task.FromResult<Uri>(new Uri("https://assets.zaralx.ru/api/v1/minecraft/vanilla/item/barrier/icon"));
     }
 }

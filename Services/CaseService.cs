@@ -126,7 +126,7 @@ public class CaseService(
 
         var caseItemsWithChances = await GetCaseItems(allCaseItems, caseData.RtpPercentage, caseData.Price);
 
-        var sumOfChances = caseItemsWithChances.Sum(item => item.PercentChance);
+        var sumOfChances = caseItemsWithChances.Sum(item => item.PercentChance ?? 0);
         if (Math.Abs(sumOfChances - 100.0) > 0.01)
             throw new ArgumentException($"The sum of drop chances ({sumOfChances:F2}%) is not equal to 100%.");
 
@@ -140,7 +140,7 @@ public class CaseService(
 
             foreach (var item in caseItemsWithChances.OrderBy(caseItemViewDto => caseItemViewDto.PercentChance))
             {
-                cumulativeChance += item.PercentChance;
+                cumulativeChance += item.PercentChance ?? 0;
 
                 if (!(randomNumber <= cumulativeChance))
                     continue;

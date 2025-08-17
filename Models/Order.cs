@@ -11,8 +11,17 @@ public class Order
     [BsonElement("userId")]
     public ObjectId UserId { get; set; }
 
+    [BsonElement("courierId")]
+    public ObjectId? CourierId { get; set; }
+
+    [BsonElement("cellId")]
+    public ObjectId CellId { get; set; }
+
     [BsonElement("item")]
     public required InventoryItem Item { get; set; }
+
+    [BsonElement("price")]
+    public decimal Price { get; set; }
 
     [BsonElement("status")]
     [BsonRepresentation(BsonType.String)]

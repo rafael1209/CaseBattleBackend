@@ -22,7 +22,7 @@ public class GameResultService(
             CaseId = caseData.Id,
             Bet = caseData.Price,
             WinMoney = item.Price,
-            DropChance = item.PercentChance,
+            DropChance = item.PercentChance ?? 0,
         };
 
         await gameResultRepository.SaveResult(gameResult);

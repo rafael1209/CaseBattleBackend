@@ -1,8 +1,8 @@
 ﻿using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Middlewares;
 using CaseBattleBackend.Models;
+using CaseBattleBackend.Requests;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 namespace CaseBattleBackend.Controllers;
 
@@ -20,11 +20,16 @@ public class OrdersController(IOrderService orderService) : Controller
 
         return Ok();
     }
-}
 
-public class CreateOrderRequest
-{
-    public required string ItemId { get; set; }
-    [Range(1, 99)]
-    public required int Amount { get; set; }
+    [HttpGet]
+    [AuthMiddleware]
+    public async Task<IActionResult> GetOrders([FromQuery] int page = 1, [FromQuery] int pageSize = 15)
+    {
+        var jwtData = HttpContext.Items["@me"] as JwtData
+                      ?? throw new UnauthorizedAccessException();
+
+        var orders = await orderService.GetOrdersViewByUserId(jwtData.Id, page, pageSize);
+
+        return Ok(orders);
+    }
 }

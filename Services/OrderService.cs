@@ -1,14 +1,20 @@
-﻿using CaseBattleBackend.Controllers;
-using CaseBattleBackend.Dtos;
+﻿using CaseBattleBackend.Dtos;
 using CaseBattleBackend.Enums;
 using CaseBattleBackend.Helpers;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
+using CaseBattleBackend.Requests;
 using MongoDB.Bson;
 
 namespace CaseBattleBackend.Services;
 
-public class OrderService(IOrderRepository orderRepository, IItemService itemService, IUserService userService, IDiscordNotificationService notificationService, IMinecraftAssets minecraftAssets, IStorageService storageService) : IOrderService
+public class OrderService(
+    IOrderRepository orderRepository,
+    IItemService itemService,
+    IUserService userService,
+    IDiscordNotificationService notificationService,
+    IMinecraftAssets minecraftAssets,
+    IStorageService storageService) : IOrderService
 {
     public async Task<List<Order>> GetAllOrdersAsync()
     {
@@ -105,5 +111,62 @@ public class OrderService(IOrderRepository orderRepository, IItemService itemSer
         var orders = await orderRepository.GetOrdersByStatusAsync(status);
 
         return orders;
+    }
+
+    public async Task<List<OrderView>> GetOrdersViewByUserId(string userId, int page = 1, int pageSize = 8)
+    {
+        if (!ObjectId.TryParse(userId, out var userIdObject))
+            throw new ArgumentException(@"Invalid ObjectId format", nameof(userId));
+
+        var orders = await orderRepository.GetOrdersByUserIdAsync(userIdObject, page, pageSize);
+        var orderViews = new List<OrderView>();
+        foreach (var order in orders)
+        {
+            orderViews.Add(new OrderView
+            {
+                Id = order.Id.ToString(),
+                Branch = new BranchView
+                {
+                    Id = "id",
+                    Name = "test name",
+                    Description = null,
+                    Coordinates =
+                    [
+                        new Coordinate
+                        {
+                            World = "world",
+                            X = 100,
+                            Y = 83,
+                            Z = 1923
+                        },
+                        new Coordinate
+                        {
+                            World = "nether",
+                            X = 21,
+                            Y = 120,
+                            Z = 93
+                        }
+                    ],
+                    ImageUrls =
+                    [
+                        "https://assets.zaralx.ru/api/v1/minecraft/vanilla/item/barrier/icon",
+                        "https://assets.zaralx.ru/api/v1/minecraft/vanilla/item/diamond_ore/icon"
+                    ],
+                    Cell = new CellView
+                    {
+                        Id = "cellId",
+                        Name = "test cell"
+                    }
+                },
+                Item = new InventoryItemView
+                {
+                    Item = await itemService.GetItemViewById(order.Item.Id.ToString()),
+                    Amount = order.Item.Amount
+                },
+                Status = order.Status
+            });
+        }
+
+        return orderViews;
     }
 }
