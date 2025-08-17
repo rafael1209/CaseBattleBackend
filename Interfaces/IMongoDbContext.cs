@@ -12,4 +12,5 @@ public interface IMongoDbContext
     IMongoCollection<Banner> BannersCollection { get; }
     IMongoCollection<Transaction> TransactionsCollection { get; }
     IMongoCollection<Order> OrdersCollection { get; }
+    IMongoCollection<Branch> BranchesCollection { get; }
 }

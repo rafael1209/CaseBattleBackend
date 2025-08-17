@@ -14,5 +14,5 @@ public class CaseItemView
     public double? PercentChance { get; set; }
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public Rarity Rarity { get; set; }
-    public bool? IsWithdrawable { get; set; }
+    public bool IsWithdrawable { get; set; }
 }

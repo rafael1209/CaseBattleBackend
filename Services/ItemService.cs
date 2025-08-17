@@ -1,5 +1,4 @@
 ﻿using CaseBattleBackend.Dtos;
-using CaseBattleBackend.Enums;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
 using CaseBattleBackend.Requests;
@@ -91,6 +90,7 @@ public class ItemService(
             Amount = item.Amount,
             Price = item.Price,
             Rarity = item.Rarity,
+            IsWithdrawable = item?.MinecraftId != null,
         };
     }
 

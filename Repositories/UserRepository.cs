@@ -1,6 +1,4 @@
-﻿using CaseBattleBackend.Database;
-using CaseBattleBackend.Enums;
-using CaseBattleBackend.Interfaces;
+﻿using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
