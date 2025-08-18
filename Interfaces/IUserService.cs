@@ -11,7 +11,7 @@ public interface IUserService
     Task<User?> TryGetByMinecraftUuid(string minecraftUuid);
     Task<User> Create(User user);
     Task<User?> GetById(ObjectId id);
-    Task<User?> GetByDiscordId(long discordId);
+    Task<User?> GetByDiscordId(ulong discordId);
     Task<UserInfo> GetUserInfo(string userId);
     Task<bool> UpdateBalance(ObjectId id, decimal amount);
     Task<List<InventoryItemView>> GetInventoryItems(string userId, int page = 1, int pageSize = 32);

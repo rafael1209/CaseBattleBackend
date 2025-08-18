@@ -139,8 +139,8 @@ public class OrderService(
                     Description = null,
                     Coordinates = new Coordinate
                     {
-                        OverWorld = new DimensionCoordinate { X = 0, Y = 0, Z = 0 },
-                        Nether = new DimensionCoordinate { X = 0, Y = 0, Z = 0 }
+                        OverWorld = null,
+                        Nether = null
                     },
                     ImageUrls =
                     [

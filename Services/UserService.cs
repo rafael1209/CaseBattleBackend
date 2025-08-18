@@ -33,7 +33,7 @@ public class UserService(
         return await userRepository.GetById(id);
     }
 
-    public async Task<User?> GetByDiscordId(long discordId)
+    public async Task<User?> GetByDiscordId(ulong discordId)
     {
         return await userRepository.GetByDiscordId(discordId);
     }

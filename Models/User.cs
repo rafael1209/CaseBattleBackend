@@ -18,7 +18,7 @@ public class User
     public decimal Balance { get; set; }
 
     [BsonElement("discordId")]
-    public long? DiscordId { get; set; }
+    public ulong? DiscordId { get; set; }
 
     [BsonElement("inventory")]
     public List<InventoryItem> Inventory { get; set; } = [];

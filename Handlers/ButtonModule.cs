@@ -44,7 +44,7 @@ public class ButtonModule(IButtonService buttonService) : InteractionModuleBase<
     [ComponentInteraction("accept_order_*", true)]
     public async Task HandleAcceptWithdraw(string orderId)
     {
-        var order = await buttonService.GetItemByOrder(orderId);
+        await buttonService.AcceptOrder(orderId, Context.User.Id);
 
         await DeferAsync(ephemeral: true);
 

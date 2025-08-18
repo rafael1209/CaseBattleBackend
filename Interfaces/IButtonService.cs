@@ -2,5 +2,5 @@
 
 public interface IButtonService
 {
-    Task AcceptOrder(string id, long userId);
+    Task AcceptOrder(string id, ulong userId);
 }
