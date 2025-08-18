@@ -24,10 +24,10 @@ public class AuthorizeService(IConfiguration configuration, ITokenService tokenS
             {
                 JsonValueKind.String => value.GetString(),
                 JsonValueKind.Number => value.GetRawText(),
-                JsonValueKind.False => "false",
-                JsonValueKind.True => "true",
-                JsonValueKind.Array when value.GetArrayLength() == 0 => "",
-                _ => value.ToString()
+                JsonValueKind.True or JsonValueKind.False => value.GetRawText(),
+                JsonValueKind.Array => string.Join(",", value.EnumerateArray().Select(v => v.GetRawText())),
+                JsonValueKind.Object => value.GetRawText(),
+                _ => value.GetRawText()
             };
         }
 

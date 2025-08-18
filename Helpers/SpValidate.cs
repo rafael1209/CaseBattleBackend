@@ -15,7 +15,7 @@ public static class SpValidate
         var checkString = string.Join("\n", properties
             .Where(kv => kv.Value != null && kv.Key != "hash")
             .OrderBy(kv => kv.Key)
-            .Select(kv => $"{kv.Key}={kv.Value?.ToString()}"));
+            .Select(kv => $"{kv.Key}={kv.Value}"));
 
         using var sha256 = SHA256.Create();
         var secret = sha256.ComputeHash(Encoding.UTF8.GetBytes(token));
