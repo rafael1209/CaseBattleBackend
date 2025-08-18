@@ -29,11 +29,8 @@ public class CaseRepository(IMongoDbContext context) : ICaseRepository
                 { "foreignField", "caseId" },
                 { "as", "results" }
             }),
-
             new BsonDocument("$addFields", new BsonDocument { { "openedCount", new BsonDocument("$size", "$results") } }),
-
             new BsonDocument("$project", new BsonDocument { { "results", 0 } }),
-
             new BsonDocument("$sort", new BsonDocument("openedCount", -1))
         };
 

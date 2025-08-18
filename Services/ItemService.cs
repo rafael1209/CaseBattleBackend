@@ -97,7 +97,7 @@ public class ItemService(
     public async Task<Uri> GetItemImageAsync(CaseItem item)
     {
         if (item.ImageId != null)
-            return await minecraftAssets.GetItemImageAsync(item.ImageId);
+            return await storageService.GetFileUrl(item.ImageId);
         return item.MinecraftId != null ? await minecraftAssets.GetItemImageAsync(item.MinecraftId) : new Uri("https://assets.zaralx.ru/api/v1/minecraft/vanilla/item/barrier/icon");
     }
 }
