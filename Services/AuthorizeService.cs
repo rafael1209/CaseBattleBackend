@@ -1,8 +1,9 @@
-﻿using CaseBattleBackend.Interfaces;
+﻿using CaseBattleBackend.Helpers;
+using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
-using System.Text.Json;
-using CaseBattleBackend.Helpers;
 using MongoDB.Bson;
+using System.Globalization;
+using System.Text.Json;
 
 namespace CaseBattleBackend.Services;
 
@@ -23,10 +24,12 @@ public class AuthorizeService(IConfiguration configuration, ITokenService tokenS
             properties[prop.Name] = value.ValueKind switch
             {
                 JsonValueKind.String => value.GetString(),
-                JsonValueKind.Number => value.GetRawText(),
-                JsonValueKind.True or JsonValueKind.False => value.GetRawText(),
-                JsonValueKind.Array => string.Join(",", value.EnumerateArray().Select(v => v.GetRawText())),
-                JsonValueKind.Object => value.GetRawText(),
+                JsonValueKind.Number => value.TryGetInt64(out var l) ? l.ToString() : value.GetDouble().ToString(CultureInfo.InvariantCulture),
+                JsonValueKind.True => "true",
+                JsonValueKind.False => "false",
+                JsonValueKind.Array => string.Join(",", value.EnumerateArray().Select(v =>
+                    v.ValueKind == JsonValueKind.String ? v.GetString() : v.GetRawText())),
+                JsonValueKind.Object => "[object Object]",
                 _ => value.GetRawText()
             };
         }
