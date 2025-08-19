@@ -16,5 +16,7 @@ public class ButtonService(IUserService userService, IOrderService orderService,
         if (order.CourierId != null) return;
 
         await orderService.AddCourier(id, currier.Id);
+
+        await orderService.UpdateStatus(order.Id, Enums.OrderStatus.Accepted);
     }
 }

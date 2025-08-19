@@ -6,7 +6,21 @@ namespace CaseBattleBackend.Handlers;
 
 public class ButtonModule(IButtonService buttonService) : InteractionModuleBase<SocketInteractionContext>
 {
-    [SlashCommand("buttons", "Отправить сообщение с кнопками")]
+    [ComponentInteraction("accept_order_*", true)]
+    public async Task HandleAcceptWithdraw(string orderId)
+    {
+        await buttonService.AcceptOrder(orderId, Context.User.Id);
+
+        await DeferAsync(ephemeral: true);
+
+        await ModifyOriginalResponseAsync(msg =>
+        {
+            msg.Content = $"✅ Заказ принят курьером <@{Context.User.Id}>.";
+            msg.Components = new ComponentBuilder().Build();
+        });
+    }
+
+    [SlashCommand("ping", "Отправить сообщение с кнопками")]
     public async Task SendButtons()
     {
         var button1 = new ButtonBuilder()
@@ -39,19 +53,5 @@ public class ButtonModule(IButtonService buttonService) : InteractionModuleBase<
     {
         await DeferAsync();
         await FollowupAsync("Вы нажали кнопку 2!");
-    }
-
-    [ComponentInteraction("accept_order_*", true)]
-    public async Task HandleAcceptWithdraw(string orderId)
-    {
-        await buttonService.AcceptOrder(orderId, Context.User.Id);
-
-        await DeferAsync(ephemeral: true);
-
-        await ModifyOriginalResponseAsync(msg =>
-        {
-            msg.Content = $"✅ Заказ принят курьером <@{Context.User.Id}>.";
-            msg.Components = new ComponentBuilder().Build();
-        });
     }
 }

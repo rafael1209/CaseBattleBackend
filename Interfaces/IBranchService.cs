@@ -9,6 +9,7 @@ public interface IBranchService
 {
     Task<List<BranchView>> GetAllBranchesAsync();
     Task<Branch?> GetBranchByIdAsync(ObjectId branchId);
+    Task<BranchView?> GetBranchViewById(ObjectId branchId);
     Task<Branch> CreateBranchAsync(CreateBranchRequest request);
     Task<bool> UpdateBranchAsync(Branch branch);
     Task<bool> DeleteBranchAsync(ObjectId branchId);

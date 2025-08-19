@@ -9,7 +9,7 @@ public class OrderView
     public required string Id { get; set; }
 
     [JsonPropertyName("branch")]
-    public required BranchView Branch { get; set; }
+    public required BranchView? Branch { get; set; }
 
     [JsonPropertyName("cell")]
     public required CellView Cell { get; set; }

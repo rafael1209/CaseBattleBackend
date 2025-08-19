@@ -9,8 +9,8 @@ public class NetherCoordinate
 {
     [BsonElement("color")]
     [JsonPropertyName("color")]
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     [BsonRepresentation(BsonType.String)]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public required LineColor Color { get; set; }
 
     [BsonElement("distance")]

@@ -38,6 +38,24 @@ public class BranchService(IBranchRepository branchRepository, ICellService cell
         return await branchRepository.GetBranchByIdAsync(branchId);
     }
 
+    public async Task<BranchView?> GetBranchViewById(ObjectId branchId)
+    {
+        var branch = await branchRepository.GetBranchByIdAsync(branchId);
+        if (branch == null)
+            return null;
+        var imageUrls = new List<Uri>();
+        foreach (var imageId in branch.ImageIds)
+            imageUrls.Add(await storageService.GetFileUrl(imageId));
+        return new BranchView
+        {
+            Id = branch.Id.ToString(),
+            Name = branch.Name,
+            Description = branch.Description,
+            Coordinates = branch.Coordinates,
+            ImageUrls = imageUrls
+        };
+    }
+
     public async Task<Branch> CreateBranchAsync(CreateBranchRequest request)
     {
         var imageIds = new List<string>();

@@ -12,6 +12,7 @@ public class OrderService(
     IOrderRepository orderRepository,
     IItemService itemService,
     IUserService userService,
+    IBranchService branchService,
     IDiscordNotificationService notificationService,
     IMinecraftAssets minecraftAssets,
     IStorageService storageService) : IOrderService
@@ -132,32 +133,31 @@ public class OrderService(
             orderViews.Add(new OrderView
             {
                 Id = order.Id.ToString(),
-                Branch = new BranchView
-                {
-                    Id = "id",
-                    Name = "test name",
-                    Description = null,
-                    Coordinates = new Coordinate
-                    {
-                        OverWorld = null,
-                        Nether = null
-                    },
-                    ImageUrls =
-                    [
-                        new Uri("https://assets.zaralx.ru/api/v1/minecraft/vanilla/item/barrier/icon"),
-                        new Uri("https://assets.zaralx.ru/api/v1/minecraft/vanilla/item/diamond_ore/icon")
-                    ]
-                },
+                Branch = await branchService.GetBranchViewById(ObjectId.Parse("68a45ae5c72161f9623fb32f")),
                 Item = new InventoryItemView
                 {
                     Item = await itemService.GetItemViewById(order.Item.Id.ToString()),
                     Amount = order.Item.Amount
                 },
                 Status = order.Status,
-                Cell = null
+                Cell = new CellView
+                {
+                    Id = "id",
+                    Name = "unknown"
+                }
             });
         }
 
         return orderViews;
+    }
+
+    public async Task UpdateStatus(ObjectId orderId, OrderStatus status)
+    {
+        var order = await orderRepository.GetOrderByIdAsync(orderId) ??
+                    throw new ArgumentException($@"Order with ID {orderId} not found.", nameof(orderId));
+
+        order.Status = status;
+
+        await orderRepository.UpdateOrderAsync(order);
     }
 }
