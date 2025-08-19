@@ -17,6 +17,8 @@ public static class SpValidate
             .OrderBy(kv => kv.Key)
             .Select(kv => $"{kv.Key}={kv.Value}"));
 
+        Console.WriteLine(checkString);
+
         using var sha256 = SHA256.Create();
         var secret = sha256.ComputeHash(Encoding.UTF8.GetBytes(token));
 

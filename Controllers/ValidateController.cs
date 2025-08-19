@@ -17,9 +17,9 @@ public class ValidateController(IAuthorizeService authorizeService) : Controller
 
             return Ok(new { authToken });
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            return BadRequest();
+            return BadRequest(e.Message);
         }
     }
 }
