@@ -7,7 +7,7 @@ namespace CaseBattleBackend.Controllers;
 [ApiController]
 [Route("api/v1/validate")]
 public class ValidateController(IAuthorizeService authorizeService) : Controller
-{
+{//
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] JsonElement body)
     {
