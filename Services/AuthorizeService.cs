@@ -24,7 +24,9 @@ public class AuthorizeService(IConfiguration configuration, ITokenService tokenS
             properties[prop.Name] = value.ValueKind switch
             {
                 JsonValueKind.String => value.GetString(),
-                JsonValueKind.Number => value.TryGetInt64(out var l) ? l.ToString() : value.GetDouble().ToString(CultureInfo.InvariantCulture),
+                JsonValueKind.Number => value.TryGetInt64(out var l)
+                    ? l.ToString(CultureInfo.InvariantCulture)
+                    : value.GetDouble().ToString(CultureInfo.InvariantCulture),
                 JsonValueKind.True => "true",
                 JsonValueKind.False => "false",
                 JsonValueKind.Array => string.Join(",", value.EnumerateArray().Select(v =>
