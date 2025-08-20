@@ -31,6 +31,9 @@ public class ButtonService(IUserService userService, IOrderService orderService,
         var order = await orderService.GetOrderByIdAsync(id) ??
                     throw new Exception($"Order with ID {id} not found.");
 
+        if (order.CourierId != currier.Id)
+            throw new Exception($"Order with ID {id} is not assigned to courier with ID {currier.Id}.");
+
         await orderService.UpdateStatus(order.Id, Enums.OrderStatus.Confirmed);
 
         return order;
