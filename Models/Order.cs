@@ -21,7 +21,7 @@ public class Order
     public required InventoryItem Item { get; set; }
 
     [BsonElement("price")]
-    public decimal Price { get; set; }
+    public decimal Price;
 
     [BsonElement("status")]
     [BsonRepresentation(BsonType.String)]

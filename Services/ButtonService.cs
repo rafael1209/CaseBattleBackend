@@ -17,8 +17,9 @@ public class ButtonService(IUserService userService, IOrderService orderService,
             throw new Exception("");
 
         await orderService.AddCourier(id, currier.Id);
-
         await orderService.UpdateStatus(order.Id, Enums.OrderStatus.Accepted);
+
+        await userService.UpdateBalance(currier.Id, order.Price);
 
         return order;
     }

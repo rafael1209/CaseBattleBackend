@@ -74,6 +74,7 @@ public class OrderService(
         {
             UserId = user.Id,
             Item = new InventoryItem(inventoryItem.Id, request.Amount),
+            Price = item.Price * request.Amount,
             Status = OrderStatus.Created,
         };
 
