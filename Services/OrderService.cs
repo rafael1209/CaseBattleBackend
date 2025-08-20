@@ -13,9 +13,7 @@ public class OrderService(
     IItemService itemService,
     IUserService userService,
     IBranchService branchService,
-    IDiscordNotificationService notificationService,
-    IMinecraftAssets minecraftAssets,
-    IStorageService storageService) : IOrderService
+    IDiscordNotificationService notificationService) : IOrderService
 {
     public async Task<List<Order>> GetAllOrdersAsync()
     {
