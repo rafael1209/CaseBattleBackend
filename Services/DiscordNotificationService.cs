@@ -11,6 +11,6 @@ public class DiscordNotificationService(DiscordSocketClient client)
     {
         if (client.GetChannel(channelId) is not IMessageChannel channel) return;
 
-        await channel.SendMessageAsync(embed: embed, components: components);
+        await channel.SendMessageAsync(text: "<@&1214945168768237638>", embed: embed, components: components);
     }
 }

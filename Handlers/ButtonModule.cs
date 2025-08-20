@@ -4,18 +4,19 @@ using CaseBattleBackend.Interfaces;
 
 namespace CaseBattleBackend.Handlers;
 
-public class ButtonModule(IButtonService buttonService) : InteractionModuleBase<SocketInteractionContext>
+public class ButtonModule(IButtonService buttonService, IUserService userService) : InteractionModuleBase<SocketInteractionContext>
 {
     [ComponentInteraction("accept_order_*", true)]
     public async Task HandleAcceptWithdraw(string orderId)
     {
-        await buttonService.AcceptOrder(orderId, Context.User.Id);
+        var order = await buttonService.AcceptOrder(orderId, Context.User.Id);
+        var user = await userService.GetById(order.Id);
 
         await DeferAsync(ephemeral: true);
 
         await ModifyOriginalResponseAsync(msg =>
         {
-            msg.Content = $"✅ Заказ принят курьером <@{Context.User.Id}>.";
+            msg.Content = $"✅ Заказ принят курьером <@{Context.User.Id}>.\n||```{user.Username}```||";
             msg.Components = new ComponentBuilder().Build();
         });
     }

@@ -1,6 +1,8 @@
-﻿namespace CaseBattleBackend.Interfaces;
+﻿using CaseBattleBackend.Models;
+
+namespace CaseBattleBackend.Interfaces;
 
 public interface IButtonService
 {
-    Task AcceptOrder(string id, ulong userId);
+    Task<Order> AcceptOrder(string id, ulong userId);
 }

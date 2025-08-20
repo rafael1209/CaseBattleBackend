@@ -92,7 +92,7 @@ public class OrderService(
             Amount = request.Amount
         }, order);
 
-        await notificationService.SendAsync(embed, 1256744815715160064, components); //TODO: Move channel ID to config
+        await notificationService.SendAsync(embed, 1407857443391668355, components); //TODO: Move channel ID to config
 
         return await orderRepository.CreateOrderAsync(order);
     }
