@@ -1,6 +1,7 @@
-﻿using Discord;
+﻿using CaseBattleBackend.Interfaces;
+using CaseBattleBackend.Models;
+using Discord;
 using Discord.Interactions;
-using CaseBattleBackend.Interfaces;
 
 namespace CaseBattleBackend.Handlers;
 
@@ -21,7 +22,7 @@ public class ButtonModule(IButtonService buttonService, IUserService userService
 
         await ModifyOriginalResponseAsync(msg =>
         {
-            msg.Content = $"✅ Заказ принят курьером <@{Context.User.Id}>.\n||```{user.Username}```||";
+            msg.Content = $"✅ Заказ принят курьером <@{Context.User.Id}>.\nДля игрока ||`{user.Username}`||";
             msg.Components = new ComponentBuilder().WithButton(button).Build();
         });
     }
@@ -29,13 +30,14 @@ public class ButtonModule(IButtonService buttonService, IUserService userService
     [ComponentInteraction("complete_*", true)]
     public async Task CompleteOrder(string orderId)
     {
-        await buttonService.CompleteOrder(orderId, Context.User.Id);
+        var order = await buttonService.CompleteOrder(orderId, Context.User.Id);
+        var user = await userService.GetById(order.UserId);
 
         await DeferAsync(ephemeral: true);
 
         await ModifyOriginalResponseAsync(msg =>
         {
-            msg.Content = $"✅ Заказ выполнен курьером <@{Context.User.Id}>.";
+            msg.Content = $"✅ Заказ выполнен курьером <@{Context.User.Id}>.\nДля игрока ||`{user.Username}`||";
             msg.Components = new ComponentBuilder().Build();
         });
     }
