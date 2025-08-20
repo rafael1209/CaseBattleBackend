@@ -10,7 +10,7 @@ public class ButtonModule(IButtonService buttonService, IUserService userService
     public async Task HandleAcceptWithdraw(string orderId)
     {
         var order = await buttonService.AcceptOrder(orderId, Context.User.Id);
-        var user = await userService.GetById(order.Id);
+        var user = await userService.GetById(order.UserId);
 
         await DeferAsync(ephemeral: true);
 
