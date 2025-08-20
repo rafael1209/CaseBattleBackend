@@ -14,9 +14,28 @@ public class ButtonModule(IButtonService buttonService, IUserService userService
 
         await DeferAsync(ephemeral: true);
 
+        var button = new ButtonBuilder()
+            .WithLabel("Выполнил")
+            .WithCustomId($"complete_{order.Id}")
+            .WithStyle(ButtonStyle.Success);
+
         await ModifyOriginalResponseAsync(msg =>
         {
             msg.Content = $"✅ Заказ принят курьером <@{Context.User.Id}>.\n||```{user.Username}```||";
+            msg.Components = new ComponentBuilder().WithButton(button).Build();
+        });
+    }
+
+    [ComponentInteraction("complete_*", true)]
+    public async Task CompleteOrder(string orderId)
+    {
+        await buttonService.CompleteOrder(orderId, Context.User.Id);
+
+        await DeferAsync(ephemeral: true);
+
+        await ModifyOriginalResponseAsync(msg =>
+        {
+            msg.Content = $"✅ Заказ выполнен курьером <@{Context.User.Id}>.";
             msg.Components = new ComponentBuilder().Build();
         });
     }
