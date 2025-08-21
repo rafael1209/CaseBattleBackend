@@ -14,15 +14,23 @@ public class ButtonModule(IButtonService buttonService, IUserService userService
 
         await DeferAsync(ephemeral: true);
 
-        var button = new ButtonBuilder()
+        var completeButton = new ButtonBuilder()
             .WithLabel("Выполнил")
             .WithCustomId($"complete_{order.Id}")
             .WithStyle(ButtonStyle.Success);
 
+        var cancelButton = new ButtonBuilder()
+            .WithLabel("Отменить")
+            .WithCustomId($"cancel_{order.Id}")
+            .WithStyle(ButtonStyle.Danger);
+
         await ModifyOriginalResponseAsync(msg =>
         {
             msg.Content = $"✅ Заказ принят курьером <@{Context.User.Id}>.\nДля игрока ||`{user.Username}`||";
-            msg.Components = new ComponentBuilder().WithButton(button).Build();
+            msg.Components = new ComponentBuilder()
+                .WithButton(completeButton)
+                .WithButton(cancelButton)
+                .Build();
         });
     }
 

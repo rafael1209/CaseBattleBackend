@@ -1,4 +1,5 @@
-﻿using CaseBattleBackend.Interfaces;
+﻿using CaseBattleBackend.Enums;
+using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
 
 namespace CaseBattleBackend.Services;
@@ -53,7 +54,9 @@ public class ButtonService(IUserService userService, IOrderService orderService,
 
         await orderService.UpdateStatus(order.Id, Enums.OrderStatus.Cancelled);
 
-        await userService.UpdateBalance(currier.Id, -order.Price);
+        if (order.Status == OrderStatus.Accepted)
+            await userService.UpdateBalance(currier.Id, -order.Price);
+
         await userService.UpdateBalance(order.UserId, order.Price);
 
         return order;
