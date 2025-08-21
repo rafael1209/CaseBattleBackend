@@ -36,7 +36,7 @@ public class ButtonService(IUserService userService, IOrderService orderService,
         if (order.CourierId != currier.Id)
             throw new Exception($"Order with ID {id} is not assigned to courier with ID {currier.Id}.");
 
-        await orderService.UpdateStatus(order.Id, Enums.OrderStatus.Confirmed);
+        await orderService.UpdateStatus(order.Id, OrderStatus.Confirmed);
 
         return order;
     }
@@ -49,14 +49,15 @@ public class ButtonService(IUserService userService, IOrderService orderService,
         var order = await orderService.GetOrderByIdAsync(id) ??
                     throw new Exception($"Order with ID {id} not found.");
 
-        if (order.CourierId != currier.Id)
-            throw new Exception($"Order with ID {id} is not assigned to courier with ID {currier.Id}.");
-
-        await orderService.UpdateStatus(order.Id, Enums.OrderStatus.Cancelled);
-
         if (order.Status == OrderStatus.Accepted)
-            await userService.UpdateBalance(currier.Id, -order.Price);
+        {
+            if (order.CourierId != currier.Id)
+                throw new Exception($"Order with ID {id} is not assigned to courier with ID {currier.Id}.");
 
+            await userService.UpdateBalance(currier.Id, -order.Price);
+        }
+
+        await orderService.UpdateStatus(order.Id, OrderStatus.Cancelled);
         await userService.UpdateBalance(order.UserId, order.Price);
 
         return order;
