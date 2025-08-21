@@ -39,4 +39,23 @@ public class ButtonService(IUserService userService, IOrderService orderService,
 
         return order;
     }
+
+    public async Task<Order> CancelOrder(string id, ulong userId)
+    {
+        var currier = await userService.GetByDiscordId(userId) ??
+                      throw new Exception($"Courier with Discord ID {userId} not found.");
+
+        var order = await orderService.GetOrderByIdAsync(id) ??
+                    throw new Exception($"Order with ID {id} not found.");
+
+        if (order.CourierId != currier.Id)
+            throw new Exception($"Order with ID {id} is not assigned to courier with ID {currier.Id}.");
+
+        await orderService.UpdateStatus(order.Id, Enums.OrderStatus.Cancelled);
+
+        await userService.UpdateBalance(currier.Id, -order.Price);
+        await userService.UpdateBalance(order.UserId, order.Price);
+
+        return order;
+    }
 }

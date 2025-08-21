@@ -1,5 +1,4 @@
 ﻿using CaseBattleBackend.Interfaces;
-using CaseBattleBackend.Models;
 using Discord;
 using Discord.Interactions;
 
@@ -38,6 +37,21 @@ public class ButtonModule(IButtonService buttonService, IUserService userService
         await ModifyOriginalResponseAsync(msg =>
         {
             msg.Content = $"✅ Заказ выполнен курьером <@{Context.User.Id}>.\nДля игрока ||`{user.Username}`||";
+            msg.Components = new ComponentBuilder().Build();
+        });
+    }
+
+    [ComponentInteraction("cancel_*", true)]
+    public async Task CancelOrder(string orderId)
+    {
+        var order = await buttonService.CancelOrder(orderId, Context.User.Id);
+        var user = await userService.GetById(order.UserId);
+
+        await DeferAsync(ephemeral: true);
+
+        await ModifyOriginalResponseAsync(msg =>
+        {
+            msg.Content = $"❌ Заказ отменён курьером <@{Context.User.Id}>.\nДля игрока ||`{user.Username}`||";
             msg.Components = new ComponentBuilder().Build();
         });
     }

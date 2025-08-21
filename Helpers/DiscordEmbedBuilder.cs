@@ -20,11 +20,19 @@ public static class DiscordEmbedBuilder
             .WithColor(Color.Orange)
             .Build();
 
-        var button = new ButtonBuilder()
+        var acceptButton = new ButtonBuilder()
             .WithLabel("Принять заказ")
             .WithCustomId($"accept_order_{order.Id}")
             .WithStyle(ButtonStyle.Success);
 
-        return (embed, new ComponentBuilder().WithButton(button).Build());
+        var cancelButton = new ButtonBuilder()
+            .WithLabel("Отменить")
+            .WithCustomId($"cancel_{order.Id}")
+            .WithStyle(ButtonStyle.Danger);
+
+        return (embed, new ComponentBuilder()
+            .WithButton(acceptButton)
+            .WithButton(cancelButton)
+            .Build());
     }
 }
