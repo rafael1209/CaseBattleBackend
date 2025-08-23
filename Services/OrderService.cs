@@ -33,6 +33,24 @@ public class OrderService(
         return order;
     }
 
+    public async Task Confirm(string userId, string orderId)
+    {
+        if (!ObjectId.TryParse(userId, out var userObjectId))
+            throw new ArgumentException(@"Invalid ObjectId format", nameof(userId));
+
+        if (!ObjectId.TryParse(orderId, out var orderObjectId))
+            throw new ArgumentException(@"Invalid ObjectId format", nameof(orderId));
+
+        var order = await orderRepository.GetOrderByIdAsync(orderObjectId) ??
+                    throw new ArgumentException($@"Order with ID {orderId} not found.", nameof(orderId));
+
+        if (order.UserId != userObjectId)
+            throw new UnauthorizedAccessException();
+
+        order.Status = OrderStatus.Confirmed;
+        await orderRepository.UpdateOrderAsync(order);
+    }
+
     public async Task AddCourier(string orderId, ObjectId courierId)
     {
         if (!ObjectId.TryParse(orderId, out var orderObjectId))

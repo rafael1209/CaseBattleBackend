@@ -27,7 +27,7 @@ public class CellService(ICellRepository cellRepository) : ICellService
         return await cellRepository.GetEmptyCell(minSlots);
     }
 
-    public async Task<CellView?> GetCellView(ObjectId id)
+    public async Task<CellView> GetCellView(ObjectId id)
     {
         var cell = await GetCellById(id);
 

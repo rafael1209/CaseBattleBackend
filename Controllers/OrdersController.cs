@@ -32,4 +32,16 @@ public class OrdersController(IOrderService orderService) : Controller
 
         return Ok(orders);
     }
+
+    [HttpPost("{id}/confirm")]
+    [AuthMiddleware]
+    public async Task<IActionResult> ConfirmOrder([FromRoute] string id)
+    {
+        var jwtData = HttpContext.Items["@me"] as JwtData
+                      ?? throw new UnauthorizedAccessException();
+
+        await orderService.Confirm(jwtData.Id, id);
+
+        return Ok();
+    }
 }

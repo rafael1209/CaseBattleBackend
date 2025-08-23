@@ -6,7 +6,7 @@ using MongoDB.Bson;
 
 namespace CaseBattleBackend.Services;
 
-public class BranchService(IBranchRepository branchRepository, ICellService cellService, IStorageService storageService)
+public class BranchService(IBranchRepository branchRepository, IStorageService storageService)
     : IBranchService
 {
     public async Task<List<BranchView>> GetAllBranchesAsync()
@@ -80,12 +80,12 @@ public class BranchService(IBranchRepository branchRepository, ICellService cell
         return await branchRepository.CreateBranchAsync(branch);
     }
 
-    public async Task<bool> UpdateBranchAsync(Branch branch)
+    public Task<bool> UpdateBranchAsync(Branch branch)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<bool> DeleteBranchAsync(ObjectId branchId)
+    public Task<bool> DeleteBranchAsync(ObjectId branchId)
     {
         throw new NotImplementedException();
     }

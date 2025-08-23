@@ -4,7 +4,7 @@ using CaseBattleBackend.Models;
 
 namespace CaseBattleBackend.Services;
 
-public class ButtonService(IUserService userService, IOrderService orderService, IItemService itemService) : IButtonService
+public class ButtonService(IUserService userService, IOrderService orderService) : IButtonService
 {
     public async Task<Order> AcceptOrder(string id, ulong currierId)
     {

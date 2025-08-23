@@ -9,6 +9,7 @@ namespace CaseBattleBackend.Interfaces;
 public interface IOrderService
 {
     Task<Order?> GetOrderByIdAsync(string orderId);
+    Task Confirm(string userId, string orderId);
     Task AddCourier(string orderId, ObjectId courierId);
     Task<Order> CreateOrderAsync(JwtData jwtData, CreateOrderRequest request);
     Task<List<Order>> GetOrdersByUserIdAsync(ObjectId userId);

@@ -27,12 +27,12 @@ public class BranchRepository(IMongoDbContext context) : IBranchRepository
         return branch;
     }
 
-    public async Task<bool> UpdateBranchAsync(Branch branch)
+    public Task<bool> UpdateBranchAsync(Branch branch)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<bool> DeleteBranchAsync(ObjectId branchId)
+    public Task<bool> DeleteBranchAsync(ObjectId branchId)
     {
         throw new NotImplementedException();
     }
