@@ -69,7 +69,7 @@ public class OrderService(
 
         await userService.RemoveFromInventory(user, inventoryItem.Id, request.Amount);
 
-        var neededCells = (int)Math.Ceiling((double)item.Amount * request.Amount / item.StackAmount);
+        var neededCells = (int)Math.Ceiling((double)item.Amount * request.Amount / (double)item.StackAmount!);
         var cell = await cellService.GetEmptyCell(neededCells);
 
         var order = new Order
