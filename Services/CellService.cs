@@ -27,14 +27,14 @@ public class CellService(ICellRepository cellRepository) : ICellService
         return await cellRepository.GetEmptyCell(minSlots);
     }
 
-    public async Task<CellView> GetCellView(ObjectId id)
+    public async Task<CellView?> GetCellView(ObjectId id)
     {
-        var cell = await GetCellById(id) ?? throw new Exception("Cell not found");
+        var cell = await GetCellById(id);
 
         return new CellView
         {
-            Id = cell.Id.ToString(),
-            Name = cell.Name
+            Id = cell?.Id.ToString() ?? "id",
+            Name = cell?.Name ?? "unknown"
         };
     }
 }

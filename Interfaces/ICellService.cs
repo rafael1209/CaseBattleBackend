@@ -10,5 +10,5 @@ public interface ICellService
     Task<BranchCell?> GetCellById(ObjectId id);
     Task<List<BranchCell>> GetCellsByBranchId(ObjectId branchId);
     Task<BranchCell> GetEmptyCell(int minSlots);
-    Task<CellView> GetCellView(ObjectId id);
+    Task<CellView?> GetCellView(ObjectId id);
 }
