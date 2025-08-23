@@ -1,4 +1,5 @@
-﻿using CaseBattleBackend.Interfaces;
+﻿using CaseBattleBackend.Dtos;
+using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
 using MongoDB.Bson;
 
@@ -6,37 +7,34 @@ namespace CaseBattleBackend.Services;
 
 public class CellService(ICellRepository cellRepository) : ICellService
 {
-    public async Task<List<BranchCell>> GetAllBranchesAsync()
+    public async Task<BranchCell> CreateCell(BranchCell cell)
     {
-        var branches = await cellRepository.GetAllBranchesAsync();
-        return branches;
+        return await cellRepository.CreateCell(cell);
     }
 
-    public async Task<BranchCell?> GetCellById(ObjectId branchId)
+    public async Task<BranchCell?> GetCellById(ObjectId id)
     {
-        return await cellRepository.GetBranchByIdAsync(branchId);
+        return await cellRepository.GetCellById(id);
     }
 
-    public async Task<BranchCell> CreateBranchAsync(BranchCell branch)
+    public async Task<List<BranchCell>> GetCellsByBranchId(ObjectId branchId)
     {
-        return await cellRepository.CreateBranchAsync(branch);
+        return await cellRepository.GetCellsByBranchId(branchId);
     }
 
-    public async Task<bool> UpdateBranchAsync(BranchCell branch)
+    public async Task<BranchCell> GetEmptyCell(int minSlots)
     {
-        var existingBranch = await cellRepository.GetBranchByIdAsync(branch.Id);
-        if (existingBranch == null)
-            return false;
-
-        return await cellRepository.UpdateBranchAsync(branch);
+        return await cellRepository.GetEmptyCell(minSlots);
     }
 
-    public async Task<bool> DeleteBranchAsync(ObjectId branchId)
+    public async Task<CellView> GetCellView(ObjectId id)
     {
-        var existingBranch = await cellRepository.GetBranchByIdAsync(branchId);
-        if (existingBranch == null)
-            return false;
+        var cell = await GetCellById(id) ?? throw new Exception("Cell not found");
 
-        return await cellRepository.DeleteBranchAsync(branchId);
+        return new CellView
+        {
+            Id = cell.Id.ToString(),
+            Name = cell.Name
+        };
     }
 }

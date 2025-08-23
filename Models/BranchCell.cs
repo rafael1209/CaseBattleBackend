@@ -20,6 +20,9 @@ public class BranchCell
     [BsonElement("orderId")]
     public ObjectId? OrderId { get; set; }
 
+    [BsonElement("slots")]
+    public int Slots { get; set; }
+
     [BsonElement("createdAt")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

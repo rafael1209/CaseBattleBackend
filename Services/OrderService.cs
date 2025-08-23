@@ -13,6 +13,7 @@ public class OrderService(
     IItemService itemService,
     IUserService userService,
     IBranchService branchService,
+    ICellService cellService,
     IDiscordNotificationService notificationService) : IOrderService
 {
     public async Task<List<Order>> GetAllOrdersAsync()
@@ -68,11 +69,15 @@ public class OrderService(
 
         await userService.RemoveFromInventory(user, inventoryItem.Id, request.Amount);
 
+        var neededCells = (int)Math.Ceiling((double)item.Amount * request.Amount / item.StackAmount);
+        var cell = await cellService.GetEmptyCell(neededCells);
+
         var order = new Order
         {
             UserId = user.Id,
             Item = new InventoryItem(inventoryItem.Id, request.Amount),
             Price = item.Price * request.Amount,
+            CellId = cell.Id,
             Status = OrderStatus.Created,
         };
 
@@ -139,11 +144,7 @@ public class OrderService(
                     Amount = order.Item.Amount
                 },
                 Status = order.Status,
-                Cell = new CellView
-                {
-                    Id = "id",
-                    Name = "unknown"
-                }
+                Cell = await cellService.GetCellView(order.CellId)
             });
         }
 

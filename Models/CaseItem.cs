@@ -26,7 +26,10 @@ public class CaseItem
 
     [BsonElement("price")]
     public required decimal Price { get; set; }
-        
+
+    [BsonElement("stackAmount")]
+    public double? StackAmount { get; set; }
+
     [BsonElement("rarity")]
     [BsonRepresentation(BsonType.String)]
     public required Rarity Rarity { get; set; }

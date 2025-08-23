@@ -5,9 +5,8 @@ namespace CaseBattleBackend.Interfaces;
 
 public interface ICellRepository
 {
-    Task<List<BranchCell>> GetAllBranchesAsync();
-    Task<BranchCell?> GetBranchByIdAsync(ObjectId branchId);
-    Task<BranchCell> CreateBranchAsync(BranchCell branch);
-    Task<bool> UpdateBranchAsync(BranchCell branch);
-    Task<bool> DeleteBranchAsync(ObjectId branchId);
+    Task<BranchCell> CreateCell(BranchCell cell);
+    Task<BranchCell?> GetCellById(ObjectId id);
+    Task<List<BranchCell>> GetCellsByBranchId(ObjectId branchId);
+    Task<BranchCell> GetEmptyCell(int minSlots);
 }
