@@ -52,10 +52,12 @@ public class OrderRepository(IMongoDbContext context) : IOrderRepository
 
         return await _orders
             .Find(o => o.UserId == userId)
+            .SortByDescending(o => o.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Limit(pageSize)
             .ToListAsync();
     }
+
 
 
     public Task<List<Order>> GetOrdersByStatusAsync(OrderStatus status)
