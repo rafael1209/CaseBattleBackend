@@ -47,6 +47,9 @@ public class ButtonService(IUserService userService, ICellService cellService, I
         await orderService.UpdateCell(order.Id, cell.Id);
         await orderService.UpdateStatus(order.Id, OrderStatus.Delivered);
 
+        order.CellId = cell.Id;
+        order.Status = OrderStatus.Delivered;
+
         return order;
     }
 
