@@ -17,6 +17,9 @@ public class Order
     [BsonElement("cellId")]
     public ObjectId CellId { get; set; }
 
+    [BsonElement("branchId")]
+    public ObjectId BranchId { get; set; }
+
     [BsonElement("item")]
     public required InventoryItem Item { get; set; }
 

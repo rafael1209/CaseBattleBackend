@@ -77,6 +77,9 @@ public class OrderService(
         if (!ObjectId.TryParse(request.ItemId, out var itemId))
             throw new ArgumentException(@"Invalid ObjectId format", nameof(request.ItemId));
 
+        var branch = await branchService.GetBranchByIdAsync(ObjectId.Parse(request.BranchId)) ??
+                     throw new ArgumentException($@"Branch with ID {request.BranchId} not found.", nameof(request.BranchId));
+
         var inventoryItem = user.Inventory
                 .Find(item => item.Id == itemId && item.Amount >= request.Amount) ??
                    throw new ArgumentException($@"Item with ID {request.ItemId} not found in user's inventory.", nameof(request.ItemId));
@@ -95,6 +98,7 @@ public class OrderService(
             Item = new InventoryItem(inventoryItem.Id, request.Amount),
             Price = item.Price * request.Amount,
             Status = OrderStatus.Created,
+            BranchId = branch.Id
         };
 
         var (embed, components) = DiscordEmbedBuilder.BuildItemWithdraw(user, new InventoryItemView()
@@ -153,7 +157,7 @@ public class OrderService(
             orderViews.Add(new OrderView
             {
                 Id = order.Id.ToString(),
-                Branch = await branchService.GetBranchViewById(ObjectId.Parse("68a45ae5c72161f9623fb32f")),
+                Branch = await branchService.GetBranchViewById(order.BranchId),
                 Item = new InventoryItemView
                 {
                     Item = await itemService.GetItemViewById(order.Item.Id.ToString()),
