@@ -47,6 +47,8 @@ public class OrderService(
         if (order.UserId != userObjectId)
             throw new UnauthorizedAccessException();
 
+        await cellService.UpdateCellStatus(order.CellId);
+
         order.Status = OrderStatus.Confirmed;
         await orderRepository.UpdateOrderAsync(order);
     }
@@ -83,7 +85,7 @@ public class OrderService(
                    throw new ArgumentException($@"Item with ID {request.ItemId} not found in the database.", nameof(request.ItemId));
 
         if (item.MinecraftId == null)
-           throw new ArgumentException(@"Item is not withdrawable.", nameof(request.ItemId));
+            throw new ArgumentException(@"Item is not withdrawable.", nameof(request.ItemId));
 
         await userService.RemoveFromInventory(user, inventoryItem.Id, request.Amount);
 
