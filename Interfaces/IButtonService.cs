@@ -1,4 +1,5 @@
-﻿using CaseBattleBackend.Models;
+﻿using CaseBattleBackend.Dtos;
+using CaseBattleBackend.Models;
 
 namespace CaseBattleBackend.Interfaces;
 

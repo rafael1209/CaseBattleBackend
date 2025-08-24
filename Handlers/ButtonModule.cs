@@ -4,7 +4,7 @@ using Discord.Interactions;
 
 namespace CaseBattleBackend.Handlers;
 
-public class ButtonModule(IButtonService buttonService, IUserService userService) : InteractionModuleBase<SocketInteractionContext>
+public class ButtonModule(IButtonService buttonService, IUserService userService, IBranchService branchService, ICellService cellService) : InteractionModuleBase<SocketInteractionContext>
 {
     [ComponentInteraction("accept_order_*", true)]
     public async Task HandleAcceptWithdraw(string orderId)
@@ -39,12 +39,15 @@ public class ButtonModule(IButtonService buttonService, IUserService userService
     {
         var order = await buttonService.CompleteOrder(orderId, Context.User.Id);
         var user = await userService.GetById(order.UserId);
+        var cell = await cellService.GetCellById(order.CellId);
+        var branch = await branchService.GetBranchByIdAsync(cell.BranchId);
 
         await DeferAsync(ephemeral: true);
 
         await ModifyOriginalResponseAsync(msg =>
         {
-            msg.Content = $"✅ Заказ выполнен курьером <@{Context.User.Id}>.\nДля игрока ||`{user.Username}`||";
+            msg.Content =
+                $"✅ Заказ выполнен курьером <@{Context.User.Id}>.\nИгрок {user.Username}\nФилиал `{branch.Name}`({branch.Coordinates.Nether.Color.ToString()} {branch.Coordinates.Nether.Distance})\nКлетка `{cell.Name}`";
             msg.Components = new ComponentBuilder().Build();
         });
     }

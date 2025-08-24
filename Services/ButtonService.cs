@@ -1,4 +1,5 @@
-﻿using CaseBattleBackend.Enums;
+﻿using CaseBattleBackend.Dtos;
+using CaseBattleBackend.Enums;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
 
