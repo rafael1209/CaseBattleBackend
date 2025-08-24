@@ -47,7 +47,10 @@ public class ButtonModule(IButtonService buttonService, IUserService userService
         await ModifyOriginalResponseAsync(msg =>
         {
             msg.Content =
-                $"✅ Заказ выполнен курьером <@{Context.User.Id}>.\nИгрок {user.Username}\nФилиал `{branch.Name}`({branch.Coordinates.Nether.Color.ToString()} {branch.Coordinates.Nether.Distance})\nКлетка `{cell.Name}`";
+                $"✅ Заказ выполнен курьером <@{Context.User.Id}>.\n" +
+                $"Игрок {user.Username}\n" +
+                $"Филиал `{branch.Name}`({branch.Coordinates.Nether.Color.ToString()} {branch.Coordinates.Nether.Distance})\n" +
+                $"Клетка `{cell.Name}`";
             msg.Components = new ComponentBuilder().Build();
         });
     }

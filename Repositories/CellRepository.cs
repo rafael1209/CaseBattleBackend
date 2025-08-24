@@ -8,10 +8,10 @@ namespace CaseBattleBackend.Repositories;
 public class CellRepository(IMongoDbContext context) : ICellRepository
 {
     private readonly IMongoCollection<BranchCell> _cells = context.BranchCellsCollection;
+
     public async Task<BranchCell> CreateCell(BranchCell cell)
     {
         await _cells.InsertOneAsync(cell);
-
         return cell;
     }
 

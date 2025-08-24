@@ -42,6 +42,6 @@ public class CellService(ICellRepository cellRepository) : ICellService
     {
         var cell = await GetCellById(id) ?? throw new Exception($"Cell with ID {id} not found.");
         cell.IsOccupied = !cell.IsOccupied;
-        await cellRepository.CreateCell(cell);
+        await cellRepository.UpdateCell(cell);
     }
 }
