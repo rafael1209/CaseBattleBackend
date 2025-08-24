@@ -11,7 +11,7 @@ public class PaymentController(IUserService userService) : Controller
 {
     [HttpPost("deposit")]
     [AuthMiddleware]
-    [RateLimit(5)]
+    [RateLimit(200)]
     public async Task<IActionResult> Donate([FromBody] DepositRequest deposit)
     {
         var jwtData = HttpContext.Items["@me"] as JwtData
@@ -31,7 +31,7 @@ public class PaymentController(IUserService userService) : Controller
 
     [HttpPost("withdraw")]
     [AuthMiddleware]
-    [RateLimit(5)]
+    [RateLimit(200)]
     public async Task<IActionResult> Withdraw([FromBody] WithdrawRequest withdraw)
     {
         var jwtData = HttpContext.Items["@me"] as JwtData
