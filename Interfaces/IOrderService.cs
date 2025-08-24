@@ -16,4 +16,5 @@ public interface IOrderService
     Task<List<Order>> GetOrdersByStatusAsync(OrderStatus status);
     Task<List<OrderView>> GetOrdersViewByUserId(string userId, int page = 1, int pageSize = 8);
     Task UpdateStatus(ObjectId orderId, OrderStatus status);
+    Task UpdateCell(ObjectId orderId, ObjectId cellId);
 }

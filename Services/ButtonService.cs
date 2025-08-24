@@ -1,10 +1,13 @@
 ﻿using CaseBattleBackend.Enums;
 using CaseBattleBackend.Interfaces;
 using CaseBattleBackend.Models;
+using CaseBattleBackend.Requests;
+using Discord;
+using Discord.Net;
 
 namespace CaseBattleBackend.Services;
 
-public class ButtonService(IUserService userService, IOrderService orderService) : IButtonService
+public class ButtonService(IUserService userService, ICellService cellService, IItemService itemService, IOrderService orderService) : IButtonService
 {
     public async Task<Order> AcceptOrder(string id, ulong currierId)
     {
@@ -18,7 +21,7 @@ public class ButtonService(IUserService userService, IOrderService orderService)
             throw new Exception("");
 
         await orderService.AddCourier(id, currier.Id);
-        await orderService.UpdateStatus(order.Id, Enums.OrderStatus.Accepted);
+        await orderService.UpdateStatus(order.Id, OrderStatus.InDelivery);
 
         await userService.UpdateBalance(currier.Id, order.Price);
 
@@ -36,7 +39,14 @@ public class ButtonService(IUserService userService, IOrderService orderService)
         if (order.CourierId != currier.Id)
             throw new Exception($"Order with ID {id} is not assigned to courier with ID {currier.Id}.");
 
-        await orderService.UpdateStatus(order.Id, OrderStatus.Confirmed);
+        var item = await itemService.GetById(order.Item.Id.ToString()) ??
+                   throw new Exception($"Item with ID {order.Item.Id} not found.");
+
+        var neededCells = (int)Math.Ceiling((double)item.Amount * order.Item.Amount / (double)item.StackAmount!);
+        var cell = await cellService.GetEmptyCell(neededCells);
+
+        await orderService.UpdateCell(order.Id, cell.Id);
+        await orderService.UpdateStatus(order.Id, OrderStatus.Delivered);
 
         return order;
     }

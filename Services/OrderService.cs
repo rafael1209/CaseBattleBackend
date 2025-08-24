@@ -83,19 +83,15 @@ public class OrderService(
                    throw new ArgumentException($@"Item with ID {request.ItemId} not found in the database.", nameof(request.ItemId));
 
         if (item.MinecraftId == null)
-            throw new ArgumentException(@"Item is not withdrawable.", nameof(request.ItemId));
+           throw new ArgumentException(@"Item is not withdrawable.", nameof(request.ItemId));
 
         await userService.RemoveFromInventory(user, inventoryItem.Id, request.Amount);
-
-        var neededCells = (int)Math.Ceiling((double)item.Amount * request.Amount / (double)item.StackAmount!);
-        var cell = await cellService.GetEmptyCell(neededCells);
 
         var order = new Order
         {
             UserId = user.Id,
             Item = new InventoryItem(inventoryItem.Id, request.Amount),
             Price = item.Price * request.Amount,
-            CellId = cell.Id,
             Status = OrderStatus.Created,
         };
 
@@ -175,6 +171,15 @@ public class OrderService(
                     throw new ArgumentException($@"Order with ID {orderId} not found.", nameof(orderId));
 
         order.Status = status;
+
+        await orderRepository.UpdateOrderAsync(order);
+    }
+
+    public async Task UpdateCell(ObjectId orderId, ObjectId cellId)
+    {
+        var order = await orderRepository.GetOrderByIdAsync(orderId) ??
+                    throw new ArgumentException($@"Order with ID {orderId} not found.", nameof(orderId));
+        order.CellId = cellId;
 
         await orderRepository.UpdateOrderAsync(order);
     }
