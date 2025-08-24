@@ -9,4 +9,5 @@ public interface ICellRepository
     Task<BranchCell?> GetCellById(ObjectId id);
     Task<List<BranchCell>> GetCellsByBranchId(ObjectId branchId);
     Task<BranchCell> GetEmptyCell(int minSlots);
+    Task UpdateCell(BranchCell cell);
 }

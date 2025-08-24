@@ -37,4 +37,11 @@ public class CellService(ICellRepository cellRepository) : ICellService
             Name = cell?.Name ?? "unknown"
         };
     }
+
+    public async Task UpdateCellStatus(ObjectId id)
+    {
+        var cell = await GetCellById(id) ?? throw new Exception($"Cell with ID {id} not found.");
+        cell.IsOccupied = !cell.IsOccupied;
+        await cellRepository.CreateCell(cell);
+    }
 }

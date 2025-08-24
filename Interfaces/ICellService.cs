@@ -11,4 +11,5 @@ public interface ICellService
     Task<List<BranchCell>> GetCellsByBranchId(ObjectId branchId);
     Task<BranchCell> GetEmptyCell(int minSlots);
     Task<CellView> GetCellView(ObjectId id);
+    Task UpdateCellStatus(ObjectId id);
 }

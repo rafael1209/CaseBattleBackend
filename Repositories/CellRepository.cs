@@ -39,4 +39,10 @@ public class CellRepository(IMongoDbContext context) : ICellRepository
 
         return cell;
     }
+
+    public async Task UpdateCell(BranchCell cell)
+    {
+        var filter = Builders<BranchCell>.Filter.Eq(c => c.Id, cell.Id);
+        await _cells.ReplaceOneAsync(filter, cell);
+    }
 }
