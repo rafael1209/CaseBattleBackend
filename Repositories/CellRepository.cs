@@ -34,11 +34,16 @@ public class CellRepository(IMongoDbContext context) : ICellRepository
             Builders<BranchCell>.Filter.Eq(c => c.IsOccupied, false),
             Builders<BranchCell>.Filter.Gte(c => c.Slots, minSlots)
         );
-        var cell = await _cells.Find(filter).FirstOrDefaultAsync() ??
-                   throw new Exception("No empty cell found with the required slots.");
+
+        var cell = await _cells
+                       .Find(filter)
+                       .Sort(Builders<BranchCell>.Sort.Ascending(c => c.Slots))
+                       .FirstOrDefaultAsync()
+                   ?? throw new Exception("No empty cell found with the required slots.");
 
         return cell;
     }
+
 
     public async Task UpdateCell(BranchCell cell)
     {
